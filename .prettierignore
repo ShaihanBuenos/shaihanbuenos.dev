@@ -1,0 +1,10 @@
+dist/
+.astro/
+.wrangler/
+node_modules/
+package-lock.json
+.scratch/
+.claude/
+.impeccable/
+# documentos escritos à mão: o formatador não mexe
+*.md
