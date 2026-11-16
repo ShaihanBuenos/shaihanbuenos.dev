@@ -1,0 +1,9 @@
+# configuração local e binários das skills
+.claude/
+# notas, dossiês e protótipos locais: nunca entram no git
+.scratch/
+# rascunhos e capturas do processo de design
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/questions/
+.impeccable/hook.cache.json
