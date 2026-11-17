@@ -332,7 +332,101 @@
   font-size: 1.06rem;
 }
 
+/* ---------- the research items ---------- */
+
+/* The paper and, below it and a step smaller, the thesis. Phone first: the
+   title, the captions and then each field under what comes before it. */
+.research-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 2rem 0 1.4rem;
+  border-top: 1px solid var(--ink);
+  /* Where the page stops when a link leads to the item. */
+  scroll-margin-top: 1rem;
+}
+
+/* The header of the page already closes with a line. */
+.reading-header + .research-item {
+  border-top: 0;
+}
+
+.research-item h2 {
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.research-item .authors {
+  color: var(--mut);
+}
+
+/* Shaihan's name among the authors. */
+.research-item .authors strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.research-item dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 0.4rem;
+}
+
+.research-item dt {
+  padding-top: 0.9rem;
+}
+
+.research-item figure {
+  margin-top: 1.4rem;
+}
+
+/* The place of a diagram that is still to be drawn: the frame of the
+   diagrams, dashed because it is empty. */
+.diagram-place {
+  aspect-ratio: 16 / 9;
+  border: 1.5px dashed var(--ink);
+}
+
+.research-item figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--mut);
+}
+
+/* The link that closes an item: to the paper, or to the contact. */
+.research-item .action {
+  margin-top: 0.6rem;
+  font-weight: 500;
+}
+
+.research-item .action a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.research-item.thesis {
+  font-size: 1rem;
+}
+
+.research-item.thesis h2 {
+  font-size: 1.35rem;
+}
+
 @media (min-width: 561px) {
+  .research-item dl {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 0.9rem 1.2rem;
+    margin-top: 1rem;
+  }
+
+  /* The term sits on the first line of its field. */
+  .research-item dt {
+    padding-top: 0.32rem;
+  }
+
   /* On the list of texts, the date has a narrow column of its own. */
   .reading > .text-list li {
     padding-left: 8rem;

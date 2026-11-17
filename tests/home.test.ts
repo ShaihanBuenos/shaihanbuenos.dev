@@ -102,6 +102,14 @@ describe("the content of Home", { concurrency: true }, () => {
     ]);
   });
 
+  // The link that closes the callout leads to the paper on the Research page.
+  test("the paper callout leads to the paper on the Research page", async () => {
+    const callout = element(await changedHome("en"), "section", "research");
+    assert.deepEqual(hrefsOf(callout), ["/research#example-paper"]);
+    const inPortuguese = element(await changedHome("pt"), "section", "research");
+    assert.deepEqual(hrefsOf(inPortuguese), ["/pt-br/pesquisa#example-paper"]);
+  });
+
   // The names on the project cards, in the order of the page.
   function projectCards(home: string): string[] {
     return elements(element(home, "section", "projects"), "h3").map(textOf);

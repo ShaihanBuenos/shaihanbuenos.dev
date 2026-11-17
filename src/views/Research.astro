@@ -1,0 +1,67 @@
+---
+import ResearchTitle from "../components/ResearchTitle.astro";
+import Reading from "../layouts/Reading.astro";
+import { EMAIL } from "../lib/contact.ts";
+import { type ResearchItem, content } from "../lib/content.ts";
+import { languageOf } from "../lib/languages.ts";
+
+const language = languageOf(Astro.currentLocale);
+const { pages, research } = await content();
+const phrases = pages[language];
+const { fields } = phrases.research;
+
+// The fields of a research item, in the order of the page: what comes before
+// each one and what it says. Only the thesis says what it is.
+function fieldsOf(item: ResearchItem): { label: string; text: string }[] {
+  return [
+    ...(item.type === "thesis" ? [{ label: fields.whatItIs, text: item.whatItIs[language] }] : []),
+    { label: fields.summary, text: item.summary[language] },
+    { label: fields.built, text: item.built[language] },
+    { label: fields.result, text: item.result[language] },
+  ];
+}
+---
+
+<Reading title={phrases.research.name}>
+  {research.map((item) => (
+    <article class:list={["research-item", item.type]} id={item.id}>
+      <h2>
+        <ResearchTitle item={item} />
+      </h2>
+      {item.type === "paper" && (
+        <>
+          <p class="caption">{item.venue}</p>
+          <p class="authors">
+            {item.authors.map(({ name, highlight }, index) => (
+              <>
+                {index > 0 && ", "}
+                {highlight ? <strong>{name}</strong> : name}
+              </>
+            ))}
+          </p>
+        </>
+      )}
+      <dl>
+        {fieldsOf(item).map(({ label, text }) => (
+          <>
+            <dt class="caption">{label}</dt>
+            <dd>{text}</dd>
+          </>
+        ))}
+      </dl>
+      {item.type === "paper" && (
+        <figure>
+          <div class="diagram-place" aria-hidden="true" />
+          <figcaption>{phrases.research.diagram}</figcaption>
+        </figure>
+      )}
+      <p class="action">
+        {item.type === "paper" ? (
+          <a href={`https://doi.org/${item.doi}`}>{phrases.research.readPaper}</a>
+        ) : (
+          <a href={EMAIL.href}>{phrases.research.onRequest}</a>
+        )}
+      </p>
+    </article>
+  ))}
+</Reading>
