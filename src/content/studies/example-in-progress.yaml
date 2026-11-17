@@ -1,0 +1,11 @@
+# Made-up example. Delete before launch.
+name:
+  en: "[Example] A study in progress"
+  pt-br: "[Exemplo] Um estudo em andamento"
+goal:
+  en: "[Example] A one-line goal for a study that is still going."
+  pt-br: "[Exemplo] O objetivo, numa linha, de um estudo que ainda está em curso."
+status: in-progress
+start: 2026-02
+links:
+  project: example-project

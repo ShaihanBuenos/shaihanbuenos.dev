@@ -1,42 +1,43 @@
 ---
-import "../styles/fontes.css";
+import "../styles/fonts.css";
 import "../styles/base.css";
-import "../styles/moldura.css";
+import "../styles/frame.css";
+import Footer from "../components/Footer.astro";
 import Menu from "../components/Menu.astro";
-import Rodape from "../components/Rodape.astro";
-import { PODE_SER_INDEXADO } from "../lib/configuracao.ts";
-import { FRASES } from "../lib/frases.ts";
-import { idiomaDe, LANG_HTML } from "../lib/idiomas.ts";
+import { INDEXABLE } from "../lib/config.ts";
+import { phrasesOf } from "../lib/content.ts";
+import { languageOf, HTML_LANG } from "../lib/languages.ts";
 
 interface Props {
-  titulo: string;
+  title: string;
 }
 
-const { titulo } = Astro.props;
-const idioma = idiomaDe(Astro.currentLocale);
+const { title } = Astro.props;
+const language = languageOf(Astro.currentLocale);
+const phrases = await phrasesOf(language);
 ---
 
 <!doctype html>
-<html lang={LANG_HTML[idioma]}>
+<html lang={HTML_LANG[language]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {!PODE_SER_INDEXADO && <meta name="robots" content="noindex" />}
-    <title>{titulo}</title>
+    {!INDEXABLE && <meta name="robots" content="noindex" />}
+    <title>{title}</title>
   </head>
   <body>
-    <a class="pular" href="#conteudo">
-      {FRASES[idioma].pular}
+    <a class="skip" href="#content">
+      {phrases.common.skip}
     </a>
-    <div class="pagina">
-      <div class="moldura">
+    <div class="page">
+      <div class="frame">
         <Menu />
-        <main id="conteudo">
+        <main id="content">
           <slot />
         </main>
-        <Rodape />
+        <Footer />
       </div>
-      <div class="dentes" aria-hidden="true"></div>
+      <div class="teeth" aria-hidden="true"></div>
     </div>
   </body>
 </html>

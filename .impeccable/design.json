@@ -94,7 +94,7 @@
           "#edeef2"
         ]
       },
-      "cobre": {
+      "copper": {
         "role": "primary",
         "displayName": "Cobre",
         "canonical": "oklch(62.1% 0.167 42)",
@@ -109,7 +109,7 @@
           "#feeae2"
         ]
       },
-      "cobre-texto": {
+      "copper-text": {
         "role": "primary",
         "displayName": "Cobre de texto",
         "canonical": "oklch(48.5% 0.137 41)",
@@ -124,7 +124,7 @@
           "#feeae2"
         ]
       },
-      "safira": {
+      "sapphire": {
         "role": "secondary",
         "displayName": "Safira",
         "canonical": "oklch(44.4% 0.217 265)",
@@ -139,7 +139,7 @@
           "#e7effe"
         ]
       },
-      "l-cobre": {
+      "l-copper": {
         "role": "primary",
         "displayName": "Camada de cobre",
         "canonical": "rgba(214, 92, 36, .34)",
@@ -154,7 +154,7 @@
           "#feeae2"
         ]
       },
-      "l-cobre-2": {
+      "l-copper-2": {
         "role": "primary",
         "displayName": "Camada fraca de cobre",
         "canonical": "rgba(214, 92, 36, .22)",
@@ -169,7 +169,7 @@
           "#feeae2"
         ]
       },
-      "l-safira": {
+      "l-sapphire": {
         "role": "secondary",
         "displayName": "Camada de safira",
         "canonical": "rgba(24, 62, 201, .26)",
@@ -184,7 +184,7 @@
           "#e7effe"
         ]
       },
-      "l-cinza": {
+      "l-grey": {
         "role": "neutral",
         "displayName": "Camada cinza",
         "canonical": "rgba(20, 22, 27, .10)",
@@ -199,7 +199,7 @@
           "#edeef2"
         ]
       },
-      "f-cobre": {
+      "f-copper": {
         "role": "primary",
         "displayName": "Fundo de cobre",
         "canonical": "oklch(85.2% 0.055 47)",
@@ -214,7 +214,7 @@
           "#feeae2"
         ]
       },
-      "f-safira": {
+      "f-sapphire": {
         "role": "secondary",
         "displayName": "Fundo de safira",
         "canonical": "oklch(84.0% 0.050 274)",
@@ -229,7 +229,7 @@
           "#e7effe"
         ]
       },
-      "f-cinza": {
+      "f-grey": {
         "role": "neutral",
         "displayName": "Fundo cinza",
         "canonical": "oklch(91.6% 0.003 85)",
@@ -244,7 +244,7 @@
           "#edeef2"
         ]
       },
-      "h-cobre": {
+      "h-copper": {
         "role": "primary",
         "displayName": "Cobre cheio",
         "canonical": "rgba(214, 92, 36, .62)",
@@ -259,7 +259,7 @@
           "#feeae2"
         ]
       },
-      "h-safira": {
+      "h-sapphire": {
         "role": "secondary",
         "displayName": "Safira cheia",
         "canonical": "rgba(24, 62, 201, .48)",
@@ -274,7 +274,7 @@
           "#e7effe"
         ]
       },
-      "h-cinza": {
+      "h-grey": {
         "role": "neutral",
         "displayName": "Cinza cheio",
         "canonical": "rgba(20, 22, 27, .26)",
@@ -368,7 +368,7 @@
       "refersTo": "contato",
       "description": "O menu: retângulos de fio sobre a borda de cima da moldura. Hover e página atual invertem para tinta.",
       "html": "<div class=\"ds-die\"><nav class=\"ds-pads\" aria-label=\"Principal\"><a href=\"#\">Projetos</a><a href=\"#\" aria-current=\"true\">Textos</a><a href=\"#\">Estudos</a><a href=\"#\">Pesquisa</a><a href=\"#\">Sobre</a></nav></div>",
-      "css": ".ds-die { position: relative; margin-top: 16px; height: 48px; border: 1.5px solid var(--ink, #14161b); border-bottom: 0; background: var(--sheet, #fbfaf8); } .ds-pads { position: absolute; left: 0; right: 0; top: 0; transform: translateY(-50%); display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0 20px; } .ds-pads a { font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: .84rem; line-height: 1; padding: 6px 12px; border: 1.5px solid var(--ink, #14161b); background: var(--ground, #f3f2ef); color: var(--ink, #14161b); text-decoration: none; white-space: nowrap; } .ds-pads a:hover, .ds-pads a[aria-current] { background: var(--ink, #14161b); color: var(--sheet, #fbfaf8); } .ds-pads a:focus-visible { outline: 2px solid var(--safira, #183ec9); outline-offset: 3px; }"
+      "css": ".ds-die { position: relative; margin-top: 16px; height: 48px; border: 1.5px solid var(--ink, #14161b); border-bottom: 0; background: var(--sheet, #fbfaf8); } .ds-pads { position: absolute; left: 0; right: 0; top: 0; transform: translateY(-50%); display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0 20px; } .ds-pads a { font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: .84rem; line-height: 1; padding: 6px 12px; border: 1.5px solid var(--ink, #14161b); background: var(--ground, #f3f2ef); color: var(--ink, #14161b); text-decoration: none; white-space: nowrap; } .ds-pads a:hover, .ds-pads a[aria-current] { background: var(--ink, #14161b); color: var(--sheet, #fbfaf8); } .ds-pads a:focus-visible { outline: 2px solid var(--sapphire, #183ec9); outline-offset: 3px; }"
     },
     {
       "name": "Blocos da planta",
@@ -376,7 +376,7 @@
       "refersTo": "bloco-cobre",
       "description": "Componente de assinatura: blocos translúcidos sobre a grade. O ativo passa à cor cheia e os outros recuam para contorno, sem transição.",
       "html": "<div class=\"ds-plan\"><a class=\"ds-blk ds-blk-cobre\" href=\"#\"><span class=\"ds-des\">Pesquisa</span><strong>Bloco de cobre</strong></a><a class=\"ds-blk ds-blk-safira\" href=\"#\"><span class=\"ds-des\">Método</span><strong>Bloco de safira</strong></a><a class=\"ds-blk ds-blk-cinza\" href=\"#\"><span class=\"ds-des\">Experiência</span><strong>Bloco cinza</strong></a></div>",
-      "css": ".ds-plan { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 36px; background-color: var(--sheet, #fbfaf8); background-image: linear-gradient(var(--grid, rgba(20,22,27,.06)) 1px, transparent 1px), linear-gradient(90deg, var(--grid, rgba(20,22,27,.06)) 1px, transparent 1px); background-size: calc(100% / 12) 36px; } .ds-blk { display: flex; flex-direction: column; justify-content: space-between; padding: 12px; color: var(--ink, #14161b); text-decoration: none; mix-blend-mode: multiply; min-width: 0; } .ds-blk strong { font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 400; font-size: 1.3rem; letter-spacing: -.02em; line-height: 1.04; } .ds-des { font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; line-height: 1.5; font-variant-numeric: tabular-nums; } .ds-blk-cobre { grid-area: 1 / 5 / 5 / 13; background: var(--l-cobre, rgba(214,92,36,.34)); align-items: flex-end; text-align: right; } .ds-blk-safira { grid-area: 3 / 3 / 8 / 8; background: var(--l-safira, rgba(24,62,201,.26)); } .ds-blk-cinza { grid-area: 6 / 1 / 10 / 6; background: var(--l-cinza, rgba(20,22,27,.10)); justify-content: flex-end; gap: 6px; } .ds-plan:has(.ds-blk:is(:hover, :focus-visible)) .ds-blk:not(:hover):not(:focus-visible) { background-color: transparent; box-shadow: inset 0 0 0 1px var(--ink, #14161b); } .ds-blk-cobre:is(:hover, :focus-visible) { background-color: var(--h-cobre, rgba(214,92,36,.62)); } .ds-blk-safira:is(:hover, :focus-visible) { background-color: var(--h-safira, rgba(24,62,201,.48)); } .ds-blk-cinza:is(:hover, :focus-visible) { background-color: var(--h-cinza, rgba(20,22,27,.26)); } .ds-blk:focus-visible { outline: 2px solid var(--safira, #183ec9); outline-offset: -4px; }"
+      "css": ".ds-plan { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 36px; background-color: var(--sheet, #fbfaf8); background-image: linear-gradient(var(--grid, rgba(20,22,27,.06)) 1px, transparent 1px), linear-gradient(90deg, var(--grid, rgba(20,22,27,.06)) 1px, transparent 1px); background-size: calc(100% / 12) 36px; } .ds-blk { display: flex; flex-direction: column; justify-content: space-between; padding: 12px; color: var(--ink, #14161b); text-decoration: none; mix-blend-mode: multiply; min-width: 0; } .ds-blk strong { font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 400; font-size: 1.3rem; letter-spacing: -.02em; line-height: 1.04; } .ds-des { font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; line-height: 1.5; font-variant-numeric: tabular-nums; } .ds-blk-cobre { grid-area: 1 / 5 / 5 / 13; background: var(--l-copper, rgba(214,92,36,.34)); align-items: flex-end; text-align: right; } .ds-blk-safira { grid-area: 3 / 3 / 8 / 8; background: var(--l-sapphire, rgba(24,62,201,.26)); } .ds-blk-cinza { grid-area: 6 / 1 / 10 / 6; background: var(--l-grey, rgba(20,22,27,.10)); justify-content: flex-end; gap: 6px; } .ds-plan:has(.ds-blk:is(:hover, :focus-visible)) .ds-blk:not(:hover):not(:focus-visible) { background-color: transparent; box-shadow: inset 0 0 0 1px var(--ink, #14161b); } .ds-blk-cobre:is(:hover, :focus-visible) { background-color: var(--h-copper, rgba(214,92,36,.62)); } .ds-blk-safira:is(:hover, :focus-visible) { background-color: var(--h-sapphire, rgba(24,62,201,.48)); } .ds-blk-cinza:is(:hover, :focus-visible) { background-color: var(--h-grey, rgba(20,22,27,.26)); } .ds-blk:focus-visible { outline: 2px solid var(--sapphire, #183ec9); outline-offset: -4px; }"
     },
     {
       "name": "Núcleo",
@@ -392,7 +392,7 @@
       "refersTo": "secao-safira",
       "description": "Faixa de largura total: fio em cima, título à esquerda, corpo à direita, link de ação em tinta sobre a cor.",
       "html": "<section class=\"ds-sec\"><h2>Método</h2><div class=\"ds-sec-body\"><p class=\"ds-lead\">Uma frase de abertura em fonte de display leve.</p><p>Texto corrido da seção, em tinta, com até 62 caracteres por linha.</p><p class=\"ds-more\"><a href=\"#\">Link de ação</a></p></div></section>",
-      "css": ".ds-sec { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 32px; padding: 48px 24px; border-top: 1.5px solid var(--ink, #14161b); background: var(--f-safira, #c0c9ec); color: var(--ink, #14161b); font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 1.0625rem; line-height: 1.55; } .ds-sec h2 { margin: 0; font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 300; font-size: 2.4rem; letter-spacing: -.03em; line-height: 1.02; } .ds-sec-body { display: flex; flex-direction: column; gap: 1.1rem; } .ds-sec p { margin: 0; max-width: 62ch; } .ds-lead { font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 1.5rem; font-weight: 300; line-height: 1.3; letter-spacing: -.02em; } .ds-more { font-weight: 500; } .ds-sec a { color: var(--ink, #14161b); text-decoration-thickness: 1px; text-underline-offset: .2em; } .ds-sec a:hover { text-decoration-thickness: 2px; } .ds-sec a:focus-visible { outline: 2px solid var(--safira, #183ec9); outline-offset: 3px; }"
+      "css": ".ds-sec { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 32px; padding: 48px 24px; border-top: 1.5px solid var(--ink, #14161b); background: var(--f-sapphire, #c0c9ec); color: var(--ink, #14161b); font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 1.0625rem; line-height: 1.55; } .ds-sec h2 { margin: 0; font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 300; font-size: 2.4rem; letter-spacing: -.03em; line-height: 1.02; } .ds-sec-body { display: flex; flex-direction: column; gap: 1.1rem; } .ds-sec p { margin: 0; max-width: 62ch; } .ds-lead { font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 1.5rem; font-weight: 300; line-height: 1.3; letter-spacing: -.02em; } .ds-more { font-weight: 500; } .ds-sec a { color: var(--ink, #14161b); text-decoration-thickness: 1px; text-underline-offset: .2em; } .ds-sec a:hover { text-decoration-thickness: 2px; } .ds-sec a:focus-visible { outline: 2px solid var(--sapphire, #183ec9); outline-offset: 3px; }"
     },
     {
       "name": "Linha de projeto",
@@ -400,7 +400,7 @@
       "refersTo": "linha-projeto",
       "description": "Linha com marca, título, descrição e a legenda de estado por último. Como link, ganha fundo de cobre claro.",
       "html": "<div class=\"ds-rows\"><a class=\"ds-row\" href=\"#\"><svg aria-hidden=\"true\" viewBox=\"0 0 120 120\"><rect x=\"24\" y=\"24\" width=\"72\" height=\"72\" fill=\"none\" stroke=\"#14161b\" stroke-width=\"8\"/><rect x=\"48\" y=\"48\" width=\"24\" height=\"24\" fill=\"#d65c24\"/></svg><h3>Nome do projeto</h3><span class=\"ds-des\">em desenvolvimento</span><p>Uma linha que descreve o projeto. <span class=\"ds-go\">Ler a história</span></p></a></div>",
-      "css": ".ds-rows { border-bottom: 1.5px solid var(--ink, #14161b); } .ds-row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 6px 20px; align-items: center; padding: 18px 12px; border-top: 1.5px solid var(--ink, #14161b); color: var(--ink, #14161b); text-decoration: none; font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); } .ds-row svg { width: 100%; height: auto; grid-row: span 3; align-self: start; } .ds-row h3 { margin: 0; grid-column: 2; font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 300; font-size: 1.8rem; letter-spacing: -.03em; line-height: 1.1; } .ds-row .ds-des { grid-column: 2; order: 3; font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; line-height: 1.5; font-variant-numeric: tabular-nums; } .ds-row p { margin: 0; grid-column: 2; color: var(--mut, #4b4f58); font-size: 1rem; line-height: 1.55; } .ds-go { font-weight: 600; color: var(--ink, #14161b); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; white-space: nowrap; } .ds-row:is(:hover, :focus-visible) { background: var(--f-cobre, #eec4b0); } .ds-row:is(:hover, :focus-visible) p { color: var(--ink, #14161b); } .ds-row:is(:hover, :focus-visible) .ds-go { text-decoration-thickness: 2px; } .ds-row:focus-visible { outline: 2px solid var(--safira, #183ec9); outline-offset: 3px; }"
+      "css": ".ds-rows { border-bottom: 1.5px solid var(--ink, #14161b); } .ds-row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 6px 20px; align-items: center; padding: 18px 12px; border-top: 1.5px solid var(--ink, #14161b); color: var(--ink, #14161b); text-decoration: none; font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); } .ds-row svg { width: 100%; height: auto; grid-row: span 3; align-self: start; } .ds-row h3 { margin: 0; grid-column: 2; font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 300; font-size: 1.8rem; letter-spacing: -.03em; line-height: 1.1; } .ds-row .ds-des { grid-column: 2; order: 3; font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; line-height: 1.5; font-variant-numeric: tabular-nums; } .ds-row p { margin: 0; grid-column: 2; color: var(--mut, #4b4f58); font-size: 1rem; line-height: 1.55; } .ds-go { font-weight: 600; color: var(--ink, #14161b); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; white-space: nowrap; } .ds-row:is(:hover, :focus-visible) { background: var(--f-copper, #eec4b0); } .ds-row:is(:hover, :focus-visible) p { color: var(--ink, #14161b); } .ds-row:is(:hover, :focus-visible) .ds-go { text-decoration-thickness: 2px; } .ds-row:focus-visible { outline: 2px solid var(--sapphire, #183ec9); outline-offset: 3px; }"
     },
     {
       "name": "Contatos de saída",
@@ -408,7 +408,7 @@
       "refersTo": "contato",
       "description": "Lista de contato no rodapé e no fim da seção Sobre; o item sem link leva a etiqueta de provisório.",
       "html": "<ul class=\"ds-contacts\"><li><a href=\"#\">GitHub</a></li><li><span>LinkedIn <span class=\"ds-ex\">a definir</span></span></li></ul>",
-      "css": ".ds-contacts { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); } .ds-contacts li > * { display: inline-block; padding: 6px 12px; border: 1.5px solid var(--ink, #14161b); font-size: .9rem; color: var(--ink, #14161b); text-decoration: none; background: var(--sheet, #fbfaf8); } .ds-contacts a:hover { background: var(--ink, #14161b); color: var(--sheet, #fbfaf8); } .ds-contacts a:focus-visible { outline: 2px solid var(--safira, #183ec9); outline-offset: 3px; } .ds-ex { font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .69rem; text-transform: uppercase; letter-spacing: .03em; border: 1px dashed currentColor; padding: 1px 5px; white-space: nowrap; vertical-align: .15em; }"
+      "css": ".ds-contacts { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); } .ds-contacts li > * { display: inline-block; padding: 6px 12px; border: 1.5px solid var(--ink, #14161b); font-size: .9rem; color: var(--ink, #14161b); text-decoration: none; background: var(--sheet, #fbfaf8); } .ds-contacts a:hover { background: var(--ink, #14161b); color: var(--sheet, #fbfaf8); } .ds-contacts a:focus-visible { outline: 2px solid var(--sapphire, #183ec9); outline-offset: 3px; } .ds-ex { font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .69rem; text-transform: uppercase; letter-spacing: .03em; border: 1px dashed currentColor; padding: 1px 5px; white-space: nowrap; vertical-align: .15em; }"
     },
     {
       "name": "Legenda de estado e etiqueta de provisório",
@@ -416,7 +416,7 @@
       "refersTo": "",
       "description": "Legenda em monoespaçado com quadradinho de cor, e a etiqueta tracejada que marca conteúdo provisório.",
       "html": "<p class=\"ds-meta\"><span class=\"ds-kind\">artigo</span><span class=\"ds-kind ds-kind-nota\">nota de estudo</span><span>em desenvolvimento</span><span class=\"ds-ex2\">exemplo</span></p>",
-      "css": ".ds-meta { margin: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; align-items: center; color: var(--ink, #14161b); font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; line-height: 1.5; font-variant-numeric: tabular-nums; } .ds-kind { display: inline-flex; align-items: center; gap: .55em; } .ds-kind::before { content: \"\"; width: .8em; aspect-ratio: 1; background: var(--cobre, #d65c24); } .ds-kind-nota::before { background: var(--safira, #183ec9); } .ds-ex2 { font-size: .69rem; letter-spacing: .03em; border: 1px dashed currentColor; padding: 1px 5px; white-space: nowrap; }"
+      "css": ".ds-meta { margin: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; align-items: center; color: var(--ink, #14161b); font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; line-height: 1.5; font-variant-numeric: tabular-nums; } .ds-kind { display: inline-flex; align-items: center; gap: .55em; } .ds-kind::before { content: \"\"; width: .8em; aspect-ratio: 1; background: var(--copper, #d65c24); } .ds-kind-nota::before { background: var(--sapphire, #183ec9); } .ds-ex2 { font-size: .69rem; letter-spacing: .03em; border: 1px dashed currentColor; padding: 1px 5px; white-space: nowrap; }"
     },
     {
       "name": "Texto de leitura",
@@ -424,7 +424,7 @@
       "refersTo": "",
       "description": "Página de leitura (provisória, sem revisão): coluna única, link em safira, lista com marcador de cobre, destaque sobre azul e código sobre cinza.",
       "html": "<article class=\"ds-prose\"><p>Um parágrafo com <a href=\"#\">um link</a> e código curto: <code>client_uuid</code>.</p><h2>Um título de seção</h2><ul><li>Um item de lista.</li><li>Outro item.</li></ul><blockquote>Uma frase em destaque.</blockquote><pre><code>ON CONFLICT DO NOTHING\nRETURNING id;</code></pre></article>",
-      "css": ".ds-prose { max-width: 41rem; font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 1.125rem; line-height: 1.68; color: var(--ink, #14161b); display: flex; flex-direction: column; gap: 1.25rem; } .ds-prose p { margin: 0; } .ds-prose a { color: var(--safira, #183ec9); text-decoration-thickness: 1px; text-underline-offset: .2em; } .ds-prose a:hover { text-decoration-thickness: 2px; } .ds-prose a:focus-visible { outline: 2px solid var(--safira, #183ec9); outline-offset: 3px; } .ds-prose h2 { margin: 1.6rem 0 0; font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 400; font-size: 1.7rem; line-height: 1.2; letter-spacing: -.02em; } .ds-prose ul { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .45rem; list-style: square; } .ds-prose li::marker { color: var(--cobre-texto, #9c3d12); } .ds-prose blockquote { margin: 0; padding: 1rem 1.2rem; background: var(--f-safira, #c0c9ec); font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 300; font-size: 1.3rem; line-height: 1.35; letter-spacing: -.01em; } .ds-prose code { font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .84em; background: var(--f-cinza, #e4e3e1); padding: .1em .35em; } .ds-prose pre { margin: 0; padding: 1rem 1.2rem; background: var(--f-cinza, #e4e3e1); overflow-x: auto; font-size: .82rem; line-height: 1.6; tab-size: 2; } .ds-prose pre code { background: none; padding: 0; font-size: inherit; }"
+      "css": ".ds-prose { max-width: 41rem; font-family: var(--text, \"Hanken Grotesk\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-size: 1.125rem; line-height: 1.68; color: var(--ink, #14161b); display: flex; flex-direction: column; gap: 1.25rem; } .ds-prose p { margin: 0; } .ds-prose a { color: var(--sapphire, #183ec9); text-decoration-thickness: 1px; text-underline-offset: .2em; } .ds-prose a:hover { text-decoration-thickness: 2px; } .ds-prose a:focus-visible { outline: 2px solid var(--sapphire, #183ec9); outline-offset: 3px; } .ds-prose h2 { margin: 1.6rem 0 0; font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 400; font-size: 1.7rem; line-height: 1.2; letter-spacing: -.02em; } .ds-prose ul { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .45rem; list-style: square; } .ds-prose li::marker { color: var(--copper-text, #9c3d12); } .ds-prose blockquote { margin: 0; padding: 1rem 1.2rem; background: var(--f-sapphire, #c0c9ec); font-family: var(--display, \"Bricolage Grotesque\", \"Helvetica Neue\", Helvetica, Arial, sans-serif); font-weight: 300; font-size: 1.3rem; line-height: 1.35; letter-spacing: -.01em; } .ds-prose code { font-family: var(--mono, \"Martian Mono\", ui-monospace, \"SF Mono\", Menlo, monospace); font-size: .84em; background: var(--f-grey, #e4e3e1); padding: .1em .35em; } .ds-prose pre { margin: 0; padding: 1rem 1.2rem; background: var(--f-grey, #e4e3e1); overflow-x: auto; font-size: .82rem; line-height: 1.6; tab-size: 2; } .ds-prose pre code { background: none; padding: 0; font-size: inherit; }"
     }
   ],
   "narrative": {

@@ -1,4 +1,4 @@
-// ESLint só olha TypeScript; os arquivos .astro são conferidos por `astro check`.
+// ESLint only looks at TypeScript; the .astro files are checked by `astro check`.
 import js from "@eslint/js";
 import prettier from "eslint-config-prettier";
 import { defineConfig } from "eslint/config";
@@ -24,7 +24,7 @@ export default defineConfig(
     },
     rules: {
       "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],
-      // O `test` do node:test devolve uma promessa que o próprio executor espera.
+      // `test` from node:test returns a promise that the runner itself awaits.
       "@typescript-eslint/no-floating-promises": [
         "error",
         {

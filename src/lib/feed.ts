@@ -1,30 +1,30 @@
 import type { APIContext } from "astro";
-import { type Idioma, IDIOMA_PADRAO, inicioDe, LANG_HTML } from "./idiomas.ts";
+import { type Language, DEFAULT_LANGUAGE, homeOf, HTML_LANG } from "./languages.ts";
 
-// Provisório: as frases do feed passam para os arquivos de conteúdo junto
-// com os itens.
-const SOBRE_O_FEED: Record<Idioma, string> = {
+// Temporary: the feed's phrases move to the content files together with the
+// items.
+const ABOUT_THE_FEED: Record<Language, string> = {
   en: "Writing by Shaihan Buenos",
   "pt-br": "Textos de Shaihan Buenos",
 };
 
-// O endereço do feed de cada idioma.
-export function enderecoDoFeed(idioma: Idioma): string {
-  return idioma === IDIOMA_PADRAO ? "/rss.xml" : `/${idioma}/rss.xml`;
+// The path of each language's feed.
+export function feedPathOf(language: Language): string {
+  return language === DEFAULT_LANGUAGE ? "/rss.xml" : `/${language}/rss.xml`;
 }
 
-// O feed de um idioma, ainda sem textos: só guarda o endereço. Os itens
-// entram com a descoberta (issue #29).
-export function feedVazio(idioma: Idioma, { site }: APIContext): Response {
-  if (!site) throw new Error("Falta `site` em astro.config.ts.");
+// The feed of a language, still without texts: it only holds the address.
+// The items arrive with discovery (issue #13).
+export function emptyFeed(language: Language, { site }: APIContext): Response {
+  if (!site) throw new Error("Missing `site` in astro.config.ts.");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <title>Shaihan Buenos</title>
-    <link>${new URL(inicioDe(idioma), site).href}</link>
-    <description>${SOBRE_O_FEED[idioma]}</description>
-    <language>${LANG_HTML[idioma]}</language>
+    <link>${new URL(homeOf(language), site).href}</link>
+    <description>${ABOUT_THE_FEED[language]}</description>
+    <language>${HTML_LANG[language]}</language>
   </channel>
 </rss>
 `;

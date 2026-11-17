@@ -6,5 +6,5 @@ package-lock.json
 .scratch/
 .claude/
 .impeccable/
-# documentos escritos à mão: o formatador não mexe
+# hand-written documents: the formatter leaves them alone
 *.md

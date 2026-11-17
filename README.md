@@ -21,6 +21,7 @@ More in [`docs/desenvolvimento.md`](docs/desenvolvimento.md) (in Portuguese).
 
 - `src/pages/`: one file per address; Portuguese pages under `src/pages/pt-br/`
 - `src/layouts/`: the document shared by every page
-- `src/lib/`: languages, the launch switch and the feed
+- `src/content/`: the content, in files; the fields of each collection are in `src/lib/schemas.ts`
+- `src/lib/`: languages, the launch switch, the feed and the checked content
 - `tests/`: tests that run against the built site
 - `DESIGN.md`, `PRODUCT.md`, `GLOSSARY.md`: the design system, what the site is for and its vocabulary

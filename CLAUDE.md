@@ -4,6 +4,8 @@ Este repo guarda o código do site pessoal de Shaihan Buenos, `shaihanbuenos.dev
 
 Antes de construir, leia `DESIGN.md`, `PRODUCT.md` e `GLOSSARY.md`. Para rodar e conferir o site, veja `docs/desenvolvimento.md`.
 
+Todo o código é escrito em inglês: nomes, comentários, testes, mensagens de erro, CSS e os campos e pastas do conteúdo. Os documentos, as issues, os PRs e o conteúdo em português do site ficam em português. Cada termo do `GLOSSARY.md` tem um nome só no código, na linha "No código".
+
 ## Agent skills
 
 ### Issue tracker

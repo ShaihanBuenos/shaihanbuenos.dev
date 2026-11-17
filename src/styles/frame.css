@@ -1,10 +1,10 @@
-/* A moldura de um fio que cerca cada página, com os contatos do menu sobre a
-   borda de cima, o rodapé dentro e os dentes embaixo. Parte do celular. */
-.pagina {
+/* The one-line frame around every page, with the contacts of the menu over
+   the top border, the footer inside and the teeth below. Phone first. */
+.page {
   padding: 0 var(--gutter) 40px;
 }
 
-.moldura {
+.frame {
   position: relative;
   margin-top: 46px;
   border: 1.5px solid var(--ink);
@@ -12,21 +12,21 @@
   container-type: inline-size;
 }
 
-.dentes {
+.teeth {
   height: 10px;
   margin-top: 2px;
   background-image: linear-gradient(90deg, var(--ink) 0 34%, transparent 34%);
-  /* Um dente por módulo. A sobra mínima evita que o arredondamento deixe a
-     lasca de um 27º dente na ponta. */
+  /* One tooth per module. The tiny excess keeps rounding from leaving the
+     sliver of a 27th tooth at the end. */
   background-size: calc(100% / 26 + 0.05px) 10px;
 }
 
-/* ---------- contatos: o menu ---------- */
+/* ---------- the menu: its contacts ---------- */
 
-/* No celular: o botão de início à esquerda, o botão de idioma sempre visível
-   à direita e, entre os dois, as páginas. Em 390px tudo cabe numa linha; numa
-   tela mais estreita, as páginas rolam na horizontal. */
-.contatos {
+/* On a phone: the home button on the left, the language button always
+   visible on the right and, between the two, the pages. At 390px everything
+   fits on one line; on a narrower screen, the pages scroll sideways. */
+.menu {
   position: absolute;
   inset: 0 0 auto;
   z-index: 3;
@@ -37,28 +37,28 @@
   transform: translateY(-50%);
 }
 
-.contatos ul {
+.menu ul {
   display: flex;
   flex: 1 1 auto;
   gap: 2px;
   min-width: 0;
-  /* O respiro deixa o contorno de foco aparecer dentro da faixa que rola. */
+  /* The breathing room lets the focus outline show inside the scrolling strip. */
   margin-block: -5px;
   padding: 5px;
   overflow-x: auto;
   scrollbar-width: none;
 }
 
-.contatos li {
+.menu li {
   flex: none;
 }
 
-.contatos a,
-.contatos .idioma span {
+.menu a,
+.menu .language span {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 44px de altura. A largura segue o texto, para o menu caber numa linha. */
+  /* 44px tall. The width follows the text, so the menu fits on one line. */
   min-height: 44px;
   padding: 6px 4px;
   font-size: 0.74rem;
@@ -68,49 +68,49 @@
   white-space: nowrap;
 }
 
-.contatos .inicio,
-.contatos li a,
-.contatos .idioma {
+.menu .home,
+.menu li a,
+.menu .language {
   border: 1.5px solid var(--ink);
   background: var(--ground);
 }
 
-.contatos .inicio,
-.contatos .idioma {
+.menu .home,
+.menu .language {
   flex: none;
 }
 
-.contatos .idioma {
+.menu .language {
   display: flex;
 }
 
-/* O fio fica no par, não em cada sigla: desconta o fio para o botão ter a
-   altura dos outros contatos. */
-.contatos .idioma a,
-.contatos .idioma span {
+/* The line is on the pair, not on each short name: subtract the line so the
+   button is as tall as the other contacts. */
+.menu .language a,
+.menu .language span {
   min-height: calc(44px - 3px);
 }
 
-.contatos a[aria-current],
-.contatos .idioma span[aria-current] {
+.menu a[aria-current],
+.menu .language span[aria-current] {
   background: var(--ink);
   color: var(--sheet);
 }
 
 @media (hover: hover) {
-  .contatos a:hover {
+  .menu a:hover {
     background: var(--ink);
     color: var(--sheet);
   }
 }
 
-/* O botão de início: as iniciais no celular, o nome inteiro no computador. */
-.contatos .inteiro {
+/* The home button: the initials on a phone, the full name on a computer. */
+.menu .full-name {
   display: none;
 }
 
-/* ---------- rodapé: os contatos de saída ---------- */
-.rodape {
+/* ---------- the footer: the way-out contacts ---------- */
+.footer {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 28px;
@@ -120,13 +120,13 @@
   border-top: 1.5px solid var(--ink);
 }
 
-.rodape ul {
+.footer ul {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
 }
 
-.rodape a {
+.footer a {
   display: flex;
   align-items: center;
   min-height: 44px;
@@ -139,22 +139,22 @@
 }
 
 @media (hover: hover) {
-  .rodape a:hover {
+  .footer a:hover {
     background: var(--ink);
     color: var(--sheet);
   }
 }
 
 @media (min-width: 801px) {
-  .rodape {
+  .footer {
     padding-inline: var(--u);
   }
 }
 
-/* No computador, cada contato se alinha a colunas da grade de 26 módulos, e o
-   botão de idioma fecha a fileira, no canto superior direito. */
+/* On a computer, each contact aligns to columns of the 26-module grid, and
+   the language button closes the row, in the top right corner. */
 @media (min-width: 1001px) {
-  .contatos {
+  .menu {
     display: grid;
     grid-template-columns: repeat(26, var(--u));
     gap: 0;
@@ -162,11 +162,11 @@
     padding: 0;
   }
 
-  .contatos .inicio {
+  .menu .home {
     grid-column: 2 / span 4;
   }
 
-  .contatos ul {
+  .menu ul {
     display: grid;
     grid-column: 6 / span 15;
     grid-template-columns: repeat(5, calc(3 * var(--u)));
@@ -176,40 +176,40 @@
     overflow: visible;
   }
 
-  .contatos li {
+  .menu li {
     display: flex;
   }
 
-  .contatos .idioma {
+  .menu .language {
     grid-column: 22 / span 4;
     justify-self: end;
   }
 
-  .contatos a,
-  .contatos .idioma span {
+  .menu a,
+  .menu .language span {
     padding: 6px 12px;
     font-size: 0.84rem;
   }
 
-  .contatos .inteiro {
+  .menu .full-name {
     display: inline;
   }
 
-  .contatos .iniciais {
+  .menu .initials {
     display: none;
   }
 }
 
-/* Só com ponteiro fino os contatos encolhem para a medida do protótipo. Numa
-   tela larga de toque, cada alvo continua com 44px. */
+/* Only with a fine pointer do the contacts shrink to the size of the
+   prototype. On a wide touch screen, each target stays at 44px. */
 @media (min-width: 1001px) and (hover: hover) and (pointer: fine) {
-  .contatos a,
-  .contatos .idioma a,
-  .contatos .idioma span {
+  .menu a,
+  .menu .language a,
+  .menu .language span {
     min-height: 0;
   }
 
-  .rodape a {
+  .footer a {
     min-height: 0;
   }
 }
