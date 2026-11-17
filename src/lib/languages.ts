@@ -18,6 +18,12 @@ export const SHORT_NAME: Record<Language, string> = {
   "pt-br": "PT",
 };
 
+// The `lang` of something a page shows in a language that is not its own,
+// as a title in the original. In the page's own language it needs none.
+export function foreignLangOf(written: Language, page: Language): string | undefined {
+  return written === page ? undefined : HTML_LANG[written];
+}
+
 export function otherLanguage(language: Language): Language {
   return language === "en" ? "pt-br" : "en";
 }

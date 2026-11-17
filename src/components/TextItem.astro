@@ -2,7 +2,7 @@
 import LanguageMark from "./LanguageMark.astro";
 import { type Text, phrasesOf, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf } from "../lib/dates.ts";
-import { languageOf, HTML_LANG } from "../lib/languages.ts";
+import { foreignLangOf, languageOf } from "../lib/languages.ts";
 import { textPathOf } from "../lib/pages.ts";
 
 interface Props {
@@ -19,8 +19,7 @@ const Title = `h${level}` as const;
 // The version this page shows: the one in the page's language when there is
 // one, and the original, with the language mark, when there is not.
 const shown = versionIn(text, language);
-const inOtherLanguage = shown.language !== language;
-const lang = inOtherLanguage ? HTML_LANG[shown.language] : undefined;
+const lang = foreignLangOf(shown.language, language);
 ---
 
 <li>
@@ -38,6 +37,6 @@ const lang = inOtherLanguage ? HTML_LANG[shown.language] : undefined;
     {text.topics.map((topic) => (
       <span>{phrases.writing.topics[topic]}</span>
     ))}
-    {inOtherLanguage && <LanguageMark language={shown.language} />}
+    {lang && <LanguageMark language={shown.language} />}
   </p>
 </li>

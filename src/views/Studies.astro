@@ -3,18 +3,18 @@ import TextItem from "../components/TextItem.astro";
 import Reading from "../layouts/Reading.astro";
 import { type Study, content } from "../lib/content.ts";
 import { monthIn } from "../lib/dates.ts";
-import { type Language, languageOf, HTML_LANG } from "../lib/languages.ts";
+import { foreignLangOf, languageOf } from "../lib/languages.ts";
 import { pathOf, projectPathOf } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
 const { pages, projects, research, studies, studyList, texts } = await content();
 const phrases = pages[language];
 
-// What the links of a study lead to. `links.texts` already holds the texts
-// to show, in order and without the drafts.
+// What the links of a study lead to. `links.texts` already names the texts
+// to show, in their order and without the drafts.
 function linksOf({ links }: Study) {
   return {
-    texts: texts.filter(({ id }) => links.texts.includes(id)),
+    texts: links.texts.flatMap((linked) => texts.find(({ id }) => id === linked) ?? []),
     project: projects.find(({ id }) => id === links.project),
     certificate: links.certificate,
     education: links.education,
@@ -28,25 +28,22 @@ function siteOf(address: string): string {
   return new URL(address).hostname.replace(/^www\./, "");
 }
 
-// A title written in another language is marked with that language.
-function langOf(written: Language): string | undefined {
-  return written === language ? undefined : HTML_LANG[written];
-}
-
 // The groups of the page: the studies in progress first, then the completed
 // ones under the year they were completed, from the most recent year to the
-// oldest. A group without studies is not shown.
-const inProgress = studies.filter(({ status }) => status === "in-progress");
-const completedIn = Map.groupBy(
-  studies.filter(({ end }) => end !== undefined),
-  ({ end = "" }) => end.slice(0, 4),
+// oldest. A study in progress has no end, so its group has no year. A group
+// without studies is not shown.
+const byYear = Map.groupBy(
+  studies.map((study) => ({ ...study, shownLinks: linksOf(study) })),
+  ({ end }) => end?.slice(0, 4),
 );
-const groups: { year?: string; studies: Study[] }[] = [
-  ...(inProgress.length > 0 ? [{ studies: inProgress }] : []),
-  ...[...completedIn]
-    .sort(([a], [b]) => b.localeCompare(a))
-    .map(([year, studies]) => ({ year, studies })),
-];
+const years = [...byYear.keys()]
+  .filter((year) => year !== undefined)
+  .sort()
+  .reverse();
+const groups = [undefined, ...years].flatMap((year) => {
+  const studies = byYear.get(year);
+  return studies ? [{ year, studies }] : [];
+});
 ---
 
 <Reading title={phrases.studies.name}>
@@ -66,93 +63,91 @@ const groups: { year?: string; studies: Study[] }[] = [
           </>
         )}
       </h2>
-      {studies
-        .map((study) => ({ study, links: linksOf(study) }))
-        .map(({ study, links }) => (
-          <article class="study" id={study.id}>
-            <h3>{study.name[language]}</h3>
-            <p class="goal">{study.goal[language]}</p>
-            <p class="caption captions">
-              <span class:list={["study-status", study.status]}>
-                {phrases.studies.statuses[study.status]}
+      {studies.map(({ shownLinks: links, ...study }) => (
+        <article class="study" id={study.id}>
+          <h3>{study.name[language]}</h3>
+          <p class="goal">{study.goal[language]}</p>
+          <p class="caption captions">
+            <span class:list={["study-status", study.status]}>
+              {phrases.studies.statuses[study.status]}
+            </span>
+            {study.end === undefined ? (
+              <span>
+                {phrases.studies.since}{" "}
+                <time datetime={study.start}>{monthIn(study.start, language)}</time>
               </span>
-              {study.end === undefined ? (
-                <span>
-                  {phrases.studies.since}{" "}
-                  <time datetime={study.start}>{monthIn(study.start, language)}</time>
-                </span>
-              ) : (
-                <span>
-                  <time datetime={study.start}>{monthIn(study.start, language)}</time> –{" "}
-                  <time datetime={study.end}>{monthIn(study.end, language)}</time>
-                </span>
-              )}
-            </p>
-            {(links.texts.length > 0 ||
-              links.project ||
-              links.certificate ||
-              links.education ||
-              links.research.length > 0) && (
-              <dl class="study-links">
-                {links.texts.length > 0 && (
-                  <>
-                    <dt class="caption">{phrases.studies.links.texts}</dt>
-                    <dd>
-                      <ul class="text-list">
-                        {links.texts.map((text) => (
-                          <TextItem text={text} level={4} />
-                        ))}
-                      </ul>
-                    </dd>
-                  </>
-                )}
-                {links.project && (
-                  <>
-                    <dt class="caption">{phrases.studies.links.project}</dt>
-                    <dd>
-                      <a href={projectPathOf(links.project.id, language)}>{links.project.name}</a>
-                    </dd>
-                  </>
-                )}
-                {links.certificate && (
-                  <>
-                    <dt class="caption">{phrases.studies.links.certificate}</dt>
-                    <dd>
-                      <a href={links.certificate}>{siteOf(links.certificate)}</a>
-                    </dd>
-                  </>
-                )}
-                {links.education && (
-                  <>
-                    <dt class="caption">{phrases.studies.links.education}</dt>
-                    <dd>
-                      <a href={pathOf("about", language)}>{phrases.about.education}</a>
-                    </dd>
-                  </>
-                )}
-                {links.research.length > 0 && (
-                  <>
-                    <dt class="caption">{phrases.studies.links.research}</dt>
-                    <dd>
-                      {links.research.map((item) => (
-                        <a href={pathOf("research", language)}>
-                          {item.type === "paper" ? (
-                            <span lang={langOf("en")}>{item.title}</span>
-                          ) : (
-                            <>
-                              <span lang={langOf("pt-br")}>{item.title}</span>
-                              {language === "en" && ` (${item.translatedTitle})`}
-                            </>
-                          )}
-                        </a>
-                      ))}
-                    </dd>
-                  </>
-                )}
-              </dl>
+            ) : (
+              <span>
+                <time datetime={study.start}>{monthIn(study.start, language)}</time> –{" "}
+                <time datetime={study.end}>{monthIn(study.end, language)}</time>
+              </span>
             )}
-          </article>
-        ))}
+          </p>
+          {(links.texts.length > 0 ||
+            links.project ||
+            links.certificate ||
+            links.education ||
+            links.research.length > 0) && (
+            <dl class="study-links">
+              {links.texts.length > 0 && (
+                <>
+                  <dt class="caption">{phrases.studies.links.texts}</dt>
+                  <dd>
+                    <ul class="text-list">
+                      {links.texts.map((text) => (
+                        <TextItem text={text} level={4} />
+                      ))}
+                    </ul>
+                  </dd>
+                </>
+              )}
+              {links.project && (
+                <>
+                  <dt class="caption">{phrases.studies.links.project}</dt>
+                  <dd>
+                    <a href={projectPathOf(links.project.id, language)}>{links.project.name}</a>
+                  </dd>
+                </>
+              )}
+              {links.certificate && (
+                <>
+                  <dt class="caption">{phrases.studies.links.certificate}</dt>
+                  <dd>
+                    <a href={links.certificate}>{siteOf(links.certificate)}</a>
+                  </dd>
+                </>
+              )}
+              {links.education && (
+                <>
+                  <dt class="caption">{phrases.studies.links.education}</dt>
+                  <dd>
+                    <a href={pathOf("about", language)}>{phrases.about.education}</a>
+                  </dd>
+                </>
+              )}
+              {links.research.length > 0 && (
+                <>
+                  <dt class="caption">{phrases.studies.links.research}</dt>
+                  <dd>
+                    {links.research.map((item) => (
+                      <a href={pathOf("research", language)}>
+                        {item.type === "paper" ? (
+                          <span lang={foreignLangOf("en", language)}>{item.title}</span>
+                        ) : (
+                          <>
+                            <span lang={foreignLangOf("pt-br", language)}>{item.title}</span>
+                            {language === "en" && ` (${item.translatedTitle})`}
+                          </>
+                        )}
+                      </a>
+                    ))}
+                  </dd>
+                </>
+              )}
+            </dl>
+          )}
+        </article>
+      ))}
     </section>
   ))}
 </Reading>
