@@ -58,6 +58,25 @@ writing:
   types:
     article: artigo
     study-note: nota de estudo
+  # The name of each topic.
+  topics:
+    backend: backend
+    frontend: frontend
+    architecture: arquitetura
+    ai: IA
+    career: carreira
+    academic: acadêmico
+  # Comes before the date of the content revision of a text.
+  updatedOn: atualizado em
+  # Comes before the study a text came from.
+  study: estudo de origem
+  # The translation note. A translation shown in Portuguese was written in
+  # English: `from` names the original language, `original` is the link to
+  # the original and `withAI` is the notice of a translation made with AI.
+  translation:
+    from: Traduzido do inglês.
+    original: Ler o original
+    withAI: Esta tradução foi feita com IA.
 
 studies:
   name: Estudos

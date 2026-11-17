@@ -1,11 +1,12 @@
 ---
 import "../styles/plan.css";
 import "../styles/sections.css";
+import LanguageMark from "../components/LanguageMark.astro";
 import ProjectRows from "../components/ProjectRows.astro";
 import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
-import { languageOf, HTML_LANG, SHORT_NAME } from "../lib/languages.ts";
+import { languageOf, HTML_LANG } from "../lib/languages.ts";
 import { pathOf, projectPathOf, textPathOf } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
@@ -128,7 +129,7 @@ const lastYear = roles.every(({ end }) => end !== undefined)
                 {shown.language !== language && (
                   <>
                     {" · "}
-                    <span lang={HTML_LANG[shown.language]}>{SHORT_NAME[shown.language]}</span>
+                    <LanguageMark language={shown.language} />
                   </>
                 )}
               </span>

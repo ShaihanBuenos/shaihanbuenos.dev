@@ -4,15 +4,19 @@ import Base from "./Base.astro";
 
 interface Props {
   title: string;
+  // Where the language button leads, when the path of the page does not tell it.
+  equivalent?: string | undefined;
 }
 
-const { title } = Astro.props;
+const { title, equivalent } = Astro.props;
 ---
 
-<Base title={title}>
+<Base title={title} equivalent={equivalent}>
   <div class="reading">
     <header class="reading-header">
       <h1>{title}</h1>
+      <!-- What follows the title: the summary and the captions of a text. -->
+      <slot name="header" />
     </header>
     <slot />
   </div>

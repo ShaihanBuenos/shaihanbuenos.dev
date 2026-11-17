@@ -10,9 +10,12 @@ import { languageOf, HTML_LANG } from "../lib/languages.ts";
 
 interface Props {
   title: string;
+  // Where the language button leads, when the path of the page does not
+  // tell it: the page of a text gives it.
+  equivalent?: string | undefined;
 }
 
-const { title } = Astro.props;
+const { title, equivalent } = Astro.props;
 const language = languageOf(Astro.currentLocale);
 const phrases = await phrasesOf(language);
 ---
@@ -31,7 +34,7 @@ const phrases = await phrasesOf(language);
     </a>
     <div class="page">
       <div class="frame">
-        <Menu />
+        <Menu equivalent={equivalent} />
         <main id="content">
           <slot />
         </main>

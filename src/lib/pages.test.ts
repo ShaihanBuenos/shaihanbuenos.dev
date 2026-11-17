@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { equivalentOf, projectPathOf, sectionAt, textPathOf } from "./pages.ts";
+import { equivalentOf, projectPathOf, sectionAt, textEquivalentOf, textPathOf } from "./pages.ts";
 
 test("the equivalent of a fixed page is the same page in the other language", () => {
   assert.equal(equivalentOf("/projects", "en"), "/pt-br/projetos");
@@ -54,4 +54,21 @@ test("a project story belongs to the Projects page, and a fixed page to itself",
   assert.equal(sectionAt("/pt-br/sobre"), "about");
   assert.equal(sectionAt("/pt-br/nao-existe"), undefined);
   assert.equal(sectionAt("/does-not-exist"), undefined);
+});
+
+test("a text belongs to the Writing page", () => {
+  assert.equal(sectionAt("/writing/an-example"), "writing");
+  assert.equal(sectionAt("/pt-br/textos/um-exemplo.html"), "writing");
+});
+
+// Section 5 of the spec: each version has its own slug, so the equivalent
+// of a text comes from the content, not from the path.
+test("the equivalent of a translated text is its version in the other language", () => {
+  assert.equal(textEquivalentOf("um-exemplo", "en"), "/pt-br/textos/um-exemplo");
+  assert.equal(textEquivalentOf("an-example", "pt-br"), "/writing/an-example");
+});
+
+test("the equivalent of a text without a translation is the other language's list of texts", () => {
+  assert.equal(textEquivalentOf(undefined, "en"), "/pt-br/textos");
+  assert.equal(textEquivalentOf(undefined, "pt-br"), "/writing");
 });

@@ -58,6 +58,25 @@ writing:
   types:
     article: article
     study-note: study note
+  # The name of each topic.
+  topics:
+    backend: backend
+    frontend: frontend
+    architecture: architecture
+    ai: AI
+    career: career
+    academic: academic
+  # Comes before the date of the content revision of a text.
+  updatedOn: updated on
+  # Comes before the study a text came from.
+  study: source study
+  # The translation note. A translation shown in English was written in
+  # Portuguese: `from` names the original language, `original` is the link to
+  # the original and `withAI` is the notice of a translation made with AI.
+  translation:
+    from: Translated from Portuguese.
+    original: Read the original
+    withAI: This translation was made with AI.
 
 studies:
   name: Studies

@@ -1,0 +1,45 @@
+---
+import LanguageMark from "../components/LanguageMark.astro";
+import Reading from "../layouts/Reading.astro";
+import { content, versionIn } from "../lib/content.ts";
+import { dayIn, isoDayOf } from "../lib/dates.ts";
+import { languageOf, HTML_LANG } from "../lib/languages.ts";
+import { textPathOf } from "../lib/pages.ts";
+
+const language = languageOf(Astro.currentLocale);
+const { pages, texts } = await content();
+const phrases = pages[language];
+
+// Every text, each in the version this page shows: the one in the page's
+// language when there is one, and the original when there is not.
+const shownTexts = texts.map((text) => ({ ...text, shown: versionIn(text, language) }));
+---
+
+<Reading title={phrases.writing.name}>
+  <ul class="text-list">
+    {shownTexts.map(({ type, publishedOn, topics, shown }) => {
+      const inOtherLanguage = shown.language !== language;
+      const lang = inOtherLanguage ? HTML_LANG[shown.language] : undefined;
+      return (
+        <li>
+          <h2>
+            <a href={textPathOf(shown.version.slug, shown.language)} lang={lang}>
+              {shown.version.title}
+            </a>
+          </h2>
+          <p class="summary" lang={lang}>
+            {shown.version.summary}
+          </p>
+          <p class="caption meta">
+            <span class:list={["text-type", type]}>{phrases.writing.types[type]}</span>
+            <time datetime={isoDayOf(publishedOn)}>{dayIn(publishedOn, language)}</time>
+            {topics.map((topic) => (
+              <span>{phrases.writing.topics[topic]}</span>
+            ))}
+            {inOtherLanguage && <LanguageMark language={shown.language} />}
+          </p>
+        </li>
+      );
+    })}
+  </ul>
+</Reading>

@@ -1,0 +1,18 @@
+---
+import type { GetStaticPaths } from "astro";
+import { content } from "../../lib/content.ts";
+import Text from "../../views/Text.astro";
+
+// One page per text that has a version in English, at the slug of that version.
+export const getStaticPaths = (async () => {
+  const { texts } = await content();
+  return texts.flatMap((text) => {
+    const version = text.versions.en;
+    return version ? [{ params: { text: version.slug }, props: { text } }] : [];
+  });
+}) satisfies GetStaticPaths;
+
+const { text } = Astro.props;
+---
+
+<Text text={text} />
