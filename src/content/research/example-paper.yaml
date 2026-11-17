@@ -6,9 +6,9 @@ venue: "[Example] Example Conference 2026"
 authors:
   - name: Shaihan Buenos
     highlight: true
-  - name: Autora de Exemplo
-  - name: Autor de Exemplo
-doi: 10.0000/exemplo.2026.0000000
+  - name: Example Author
+  - name: Another Example Author
+doi: 10.0000/example.2026.0000000
 summary:
   en: "[Example] Two or three sentences that summarize the made-up paper in plain words."
   pt-br: "[Exemplo] Duas ou três frases que resumem o paper inventado em palavras simples."

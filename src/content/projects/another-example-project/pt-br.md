@@ -1,6 +1,6 @@
 ---
 whatItIs: "[Exemplo] Outro projeto inventado, ainda em planejamento."
-description: "[Exemplo] Descrição da página do Outro Projeto de Exemplo."
+description: "[Exemplo] Descrição da página do Another Example Project."
 ---
 
 ## Decisões de engenharia

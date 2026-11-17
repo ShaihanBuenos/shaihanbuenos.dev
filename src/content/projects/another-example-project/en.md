@@ -1,6 +1,6 @@
 ---
 whatItIs: "[Example] Another made-up project, still being planned."
-description: "[Example] Description of the Another Example Project page."
+description: "[Example] Description of the page of Another Example Project."
 ---
 
 ## Engineering decisions

@@ -19,38 +19,40 @@ function assertStopped({ failed, output }: Build, ...clues: RegExp[]): void {
   for (const clue of clues) assert.match(output, clue);
 }
 
-const PAGES_PT = `common:
-  menu: Principal
-  language: Idioma
-  skip: Pular para o conteúdo
+// A whole phrases file, with test phrases. The language of the phrases does
+// not matter to the build, so the same text stands in for either language.
+const PAGES = `common:
+  menu: Main
+  language: Language
+  skip: Skip to content
   feed: Feed
 home:
-  name: Início
-  description: Descrição de teste.
-  label: Rótulo de teste
-  intro: Frase de apresentação de teste.
+  name: Home
+  description: Test description.
+  label: Test label
+  intro: Test intro.
 projects:
-  name: Trabalhos
-  description: Descrição de teste.
+  name: Works
+  description: Test description.
 writing:
-  name: Textos
-  description: Descrição de teste.
+  name: Writing
+  description: Test description.
 studies:
-  name: Estudos
-  description: Descrição de teste.
+  name: Studies
+  description: Test description.
 research:
-  name: Pesquisa
-  description: Descrição de teste.
+  name: Research
+  description: Test description.
 about:
-  name: Sobre
-  description: Descrição de teste.
-  bio: Bio de teste.
-  education: Formação de teste.
+  name: About
+  description: Test description.
+  bio: Test bio.
+  education: Test education.
 notFound:
-  name: Página sumida
+  name: Gone missing
 `;
 
-const PROJECT = `name: Projeto de Exemplo
+const PROJECT = `name: Example Project
 order: 1
 state: works-locally
 updatedOn: 2026-05-20
@@ -71,21 +73,18 @@ describe("content in files", { concurrency: true }, () => {
   const example = build();
 
   test("changing a page name in the phrases file changes the name on the menu", async () => {
-    const built = await build({ write: { "pages/pt-br.yaml": PAGES_PT } });
-    assert.match(
-      await built.read("pt-br/projetos.html"),
-      /<a href="\/pt-br\/projetos"[^>]*>\s*Trabalhos\s*<\/a>/,
-    );
+    const built = await build({ write: { "pages/en.yaml": PAGES } });
+    assert.match(await built.read("projects.html"), /<a href="\/projects"[^>]*>\s*Works\s*<\/a>/);
   });
 
   test('the title of "not found" comes from the phrases file', async () => {
-    const built = await build({ write: { "pages/pt-br.yaml": PAGES_PT } });
-    assert.match(await built.read("pt-br/404.html"), /<h1[^>]*>Página sumida<\/h1>/);
+    const built = await build({ write: { "pages/en.yaml": PAGES } });
+    assert.match(await built.read("404.html"), /<h1[^>]*>Gone missing<\/h1>/);
   });
 
   // Validation: a fixed page that exists in one language and is missing in the other.
   test("a fixed page missing in one language stops the build", async () => {
-    const withoutAbout = PAGES_PT.slice(0, PAGES_PT.indexOf("about:"));
+    const withoutAbout = PAGES.slice(0, PAGES.indexOf("about:"));
     const built = await build({ write: { "pages/pt-br.yaml": withoutAbout } });
     assertStopped(built, /pages\/pt-br\.yaml/, /about/);
   });
@@ -108,11 +107,11 @@ describe("content in files", { concurrency: true }, () => {
   test("each version of a text has its own slug, and the translation says if it was made with AI", async () => {
     const { texts } = await contentOf(await example);
     const article = texts.find(({ id }) => id === "example-article");
-    assert.equal(article?.originalLanguage, "pt-br");
-    assert.equal(article.versions["pt-br"]?.slug, "exemplo-de-artigo-com-traducao");
-    assert.equal(article.versions["pt-br"].translatedWithAI, undefined);
+    assert.equal(article?.originalLanguage, "en");
     assert.equal(article.versions.en?.slug, "example-article-with-translation");
-    assert.equal(article.versions.en.translatedWithAI, true);
+    assert.equal(article.versions.en.translatedWithAI, undefined);
+    assert.equal(article.versions["pt-br"]?.slug, "exemplo-de-artigo-com-traducao");
+    assert.equal(article.versions["pt-br"].translatedWithAI, true);
   });
 
   test("the texts come from the most recent to the oldest", async () => {
@@ -153,7 +152,7 @@ describe("content in files", { concurrency: true }, () => {
     const built = await build({
       write: {
         "texts/example-article/text.yaml":
-          "type: article\ntopics: [backend]\noriginalLanguage: pt-br\n",
+          "type: article\ntopics: [backend]\noriginalLanguage: en\n",
       },
     });
     assertStopped(built, /texts\/example-article\/text\.yaml/, /publishedOn/);
@@ -163,7 +162,7 @@ describe("content in files", { concurrency: true }, () => {
     const built = await build({
       write: {
         "texts/example-article/text.yaml":
-          "publishedOn:\ntype: article\ntopics: [backend]\noriginalLanguage: pt-br\n",
+          "publishedOn:\ntype: article\ntopics: [backend]\noriginalLanguage: en\n",
       },
     });
     assertStopped(built, /texts\/example-article\/text\.yaml/, /publishedOn/);
@@ -199,7 +198,7 @@ describe("content in files", { concurrency: true }, () => {
     const built = await build({
       write: {
         "texts/example-article/text.yaml":
-          "publishedOn: 2026-01-15\ntype: article\ntopics: [backend, cooking]\noriginalLanguage: pt-br\n",
+          "publishedOn: 2026-01-15\ntype: article\ntopics: [backend, cooking]\noriginalLanguage: en\n",
       },
     });
     assertStopped(built, /texts\/example-article\/text\.yaml/, /topics/);
@@ -209,7 +208,7 @@ describe("content in files", { concurrency: true }, () => {
     const built = await build({
       write: {
         "texts/example-article/text.yaml":
-          "publishedOn: 2026-01-15\ntype: article\ntopics: [backend, frontend, ai, career]\noriginalLanguage: pt-br\n",
+          "publishedOn: 2026-01-15\ntype: article\ntopics: [backend, frontend, ai, career]\noriginalLanguage: en\n",
       },
     });
     assertStopped(built, /texts\/example-article\/text\.yaml/, /topics/);
@@ -296,7 +295,7 @@ describe("content in files", { concurrency: true }, () => {
     const built = await build({
       write: {
         "roles/example-current-role.yaml":
-          "company: Empresa de Exemplo\ntitle: Software Engineer\nstart: 2024-03\ncontext:\n  en: Context.\n  pt-br: Contexto.\n",
+          "company: Example Company\ntitle: Software Engineer\nstart: 2024-03\ncontext:\n  en: Context.\n  pt-br: Contexto.\n",
       },
     });
     assertStopped(built, /roles\/example-current-role\.yaml/, /achievements/);
@@ -306,7 +305,7 @@ describe("content in files", { concurrency: true }, () => {
     const built = await build({
       write: {
         "research/example-thesis.yaml":
-          "type: thesis\norder: 2\ntitle: Título\ntranslatedTitle: Title\nwhatItIs: { en: a, pt-br: a }\nsummary: { en: a, pt-br: a }\nbuilt: { en: a, pt-br: a }\n",
+          "type: thesis\norder: 2\ntitle: Title\ntranslatedTitle: Title\nwhatItIs: { en: a, pt-br: a }\nsummary: { en: a, pt-br: a }\nbuilt: { en: a, pt-br: a }\n",
       },
     });
     assertStopped(built, /research\/example-thesis\.yaml/, /result/);

@@ -1,6 +1,6 @@
 # Made-up example. Delete before launch. Without the "end" field, the role is
 # the current one.
-company: Empresa de Exemplo
+company: Example Company
 title: Software Engineer II
 start: 2024-03
 context:

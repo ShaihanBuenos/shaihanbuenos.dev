@@ -1,6 +1,6 @@
 ---
 whatItIs: "[Exemplo] Um projeto inventado, que ocupa o lugar de uma história do projeto de verdade."
-description: "[Exemplo] Descrição da página do Projeto de Exemplo."
+description: "[Exemplo] Descrição da página do Example Project."
 ---
 
 ## Decisões de engenharia

@@ -10,6 +10,6 @@ start: 2025-03
 end: 2025-11
 links:
   texts: [example-article]
-  certificate: https://example.com/certificado-de-exemplo
+  certificate: https://example.com/example-certificate
   education: true
   research: [example-paper, example-thesis]
