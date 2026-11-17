@@ -28,8 +28,9 @@ export interface Company {
   roles: Role[];
 }
 
-// The timeline: one entry per company, with the roles Shaihan had there. The
-// roles come from the most recent to the oldest, and so do the companies, by
+// The timeline: one entry per company, with the roles Shaihan had there. It
+// keeps the order of the roles it is given. `content()` gives them from the
+// most recent to the oldest, so the companies come out in that order too, by
 // the most recent role of each one.
 export function timelineOf(roles: Role[]): Company[] {
   return [...Map.groupBy(roles, ({ company }) => company)].flatMap(([name, roles]) => {

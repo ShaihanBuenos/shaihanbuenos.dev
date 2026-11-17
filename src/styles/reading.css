@@ -101,8 +101,10 @@
   letter-spacing: 0;
 }
 
+/* The lists of a text, and the achievements of a role. */
 .prose ul,
-.prose ol {
+.prose ol,
+.achievements {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -110,7 +112,8 @@
   padding-left: 1.3rem;
 }
 
-.prose ul {
+.prose ul,
+.achievements {
   list-style: square;
 }
 
@@ -118,7 +121,8 @@
   list-style: decimal;
 }
 
-.prose li::marker {
+.prose li::marker,
+.achievements li::marker {
   color: var(--copper-text);
 }
 
@@ -472,22 +476,7 @@
 }
 
 .achievements {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
   margin-top: 0.5rem;
-  padding-left: 1.3rem;
-  list-style: square;
-}
-
-.achievements li::marker {
-  color: var(--copper-text);
-}
-
-.contact-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 12px;
 }
 
 @media (min-width: 561px) {

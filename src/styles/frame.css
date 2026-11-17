@@ -120,13 +120,14 @@
   border-top: 1.5px solid var(--ink);
 }
 
-.footer ul {
+/* The list of the contacts, in the footer and on the About page. */
+.footer ul,
+.contact-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
 }
 
-/* The contacts of the footer, and the ones of the contact list of About. */
 .footer a,
 .contact-list a {
   display: flex;

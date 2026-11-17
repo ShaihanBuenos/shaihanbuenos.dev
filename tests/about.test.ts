@@ -19,13 +19,17 @@ async function examplePage(language: keyof typeof ABOUT): Promise<string> {
   return element(await readFile(`${root}dist/${ABOUT[language]}`, "utf8"), "main");
 }
 
+// What opens the page, before its sections: the bio and the avatar.
+function openingOf(page: string): string {
+  return page.split(/<section\b/)[0] ?? "";
+}
+
 // The parts of the page, in the order they appear: the bio, which has no
 // title, and then the title of each section.
 function partsOf(page: string) {
-  const [beforeSections = ""] = page.split(/<section\b/);
   return {
     title: textOf(element(page, "h1")),
-    bio: elements(beforeSections, "p").map(textOf),
+    bio: elements(openingOf(page), "p").map(textOf),
     sections: elements(page, "section").map((section) => textOf(element(section, "h2"))),
   };
 }
@@ -47,8 +51,7 @@ test("About shows, in both languages, the bio, the experience, the education and
 
 // The avatar: what the <img> of the bio says in the HTML.
 function avatarOf(page: string) {
-  const [beforeSections = ""] = page.split(/<section\b/);
-  const [image = ""] = beforeSections.match(/<img\b[^>]*>/) ?? [];
+  const [image = ""] = openingOf(page).match(/<img\b[^>]*>/) ?? [];
   const attribute = (name: string) => image.match(new RegExp(`\\b${name}="([^"]*)"`))?.[1];
   return {
     alt: attribute("alt"),

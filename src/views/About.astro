@@ -1,8 +1,8 @@
 ---
 import avatar from "../assets/avatar.png";
+import ContactLinks from "../components/ContactLinks.astro";
 import Period from "../components/Period.astro";
 import Reading from "../layouts/Reading.astro";
-import { CONTACT } from "../lib/contact.ts";
 import { content } from "../lib/content.ts";
 import { timelineOf } from "../lib/experience.ts";
 import { foreignLangOf, languageOf } from "../lib/languages.ts";
@@ -29,7 +29,7 @@ const phrases = pages[language];
       <article class="company">
         <h3>{company.name}</h3>
         <p class="caption">
-          <Period {...company.period} />
+          <Period start={company.period.start} end={company.period.end} />
         </p>
         <ol class="roles">
           {company.roles.map((role) => (
@@ -59,11 +59,7 @@ const phrases = pages[language];
   <section class="about-section" id="contact">
     <h2>{phrases.about.contact}</h2>
     <ul class="contact-list">
-      {CONTACT.map(({ name, href }) => (
-        <li>
-          <a href={href}>{name}</a>
-        </li>
-      ))}
+      <ContactLinks />
     </ul>
   </section>
 </Reading>
