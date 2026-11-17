@@ -102,7 +102,7 @@ A saída é só de arquivos estáticos.
 | `src/lib/share-image.ts` | As imagens de compartilhamento: quais existem, onde fica cada uma e o que cada uma diz. |
 | `src/lib/share-image-drawing.ts` | O desenho de uma imagem de compartilhamento, e o PNG. |
 | `src/lib/structured-data.ts` | Os dados estruturados: a pessoa do Início e o artigo de um texto. |
-| `tests/` | Os testes do site construído. |
+| `tests/` | Os testes do site construído e os da issue de conferência. |
 | `scripts/check` | A conferência completa. |
 | `scripts/open-check-issue` | O script que abre a issue de conferência (ver "A issue de conferência", abaixo). |
 | `.github/workflows/check-issue.yml` | A tarefa agendada que roda esse script a cada três meses. |
@@ -598,7 +598,7 @@ scripts/open-check-issue --dry-run                  # com o mês de hoje no tít
 scripts/open-check-issue --dry-run --month 2027-02  # com outro mês
 ```
 
-O ensaio só lê a lista de issues abertas. Sem `--dry-run`, o script abre a issue de verdade.
+Com `--dry-run`, o script só lê a lista de issues abertas. Sem `--dry-run`, o script abre a issue de verdade.
 
 ### Como a segunda issue é evitada
 

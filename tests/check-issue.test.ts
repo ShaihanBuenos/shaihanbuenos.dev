@@ -10,6 +10,9 @@ import { test } from "node:test";
 
 const root = new URL("..", import.meta.url).pathname;
 
+// The month most runs name the issue after.
+const FEBRUARY = ["--month", "2027-02"];
+
 // An issue of the fake tracker.
 interface Issue {
   number: number;
@@ -82,6 +85,11 @@ async function run(issues: Issue[], args: string[] = []): Promise<Run> {
   }
 }
 
+// The `gh` command of each call, as in "issue list".
+function commandsOf(calls: string[][]): string[] {
+  return calls.map((call) => call.slice(0, 2).join(" "));
+}
+
 // The issues the script opened: the value of each flag of `gh issue create`.
 function opened(calls: string[][]) {
   return calls
@@ -98,7 +106,7 @@ function opened(calls: string[][]) {
 }
 
 test("with no check issue open, the script opens one, assigned to Shaihan, with the check list", async () => {
-  const { status, calls } = await run([], ["--month", "2027-02"]);
+  const { status, calls } = await run([], FEBRUARY);
 
   assert.equal(status, 0);
   const issues = opened(calls);
@@ -136,50 +144,58 @@ function issueWith(change: Partial<Issue>): Issue {
 }
 
 test("while the last check issue is open, the script opens no other", async () => {
-  const { status, output, calls } = await run([issueWith({})], ["--month", "2027-02"]);
+  const { status, output, calls } = await run([issueWith({})], FEBRUARY);
 
   assert.equal(status, 0);
   assert.deepEqual(opened(calls), []);
   assert.match(output, /check issue #41 is still open/);
 });
 
+// The fake `gh` prints numbers only, as the real one does when asked like this.
+test("the script asks for the numbers of the open issues with the label", async () => {
+  const { calls } = await run([issueWith({})], FEBRUARY);
+
+  assert.deepEqual(calls, [
+    [
+      ...["issue", "list", "--state", "open", "--label", "conferência", "--limit", "1"],
+      ...["--json", "number", "--jq", ".[].number"],
+    ],
+  ]);
+});
+
 test("once the last check issue is closed, the script opens the next one", async () => {
-  const { calls } = await run([issueWith({ state: "closed" })], ["--month", "2027-02"]);
+  const { calls } = await run([issueWith({ state: "closed" })], FEBRUARY);
 
   assert.equal(opened(calls).length, 1);
 });
 
 // The label is the mark of a check issue, and the title is not.
 test("it is the label, and not the title, that holds the second issue back", async () => {
-  const renamed = await run([issueWith({ title: "Another title" })], ["--month", "2027-02"]);
+  const renamed = await run([issueWith({ title: "Another title" })], FEBRUARY);
   assert.deepEqual(opened(renamed.calls), []);
 
   const sameTitle = await run(
     [issueWith({ title: "Conferência do site: fevereiro de 2027", labels: ["ready-for-human"] })],
-    ["--month", "2027-02"],
+    FEBRUARY,
   );
   assert.equal(opened(sameTitle.calls).length, 1);
 });
 
 test("the script makes sure the label exists before it opens the issue", async () => {
-  const { calls } = await run([], ["--month", "2027-02"]);
+  const { calls } = await run([], FEBRUARY);
 
-  const commands = calls.map((call) => call.slice(0, 2).join(" "));
-  assert.deepEqual(commands, ["issue list", "label create", "issue create"]);
-  const [, label] = calls;
-  assert.equal(label[2], "conferência");
+  assert.deepEqual(commandsOf(calls), ["issue list", "label create", "issue create"]);
+  const [, labelCall] = calls;
+  assert.equal(labelCall[2], "conferência");
   // Without --force, `gh` fails when the label already exists.
-  assert.ok(label.includes("--force"));
+  assert.ok(labelCall.includes("--force"));
 });
 
 test("a dry run shows the issue it would open and changes nothing", async () => {
   const { status, output, calls } = await run([], ["--dry-run", "--month", "2027-02"]);
 
   assert.equal(status, 0);
-  assert.deepEqual(
-    calls.map((call) => call.slice(0, 2).join(" ")),
-    ["issue list"],
-  );
+  assert.deepEqual(commandsOf(calls), ["issue list"]);
   assert.match(output, /Conferência do site: fevereiro de 2027/);
   assert.match(output, /ShaihanBuenos/);
   assert.match(output, /- \[ \] \*\*Cargo atual:\*\*/);
@@ -198,6 +214,14 @@ test("the script refuses a month that is not one", async () => {
 
   assert.equal(status, 2);
   assert.match(output, /not a month/);
+  assert.deepEqual(calls, []);
+});
+
+test("the script refuses --month without a value", async () => {
+  const { status, output, calls } = await run([], ["--month"]);
+
+  assert.equal(status, 2);
+  assert.match(output, /--month needs a value/);
   assert.deepEqual(calls, []);
 });
 
@@ -238,11 +262,13 @@ test("the workflow may write issues and nothing else", async () => {
 });
 
 test("the workflow only calls the script, with the token `gh` needs", async () => {
-  const steps = blockOf(await workflow(), "jobs");
+  const jobs = blockOf(await workflow(), "jobs");
 
+  // One job, which fetches the repo and runs the script.
+  assert.equal(jobs.filter((line) => line === "runs-on: ubuntu-latest").length, 1);
   assert.deepEqual(
-    steps.filter((line) => /^(- )?run:/.test(line)),
-    ["run: scripts/open-check-issue"],
+    jobs.filter((line) => /^(- )?(run|uses):/.test(line)),
+    ["- uses: actions/checkout@v7", "run: scripts/open-check-issue"],
   );
-  assert.ok(steps.includes("GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}"));
+  assert.ok(jobs.includes("GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}"));
 });

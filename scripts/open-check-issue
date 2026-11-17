@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # The label is the mark of a check issue.
-LABEL="conferência"
+CHECK_LABEL="conferência"
 ASSIGNEE="ShaihanBuenos"
 MONTH_NAMES=(janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro)
 
@@ -23,7 +23,11 @@ while (($# > 0)); do
   case $1 in
     --dry-run) dry_run=true ;;
     --month)
-      month=${2:?"--month needs a value, as in 2027-02"}
+      if (($# < 2)); then
+        echo "--month needs a value, as in 2027-02" >&2
+        exit 2
+      fi
+      month=$2
       shift
       ;;
     *)
@@ -41,9 +45,9 @@ year=${month%-*}
 month_name=${MONTH_NAMES[$((10#${month#*-} - 1))]}
 
 # The last check issue is still open: Shaihan has not finished that check.
-open=$(gh issue list --state open --label "$LABEL" --limit 1 --json number --jq '.[].number')
-if [[ -n $open ]]; then
-  echo "check issue #$open is still open: not opening another"
+open_issue=$(gh issue list --state open --label "$CHECK_LABEL" --limit 1 --json number --jq '.[].number')
+if [[ -n $open_issue ]]; then
+  echo "check issue #$open_issue is still open: not opening another"
   exit 0
 fi
 
@@ -68,11 +72,11 @@ BODY
 )
 
 if [[ $dry_run == true ]]; then
-  printf 'dry run: would open this issue, assigned to %s, with the label "%s"\n\n' "$ASSIGNEE" "$LABEL"
+  printf 'dry run: would open this issue, assigned to %s, with the label "%s"\n\n' "$ASSIGNEE" "$CHECK_LABEL"
   printf '%s\n\n%s\n' "$title" "$body"
   exit 0
 fi
 
 # `gh issue create` fails if the label does not exist.
-gh label create "$LABEL" --description "Conferência do site, a cada três meses" --color 5319e7 --force
-gh issue create --title "$title" --body "$body" --assignee "$ASSIGNEE" --label "$LABEL"
+gh label create "$CHECK_LABEL" --description "Conferência do site, a cada três meses" --color 5319e7 --force
+gh issue create --title "$title" --body "$body" --assignee "$ASSIGNEE" --label "$CHECK_LABEL"
