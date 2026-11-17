@@ -250,18 +250,27 @@ O único `box-shadow` do sistema é um contorno interno de 1px (`inset 0 0 0 1px
 
 O sistema de movimento se chama "Traçado": o chip é roteado diante de quem chega e continua vivo depois. Ele substitui o "pouca animação" da primeira versão deste documento. Os tempos abaixo vêm do protótipo e são ponto de partida; o ajuste fino é feito com o site rodando num celular.
 
-- **Abertura (cerca de 1,8 s, só na página inicial):** trilhas de 1.5px em tinta são desenhadas da moldura até os blocos, em cerca de 0,7 s cada, com um nó quadrado de 7px na chegada. Cada bloco se revela de cima para baixo em cor cheia (`h-`) e assenta na camada (`l-`), em 0,6 s, na ordem pesquisa, método, experiência, projetos. O núcleo entra primeiro, da esquerda para a direita, e o nome surge letra a letra, com 55 ms entre as letras.
+- **Abertura (cerca de 1,8 s, só na página inicial):** trilhas de 1.5px em tinta são desenhadas da moldura até os blocos, em cerca de 0,7 s cada, com um nó quadrado de 7px na chegada. Cada bloco se revela de cima para baixo em cor cheia (`h-`) e assenta na camada (`l-`), em 0,6 s, na ordem pesquisa, método, experiência, projetos. O núcleo entra primeiro, da esquerda para a direita, e o nome surge letra a letra, com 55 ms entre as letras. A planta do celular tem trilhas próprias, cinco, e a do computador tem oito.
 - **Pulsos:** depois da abertura, um traço curto de 14px, em cobre ou safira, percorre cada trilha a cada 2,6 s. É o único movimento contínuo do site.
-- **Rolagem:** uma barra de cobre de 5px na borda esquerda da moldura cresce com o progresso da página. Cada seção se revela uma vez ao entrar na tela; as seções com fundo colorido preenchem da esquerda para a direita em 0,7 s, e as marcas de projeto se revelam de cima para baixo.
-- **Troca de página:** o bloco do projeto tocado vira o painel da marca na história do projeto, em 0,45 s; o resto da página esmaece. As páginas de leitura recebem só o esmaecer.
+- **Rolagem (página inicial, Projetos e história do projeto):** uma barra de cobre de 5px na borda esquerda da moldura cresce com o progresso da página. Cada seção se revela uma vez ao entrar na tela: o fio de cima é desenhado da esquerda para a direita, o título e o corpo sobem 12px até o lugar, as seções com fundo colorido preenchem da esquerda para a direita em 0,7 s, e as marcas de projeto se revelam de cima para baixo. Na história do projeto, o nome, o estado e "o que é" sobem do mesmo jeito na chegada.
+- **Troca de página:** o bloco do projeto tocado vira o painel da marca na história do projeto, em 0,45 s, e faz o caminho de volta ao voltar; o resto da página esmaece. As páginas de leitura recebem só o esmaecer. Quem faz a troca é o próprio navegador; num navegador que não sabe fazer, a página troca sem animação.
 - **Curva:** `cubic-bezier(.3, .6, .2, 1)` para trilhas e blocos, `cubic-bezier(.2, .7, .1, 1)` para o que entra na tela.
 
 ### Named Rules
 **A Regra do Movimento Reduzido.** Com `prefers-reduced-motion: reduce`, não há abertura, pulso, revelação nem troca animada: a página aparece pronta. Nenhuma informação depende de animação.
 
-**A Regra do Movimento Leve.** Só `transform`, `clip-path`, `opacity` e o traço das trilhas são animados. Sem biblioteca de movimento nem de 3D; o protótipo usa CSS e cerca de 6 kB de JavaScript, e esse é o teto.
+**A Regra do Movimento Leve.** Só `transform`, `clip-path`, `opacity` e o traço das trilhas são animados. Sem biblioteca de movimento nem de 3D; o protótipo usa CSS e cerca de 6 kB de JavaScript, e esse é o teto. A construção manda menos de 3 kB.
+
+**A Regra do Conteúdo Antes do Movimento.** Todo o conteúdo está na página e visível sem o movimento. Nada nasce escondido à espera de uma animação: o que a animação esconde, ela só esconde depois que o JavaScript liga o movimento. Com o JavaScript desligado, a página aparece pronta. As trilhas e a barra de progresso são enfeite e ficam fora da leitura de tela; o nome letra a letra continua sendo lido inteiro.
 
 **A Regra da Folha Viva, mas Plana.** O movimento não traz sombra, desfoque, perspectiva nem elasticidade. As trilhas são fios e os pulsos são traços chapados.
+
+### Onde a construção diverge do protótipo
+
+- **A cor cheia da abertura.** O protótipo animava a cor de fundo do bloco, de `h-` para `l-`, o que quebra a Regra do Movimento Leve. Na construção, o bloco fica sempre na camada (`l-`), e uma cobertura no tom do bloco (cobre, safira ou tinta) esmaece sobre ela. A opacidade inicial da cobertura é a que faz a camada parecer a cor cheia, então as cores na tela são as mesmas e nenhuma cor nova foi criada.
+- **O nome, se o JavaScript demorar.** As letras são separadas pelo JavaScript. Se ele chegar depois de o nome já ter aparecido, o nome fica inteiro, em vez de sumir e começar de novo.
+- **O estado de toque** não depende do movimento: vale também com o movimento reduzido, porque é uma troca de cor instantânea.
+- **A abertura ao voltar.** A abertura roda a cada carga da página inicial. Quando o navegador devolve a página que guardou, ao voltar de uma história, ela reaparece pronta.
 
 ## Shapes
 

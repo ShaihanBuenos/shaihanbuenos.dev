@@ -1,14 +1,22 @@
 ---
 import "../styles/plan.css";
+import "../styles/opening.css";
 import "../styles/sections.css";
 import LanguageMark from "../components/LanguageMark.astro";
+import Motion from "../components/Motion.astro";
 import ProjectRows from "../components/ProjectRows.astro";
 import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
 import { periodOf } from "../lib/experience.ts";
 import { foreignLangOf, languageOf } from "../lib/languages.ts";
-import { pathOf, projectPathOf, researchItemPathOf, textPathOf } from "../lib/pages.ts";
+import {
+  pageChangeNameOf,
+  pathOf,
+  projectPathOf,
+  researchItemPathOf,
+  textPathOf,
+} from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
 const { pages, research, projects, roles, texts, studies } = await content();
@@ -31,6 +39,7 @@ const lastYear = experience?.end?.slice(0, 4);
 ---
 
 <Base title="Shaihan Buenos">
+  <Motion slot="head" />
   <div class="plan">
     <header class="block core">
       <h1>
@@ -69,7 +78,11 @@ const lastYear = experience?.end?.slice(0, 4);
     </a>
     <div class="plan-projects">
       {projects.map((project) => (
-        <a class="block project" href={projectPathOf(project.id, language)}>
+        <a
+          class="block project"
+          href={projectPathOf(project.id, language)}
+          style={{ viewTransitionName: pageChangeNameOf(project.id) }}
+        >
           <span class="caption">{phrases.projects.states[project.state]}</span>
           <strong>{project.name}</strong>
         </a>

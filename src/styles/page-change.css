@@ -1,0 +1,34 @@
+/* The page change, on every page: the page that leaves fades out and the one
+   that arrives fades in. The browser does it by itself, with no JavaScript;
+   one without view transitions changes the page with no animation. With
+   reduced motion asked of the system, there is no page change at all. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* What exists on one of the two pages only fades with the page. */
+  ::view-transition-old(root),
+  ::view-transition-old(*):only-child {
+    animation: fade 0.2s ease-out reverse both;
+  }
+
+  ::view-transition-new(root),
+  ::view-transition-new(*):only-child {
+    animation: fade 0.3s ease-out 0.2s both;
+  }
+
+  /* What has the same name on both pages moves from its place on the first
+     to its place on the second: the project block touched on the Home page
+     becomes the panel of the project mark on the project story. */
+  ::view-transition-group(*) {
+    animation-duration: 0.45s;
+    animation-timing-function: cubic-bezier(0.3, 0.6, 0.2, 1);
+  }
+}

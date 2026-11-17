@@ -1,5 +1,6 @@
 ---
 import "../styles/sections.css";
+import Motion from "../components/Motion.astro";
 import ProjectRows from "../components/ProjectRows.astro";
 import Base from "../layouts/Base.astro";
 import { content } from "../lib/content.ts";
@@ -11,6 +12,7 @@ const phrases = pages[language];
 ---
 
 <Base title={phrases.projects.name}>
+  <Motion slot="head" />
   <section class="section">
     <h1>{phrases.projects.name}</h1>
     <div class="body">

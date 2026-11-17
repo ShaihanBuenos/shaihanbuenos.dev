@@ -1,0 +1,108 @@
+/* The motion "Traçado" on the scroll (DESIGN.md, Motion): the progress bar
+   and the reveal of the sections. Every rule hangs on the class "motion",
+   which Motion.astro puts on the page: with JavaScript off, or with reduced
+   motion asked of the system, nothing here applies and nothing is hidden.
+   On paper, the page is still. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  /* The end is written out: what rises is held transparent until then, and
+     an animation with no end would go back to that. */
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The progress bar: copper, 5px, on the left border of the frame. It grows
+     with the scroll of the page, which motion.ts gives as --progress. */
+  .motion .frame::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -1.5px;
+    z-index: 2;
+    width: 5px;
+    height: 100%;
+    background: var(--copper);
+    transform: scaleY(var(--progress, 0));
+    transform-origin: top;
+    pointer-events: none;
+  }
+
+  /* ---------- the sections ---------- */
+
+  /* Each section is revealed once, when it enters the screen: motion.ts
+     marks it with "seen". The line on top is drawn from left to right, by a
+     cover the color of the sheet that shrinks away. */
+  .motion .section {
+    position: relative;
+  }
+
+  .motion .section:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    inset: -1.5px 0 auto;
+    height: 1.5px;
+    background: var(--sheet);
+    transform-origin: right;
+    transition: transform 0.7s cubic-bezier(0.3, 0.6, 0.2, 1);
+  }
+
+  .motion .section.seen::before {
+    transform: scaleX(0);
+  }
+
+  /* A section with a background fills from left to right. */
+  .motion .section:is(.copper, .sapphire, .grey) {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.7s cubic-bezier(0.3, 0.6, 0.2, 1);
+  }
+
+  .motion .section.seen:is(.copper, .sapphire, .grey) {
+    clip-path: inset(0);
+  }
+
+  /* The title and then the body come up into place. */
+  .motion .section > * {
+    opacity: 0;
+  }
+
+  .motion .section.seen > * {
+    animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.1, 1) 0.25s both;
+  }
+
+  .motion .section.seen > .body {
+    animation-delay: 0.38s;
+  }
+
+  /* The project marks are revealed from top to bottom, one after the other. */
+  .motion .row .mark svg {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.6s cubic-bezier(0.3, 0.6, 0.2, 1) 0.5s;
+  }
+
+  .motion .section.seen .row .mark svg {
+    clip-path: inset(0);
+  }
+
+  .motion .rows li:nth-child(2) .mark svg {
+    transition-delay: 0.62s;
+  }
+
+  .motion .rows li:nth-child(n + 3) .mark svg {
+    transition-delay: 0.74s;
+  }
+
+  /* ---------- the project story ---------- */
+
+  /* The name, the state and "what it is" come up into place while the panel
+     of the project mark arrives from the Home page. */
+  .motion .story-id > * {
+    animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.1, 1) 0.35s both;
+  }
+}
