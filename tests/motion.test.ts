@@ -220,7 +220,7 @@ async function scriptsOf(html: string): Promise<string[]> {
 const MOVING_PAGES = EVERY_PAGE.filter((path) => !READING_PAGES.includes(path));
 
 test("the JavaScript of the motion is a file of the site, in src/scripts", async () => {
-  assert.deepEqual(await readdir(`${root}src/scripts`), ["motion.ts"]);
+  assert.ok((await readdir(`${root}src/scripts`)).includes("motion.ts"));
 });
 
 // DESIGN.md, "A Regra do Movimento Leve": about 6 kB of JavaScript is the

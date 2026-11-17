@@ -1,7 +1,7 @@
 // The motion "Traçado" (DESIGN.md, Motion), on the pages that have the plan
 // or sections: the name letter by letter and the traces of the opening, the
 // reveal of the sections and the progress bar. The CSS does the animating,
-// in opening.css and scroll.css; this file gives it what CSS cannot find out
+// in motion-opening.css and motion-scroll.css; this file gives it what CSS cannot find out
 // by itself. The reading pages do not load it.
 
 const root = document.documentElement;
@@ -17,7 +17,7 @@ function spellName(): void {
   if (!name || getComputedStyle(name).opacity !== "0") return;
 
   const letters = document.createElement("span");
-  letters.ariaHidden = "true";
+  letters.setAttribute("aria-hidden", "true");
   let index = 0;
   for (const node of name.childNodes) {
     if (node.nodeName === "BR") letters.append(document.createElement("br"));
@@ -29,7 +29,7 @@ function spellName(): void {
       letters.append(element);
     }
   }
-  name.ariaLabel = name.textContent.replace(/\s+/g, " ").trim();
+  name.setAttribute("aria-label", name.textContent.replace(/\s+/g, " ").trim());
   name.replaceChildren(letters);
 }
 
@@ -82,7 +82,7 @@ function routeTraces(): void {
 
     // The traces are decoration: they stay out of the reading of the page.
     const svg = shape("svg", "traces");
-    svg.ariaHidden = "true";
+    svg.setAttribute("aria-hidden", "true");
     for (const [delay, tone, ...points] of traces) {
       let length = 0;
       let [x, y] = [0, 0];
@@ -150,15 +150,14 @@ function followScroll(): void {
     const progress = most > 0 ? Math.min(1, scrollY / most) : 0;
     root.style.setProperty("--progress", progress.toFixed(4));
   };
-  addEventListener(
-    "scroll",
-    () => {
-      if (waiting) return;
-      waiting = true;
-      requestAnimationFrame(update);
-    },
-    { passive: true },
-  );
+  const ask = () => {
+    if (waiting) return;
+    waiting = true;
+    requestAnimationFrame(update);
+  };
+  addEventListener("scroll", ask, { passive: true });
+  // The page also gets taller or shorter when the window changes size.
+  addEventListener("resize", ask, { passive: true });
   update();
 }
 

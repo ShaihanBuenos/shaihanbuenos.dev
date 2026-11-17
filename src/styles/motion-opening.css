@@ -106,8 +106,6 @@
      full color (1 - (1 - full) / (1 - layer), from the opacities of the two
      in base.css). */
   .motion .plan a.block:not(.exit) {
-    --tone: var(--ink);
-    --lift: 0.178;
     position: relative;
     animation: wipe-down 0.6s cubic-bezier(0.3, 0.6, 0.2, 1) var(--delay) both;
   }
@@ -140,6 +138,8 @@
   }
 
   .motion .plan .experience {
+    --tone: var(--ink);
+    --lift: 0.178;
     --delay: 1000ms;
   }
 

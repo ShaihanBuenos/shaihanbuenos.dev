@@ -259,7 +259,7 @@ O sistema de movimento se chama "Traçado": o chip é roteado diante de quem che
 ### Named Rules
 **A Regra do Movimento Reduzido.** Com `prefers-reduced-motion: reduce`, não há abertura, pulso, revelação nem troca animada: a página aparece pronta. Nenhuma informação depende de animação.
 
-**A Regra do Movimento Leve.** Só `transform`, `clip-path`, `opacity` e o traço das trilhas são animados. Sem biblioteca de movimento nem de 3D; o protótipo usa CSS e cerca de 6 kB de JavaScript, e esse é o teto. A construção manda menos de 3 kB.
+**A Regra do Movimento Leve.** Só `transform`, `clip-path`, `opacity` e o traço das trilhas são animados. Sem biblioteca de movimento nem de 3D; o protótipo usa CSS e cerca de 6 kB de JavaScript, e esse é o teto.
 
 **A Regra do Conteúdo Antes do Movimento.** Todo o conteúdo está na página e visível sem o movimento. Nada nasce escondido à espera de uma animação: o que a animação esconde, ela só esconde depois que o JavaScript liga o movimento. Com o JavaScript desligado, a página aparece pronta. As trilhas e a barra de progresso são enfeite e ficam fora da leitura de tela; o nome letra a letra continua sendo lido inteiro.
 

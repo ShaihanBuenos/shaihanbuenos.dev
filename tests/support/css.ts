@@ -42,6 +42,7 @@ function block(
     if (character === '"' || character === "'") {
       // A string goes whole into the text: a brace inside it is not a block.
       const close = css.indexOf(character, index + 1);
+      if (close < 0) break;
       text += css.slice(index, close + 1);
       index = close + 1;
     } else if (character === "{") {

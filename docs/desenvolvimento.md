@@ -76,7 +76,7 @@ A saída é só de arquivos estáticos.
 | `src/layouts/Reading.astro` | A coluna de leitura simples: o título e, abaixo dele, o que a página puser. É a da lista de textos, da página de um texto, da lista de estudos, da página Pesquisa, da página Sobre e do "não encontrado". |
 | `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos), `ProjectStory.astro` (a história do projeto), `Writing.astro` (a lista de textos), `Text.astro` (a página de um texto), `Studies.astro` (a lista de estudos), `Research.astro` (a página Pesquisa) e `About.astro` (a página Sobre). |
 | `src/components/` | As peças comuns: menu, botão de idioma, rodapé, os links do contato (`ContactLinks.astro`), usados no rodapé e na página Sobre, e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos, a marca de idioma (`LanguageMark.astro`), usada no Início e nos itens de texto, o item de texto (`TextItem.astro`), usado na lista de textos e nos textos ligados a um estudo, o título de um item de pesquisa (`ResearchTitle.astro`), usado na página Pesquisa e na lista de estudos, o período de uma empresa ou de um cargo (`Period.astro`), usado na página Sobre, e o movimento (`Motion.astro`), usado no Início, em Projetos e na história do projeto. |
-| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura: a coluna, o corpo de um texto, a lista de textos, a lista de estudos, os itens de pesquisa e a página Sobre), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. O movimento "Traçado" fica em três arquivos: `page-change` (a troca de página, em todas as páginas), `opening` (a abertura e os pulsos, só no Início) e `scroll` (a barra de progresso e a revelação das seções). |
+| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura: a coluna, o corpo de um texto, a lista de textos, a lista de estudos, os itens de pesquisa e a página Sobre), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. O movimento "Traçado" fica em três arquivos: `page-change` (a troca de página, em todas as páginas), `motion-opening` (a abertura e os pulsos, só no Início) e `motion-scroll` (a barra de progresso e a revelação das seções). |
 | `src/scripts/` | O JavaScript que roda no navegador: `motion.ts`, o do movimento (ver "Movimento", abaixo). |
 | `public/fonts/` | As três fontes, servidas pelo próprio site. |
 | `src/assets/` | As imagens que as páginas importam: hoje, o avatar (ver "O avatar", abaixo). |
@@ -134,8 +134,8 @@ O movimento "Traçado" está descrito em `DESIGN.md`, na seção Motion. Ele é 
 | Parte | Onde existe | Onde fica |
 |---|---|---|
 | A troca de página: a página esmaece, e o bloco do projeto tocado no Início vira o painel da marca na história do projeto. | Em todas as páginas. | `src/styles/page-change.css`, importado pelo layout. Não usa JavaScript. |
-| A abertura (as trilhas, os blocos e o nome letra a letra) e os pulsos. | Só no Início. | `src/styles/opening.css`, importado por `Home.astro`, e `src/scripts/motion.ts`. |
-| A barra de progresso e a revelação das seções. | No Início, em Projetos e na história do projeto. | `src/styles/scroll.css` e `src/scripts/motion.ts`, pelos dois por `Motion.astro`. |
+| A abertura (as trilhas, os blocos e o nome letra a letra) e os pulsos. | Só no Início. | `src/styles/motion-opening.css`, importado por `Home.astro`, e `src/scripts/motion.ts`. |
+| A barra de progresso e a revelação das seções. | No Início, em Projetos e na história do projeto. | `src/styles/motion-scroll.css` e `src/scripts/motion.ts`, os dois por `Motion.astro`. |
 
 As páginas de leitura recebem só a troca de página.
 
@@ -150,7 +150,7 @@ As páginas de leitura recebem só a troca de página.
 </Base>
 ```
 
-`Motion.astro` põe no `<head>` a chave do movimento e o `motion.ts`. A chave é uma classe, `motion`, posta no `<html>` antes de a página aparecer. Toda regra do movimento em `opening.css` e em `scroll.css` começa por `.motion` e fica dentro de `@media screen and (prefers-reduced-motion: no-preference)`. O `motion.ts` só começa se a classe estiver lá.
+`Motion.astro` põe no `<head>` a chave do movimento e o `motion.ts`. A chave é uma classe, `motion`, posta no `<html>` antes de a página aparecer. Toda regra do movimento em `motion-opening.css` e em `motion-scroll.css` começa por `.motion` e fica dentro de `@media screen and (prefers-reduced-motion: no-preference)`. O `motion.ts` só começa se a classe estiver lá.
 
 **Desligado.** O movimento fica desligado, e a página aparece pronta, em três casos:
 
@@ -177,9 +177,9 @@ npm run build
 node -e 'const html = require("fs").readFileSync("dist/index.html", "utf8"); console.log([...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].reduce((sum, [, code]) => sum + Buffer.byteLength(code), 0), "bytes")'
 ```
 
-Hoje são 2.863 bytes: 2.638 do `motion.ts`, 124 da chave e 101 do menu. O Astro escreve um script com menos de 4 kB dentro da própria página, e não num arquivo à parte; se o `motion.ts` passar disso, ele vira um arquivo em `dist/_astro/`, e a conta acima deixa de vê-lo (o teste continua vendo).
+Hoje são 2.960 bytes: 2.735 do `motion.ts`, 124 da chave e 101 do menu. O Astro escreve um script com menos de 4 kB dentro da própria página, e não num arquivo à parte; se o `motion.ts` passar disso, ele vira um arquivo em `dist/_astro/`, e a conta acima deixa de vê-lo (o teste continua vendo).
 
-Os tempos e as curvas estão no CSS, com os valores do `DESIGN.md`. O ajuste fino é feito por Shaihan, com o site rodando num celular.
+Os tempos e as curvas estão no CSS, com os valores do `DESIGN.md`; o caminho e o atraso de cada trilha ficam em `motion.ts`. O ajuste fino é feito por Shaihan, com o site rodando num celular.
 
 ## Conteúdo
 
