@@ -19,18 +19,21 @@ export type Texto = CollectionEntry<"textos">["data"] & {
 };
 
 // A história do projeto num idioma.
-export type VersaoDoProjeto = CollectionEntry<"versoesDosProjetos">["data"] & {
+export type HistoriaDoProjeto = CollectionEntry<"historiasDosProjetos">["data"] & {
   // O arquivo da versão, para a página mostrar o corpo com `render()`.
-  arquivo: CollectionEntry<"versoesDosProjetos">;
+  arquivo: CollectionEntry<"historiasDosProjetos">;
 };
 
-export type Projeto = Omit<CollectionEntry<"projetos">["data"], "marca"> & {
+export type Projeto = CollectionEntry<"projetos">["data"] & {
   id: string;
   // A marca do projeto: o SVG, para entrar direto na página.
   marca: string;
-  versoes: Record<Idioma, VersaoDoProjeto>;
+  // A história do projeto em cada idioma.
+  historias: Record<Idioma, HistoriaDoProjeto>;
 };
 
+// Em `ligacoes.textos` vêm os textos que nasceram do estudo e os que o
+// arquivo do estudo liga, do mais recente ao mais antigo.
 export type Estudo = CollectionEntry<"estudos">["data"] & { id: string };
 export type Cargo = CollectionEntry<"cargos">["data"] & { id: string };
 export type ItemDePesquisa = CollectionEntry<"pesquisa">["data"] & { id: string };
@@ -55,7 +58,7 @@ export interface Conteudo {
 // As marcas dos projetos: o SVG de cada arquivo, pelo caminho.
 const MARCAS = new Map(
   Object.entries(
-    import.meta.glob<string>("../content/projetos/*/*.svg", {
+    import.meta.glob<string>("../content/projetos/*/marca.svg", {
       query: "?raw",
       import: "default",
       eager: true,
@@ -132,27 +135,32 @@ async function carregar(): Promise<Conteudo> {
     }
   }
 
-  const versoesDosProjetos = porId(await getCollection("versoesDosProjetos"));
+  const historiasDosProjetos = porId(await getCollection("historiasDosProjetos"));
   const projetos: Projeto[] = [];
   const idsDosProjetos: string[] = [];
   for (const { id, data } of await getCollection("projetos")) {
     idsDosProjetos.push(id);
-    const marca = MARCAS.get(`../content/projetos/${id}/${data.marca}`);
+    const marca = MARCAS.get(`../content/projetos/${id}/marca.svg`);
     if (marca === undefined) {
-      erros.push(`projetos/${id}/projeto.yaml: a marca ${data.marca} não existe na pasta`);
+      erros.push(`projetos/${id}: falta marca.svg, a marca do projeto`);
     }
-    const [en, ptBr] = IDIOMAS.map((idioma) => {
-      const arquivo = versoesDosProjetos.get(`${id}/${idioma}`);
-      if (!arquivo)
-        erros.push(`projetos/${id}: o projeto falta num idioma, não existe ${idioma}.md`);
-      return arquivo && { ...arquivo.data, arquivo };
-    });
-    if (marca !== undefined && en && ptBr) {
-      projetos.push({ ...data, id, marca, versoes: { en, "pt-br": ptBr } });
+    const historias: Partial<Projeto["historias"]> = {};
+    for (const idioma of IDIOMAS) {
+      const arquivo = historiasDosProjetos.get(`${id}/${idioma}`);
+      if (arquivo) historias[idioma] = { ...arquivo.data, arquivo };
+      else erros.push(`projetos/${id}: o projeto falta num idioma, não existe ${idioma}.md`);
+    }
+    if (marca !== undefined && historias.en && historias["pt-br"]) {
+      projetos.push({
+        ...data,
+        id,
+        marca,
+        historias: { en: historias.en, "pt-br": historias["pt-br"] },
+      });
     }
   }
 
-  for (const pasta of pastasSemOArquivoComum(versoesDosProjetos, idsDosProjetos)) {
+  for (const pasta of pastasSemOArquivoComum(historiasDosProjetos, idsDosProjetos)) {
     erros.push(`projetos/${pasta}: falta projeto.yaml`);
   }
 
@@ -194,21 +202,26 @@ async function carregar(): Promise<Conteudo> {
 
   // Um rascunho aparece só no site rodando localmente, e leva junto as
   // ligações que apontam para ele.
-  const publicados = textos.filter(({ rascunho }) => !rascunho || import.meta.env.DEV);
-  const publicado = new Set(publicados.map(({ id }) => id));
+  const publicados = textos
+    .filter(({ rascunho }) => !rascunho || import.meta.env.MOSTRAR_RASCUNHOS)
+    .sort((a, b) => b.publicadoEm.getTime() - a.publicadoEm.getTime());
 
   return {
     paginas: Object.fromEntries(
       IDIOMAS.map((idioma) => [idioma, paginas.get(idioma)?.data]),
     ) as Conteudo["paginas"],
-    textos: publicados.sort((a, b) => b.publicadoEm.getTime() - a.publicadoEm.getTime()),
+    textos: publicados,
     projetos: projetos.sort((a, b) => a.ordem - b.ordem),
     estudos: estudos
       .map((estudo) => ({
         ...estudo,
         ligacoes: {
           ...estudo.ligacoes,
-          textos: estudo.ligacoes.textos.filter((texto) => publicado.has(texto)),
+          textos: publicados
+            .filter(
+              (texto) => texto.estudo === estudo.id || estudo.ligacoes.textos.includes(texto.id),
+            )
+            .map(({ id }) => id),
         },
       }))
       .sort((a, b) => b.inicio.localeCompare(a.inicio)),

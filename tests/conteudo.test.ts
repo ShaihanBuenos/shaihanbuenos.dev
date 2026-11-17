@@ -45,13 +45,14 @@ sobre:
   descricao: Descrição de teste.
   bio: Bio de teste.
   formacao: Formação de teste.
+naoEncontrado:
+  nome: Página sumida
 `;
 
 const PROJETO = `nome: Projeto de Exemplo
 ordem: 1
 estado: funciona-localmente
 atualizadaEm: 2026-05-20
-marca: marca.svg
 `;
 
 const ESTUDO = `nome:
@@ -76,19 +77,21 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
     );
   });
 
+  test('o título do "não encontrado" vem do arquivo de frases', async () => {
+    const construcao = await construir({ escrever: { "paginas/pt-br.yaml": PAGINAS_PT } });
+    assert.match(await construcao.ler("pt-br/404.html"), /<h1[^>]*>Página sumida<\/h1>/);
+  });
+
   // Validação: página fixa que existe num idioma e falta no outro.
   test("uma página fixa que falta num idioma barra a construção", async () => {
     const semSobre = PAGINAS_PT.slice(0, PAGINAS_PT.indexOf("sobre:"));
-    const { falhou, saida } = await construir({ escrever: { "paginas/pt-br.yaml": semSobre } });
-    assert.ok(falhou, "a construção passou");
-    assert.match(saida, /paginas\/pt-br\.yaml/);
-    assert.match(saida, /sobre/);
+    const construcao = await construir({ escrever: { "paginas/pt-br.yaml": semSobre } });
+    assertBarrou(construcao, /paginas\/pt-br\.yaml/, /sobre/);
   });
 
   test("as frases das páginas fixas faltando num idioma inteiro barram a construção", async () => {
-    const { falhou, saida } = await construir({ apagar: ["paginas/pt-br.yaml"] });
-    assert.ok(falhou, "a construção passou");
-    assert.match(saida, /paginas\/pt-br\.yaml/);
+    const construcao = await construir({ apagar: ["paginas/pt-br.yaml"] });
+    assertBarrou(construcao, /paginas\/pt-br\.yaml/);
   });
 
   test("o conteúdo de exemplo tem um texto com tradução e um sem tradução", async () => {
@@ -118,6 +121,24 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
     assert.deepEqual(datas, datas.toSorted().reverse());
   });
 
+  // O que decide é o comando (construir ou rodar localmente), e não o
+  // ambiente de quem chama.
+  test("um rascunho não aparece na construção nem com NODE_ENV=development", async () => {
+    const construcao = await construir({}, { NODE_ENV: "development" });
+    const { textos } = await conteudoDe(construcao);
+    assert.ok(textos.length > 0);
+    assert.deepEqual(
+      textos.filter(({ rascunho }) => rascunho),
+      [],
+    );
+  });
+
+  test("um estudo mostra os textos que nasceram dele, sem repetir a ligação", async () => {
+    const { estudos } = await conteudoDe(await exemplo);
+    const estudo = estudos.find(({ id }) => id === "exemplo-em-andamento");
+    assert.deepEqual(estudo?.ligacoes.textos, ["exemplo-de-nota-de-estudo"]);
+  });
+
   test("um rascunho não aparece na construção publicada", async () => {
     const { textos } = await conteudoDe(await exemplo);
     assert.ok(textos.length > 0);
@@ -138,29 +159,39 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
     assertBarrou(construcao, /textos\/exemplo-de-artigo\/texto\.yaml/, /publicadoEm/);
   });
 
+  test("um texto com a data de publicação vazia barra a construção", async () => {
+    const construcao = await construir({
+      escrever: {
+        "textos/exemplo-de-artigo/texto.yaml":
+          "publicadoEm:\ntipo: artigo\ntemas: [backend]\nidiomaOriginal: pt-br\n",
+      },
+    });
+    assertBarrou(construcao, /textos\/exemplo-de-artigo\/texto\.yaml/, /publicadoEm/);
+  });
+
   test("uma versão de texto sem o resumo de uma linha barra a construção", async () => {
     const construcao = await construir({
       escrever: {
-        "textos/exemplo-de-nota/en.md":
+        "textos/exemplo-de-nota-de-estudo/en.md":
           "---\ntitulo: Sem resumo\nendereco: sem-resumo\n---\n\nCorpo.\n",
       },
     });
-    assertBarrou(construcao, /textos\/exemplo-de-nota\/en\.md/, /resumo/);
+    assertBarrou(construcao, /textos\/exemplo-de-nota-de-estudo\/en\.md/, /resumo/);
   });
 
   test("uma tradução que não diz se foi feita com IA barra a construção", async () => {
     const construcao = await construir({
       escrever: {
-        "textos/exemplo-de-nota/pt-br.md":
+        "textos/exemplo-de-nota-de-estudo/pt-br.md":
           "---\ntitulo: Tradução\nresumo: Resumo.\nendereco: traducao\n---\n\nCorpo.\n",
       },
     });
-    assertBarrou(construcao, /textos\/exemplo-de-nota\/pt-br\.md/, /traducaoComIA/);
+    assertBarrou(construcao, /textos\/exemplo-de-nota-de-estudo\/pt-br\.md/, /traducaoComIA/);
   });
 
   test("um texto sem a versão no idioma original barra a construção", async () => {
-    const construcao = await construir({ apagar: ["textos/exemplo-de-nota/en.md"] });
-    assertBarrou(construcao, /textos\/exemplo-de-nota/, /en\.md/);
+    const construcao = await construir({ apagar: ["textos/exemplo-de-nota-de-estudo/en.md"] });
+    assertBarrou(construcao, /textos\/exemplo-de-nota-de-estudo/, /en\.md/);
   });
 
   // Validação: tema fora da lista.
@@ -185,18 +216,18 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
   });
 
   test("uma versão de texto numa pasta sem texto.yaml barra a construção", async () => {
-    const construcao = await construir({ apagar: ["textos/exemplo-de-nota/texto.yaml"] });
-    assertBarrou(construcao, /textos\/exemplo-de-nota/, /texto\.yaml/);
+    const construcao = await construir({ apagar: ["textos/exemplo-de-nota-de-estudo/texto.yaml"] });
+    assertBarrou(construcao, /textos\/exemplo-de-nota-de-estudo/, /texto\.yaml/);
   });
 
   test("dois textos com o mesmo endereço no mesmo idioma barram a construção", async () => {
     const construcao = await construir({
       escrever: {
-        "textos/exemplo-de-nota/en.md":
+        "textos/exemplo-de-nota-de-estudo/en.md":
           "---\ntitulo: Repetido\nresumo: Resumo.\nendereco: example-article-with-translation\n---\n\nCorpo.\n",
       },
     });
-    assertBarrou(construcao, /textos\/exemplo-de-(nota|artigo)\/en\.md/, /endereço/);
+    assertBarrou(construcao, /textos\/exemplo-de-(nota-de-estudo|artigo)\/en\.md/, /endereço/);
   });
 
   test("cada coleção tem conteúdo de exemplo", async () => {
@@ -214,7 +245,7 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
     const projeto = projetos.find(({ id }) => id === "projeto-de-exemplo");
     assert.equal(projeto?.estado, "funciona-localmente");
     assert.match(projeto.marca, /^<svg\b/);
-    assert.notEqual(projeto.versoes.en.oQueE, projeto.versoes["pt-br"].oQueE);
+    assert.notEqual(projeto.historias.en.oQueE, projeto.historias["pt-br"].oQueE);
   });
 
   test("mudar o campo ordem de um projeto muda a ordem da lista", async () => {
@@ -254,13 +285,9 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
     assertBarrou(construcao, /projetos\/projeto-de-exemplo\/projeto\.yaml/, /estado/);
   });
 
-  test("um projeto que aponta para uma marca do projeto que não existe barra a construção", async () => {
-    const construcao = await construir({
-      escrever: {
-        "projetos/projeto-de-exemplo/projeto.yaml": PROJETO.replace("marca.svg", "outra.svg"),
-      },
-    });
-    assertBarrou(construcao, /projetos\/projeto-de-exemplo/, /outra\.svg/);
+  test("um projeto sem a marca do projeto barra a construção", async () => {
+    const construcao = await construir({ apagar: ["projetos/projeto-de-exemplo/marca.svg"] });
+    assertBarrou(construcao, /projetos\/projeto-de-exemplo/, /marca\.svg/);
   });
 
   test("um estudo concluído sem o mês de conclusão barra a construção", async () => {
@@ -296,11 +323,15 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
   test("um texto ligado a um estudo que não existe barra a construção", async () => {
     const construcao = await construir({
       escrever: {
-        "textos/exemplo-de-nota/texto.yaml":
+        "textos/exemplo-de-nota-de-estudo/texto.yaml":
           "publicadoEm: 2026-03-10\ntipo: nota-de-estudo\ntemas: [ia]\nidiomaOriginal: en\nestudo: estudo-que-nao-existe\n",
       },
     });
-    assertBarrou(construcao, /textos\/exemplo-de-nota\/texto\.yaml/, /estudo-que-nao-existe/);
+    assertBarrou(
+      construcao,
+      /textos\/exemplo-de-nota-de-estudo\/texto\.yaml/,
+      /estudo-que-nao-existe/,
+    );
   });
 
   test("um estudo ligado a um texto que não existe barra a construção", async () => {
@@ -353,12 +384,12 @@ describe("conteúdo em arquivos", { concurrency: true }, () => {
   test("a ligação de um estudo com um rascunho não aparece na construção publicada", async () => {
     const construcao = await construir({
       escrever: {
-        "estudos/exemplo-em-andamento.yaml": `${ESTUDO}ligacoes:\n  textos: [exemplo-de-rascunho, exemplo-de-nota]\n`,
+        "estudos/exemplo-em-andamento.yaml": `${ESTUDO}ligacoes:\n  textos: [exemplo-de-rascunho, exemplo-de-nota-de-estudo]\n`,
       },
     });
     const { estudos } = await conteudoDe(construcao);
     const estudo = estudos.find(({ id }) => id === "exemplo-em-andamento");
-    assert.deepEqual(estudo?.ligacoes.textos, ["exemplo-de-nota"]);
+    assert.deepEqual(estudo?.ligacoes.textos, ["exemplo-de-nota-de-estudo"]);
   });
 });
 
@@ -384,6 +415,6 @@ test("um rascunho aparece no site rodando localmente", async () => {
     assert.equal(rascunho?.rascunho, true);
   } finally {
     await servidor.stop();
-    await copia.apagar();
+    await copia.descartar();
   }
 });

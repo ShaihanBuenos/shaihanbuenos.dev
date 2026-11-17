@@ -1,14 +1,14 @@
-# The phrases of the fixed pages, in English. The file pt-br.yaml has the same
-# keys, in Portuguese. Phrases marked with [Example] are still to be written.
+# As frases das páginas fixas, em inglês. O arquivo pt-br.yaml tem as mesmas
+# chaves, em português. As frases marcadas com [Example] ainda vão ser escritas.
 
-# Phrases of the layout shared by every page.
+# Frases do layout comum a todas as páginas.
 comum:
-  # The names of the menu and of the language button, for screen readers.
+  # O nome do menu e o do botão de idioma, para leitores de tela.
   menu: Main
   idioma: Language
-  # The link that skips the menu, for keyboard users.
+  # O link que pula o menu, para quem navega pelo teclado.
   pular: Skip to content
-  # The feed link, in the footer.
+  # O link do feed, no rodapé.
   feed: Feed
 
 inicio:
@@ -38,3 +38,7 @@ sobre:
   descricao: "[Example] Description of the About page."
   bio: "[Example] This paragraph stands in for the bio, which is still to be written."
   formacao: Bachelor's degree in Information Systems, UNISINOS, completed in 2025
+
+# A página que aparece quando o endereço não existe.
+naoEncontrado:
+  nome: Page not found

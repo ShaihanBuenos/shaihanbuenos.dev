@@ -5,7 +5,7 @@ import { glob } from "astro/loaders";
 import {
   esquemaDaListaDeEstudos,
   esquemaDasPaginas,
-  esquemaDaVersaoDoProjeto,
+  esquemaDaHistoriaDoProjeto,
   esquemaDaVersaoDoTexto,
   esquemaDoCargo,
   esquemaDoEstudo,
@@ -44,7 +44,7 @@ const versoesDosTextos = defineCollection({
   schema: esquemaDaVersaoDoTexto,
 });
 
-// Um projeto também é uma pasta, com uma versão por idioma.
+// Um projeto também é uma pasta, com a história do projeto em cada idioma.
 const projetos = defineCollection({
   loader: glob({
     base: "./src/content/projetos",
@@ -54,13 +54,13 @@ const projetos = defineCollection({
   schema: esquemaDoProjeto,
 });
 
-const versoesDosProjetos = defineCollection({
+const historiasDosProjetos = defineCollection({
   loader: glob({
     base: "./src/content/projetos",
     pattern: "*/{en,pt-br}.md",
     generateId: ({ entry }) => entry.replace(/\.md$/, ""),
   }),
-  schema: esquemaDaVersaoDoProjeto,
+  schema: esquemaDaHistoriaDoProjeto,
 });
 
 const estudos = defineCollection({ loader: arquivosDe("estudos"), schema: esquemaDoEstudo });
@@ -79,7 +79,7 @@ export const collections = {
   textos,
   versoesDosTextos,
   projetos,
-  versoesDosProjetos,
+  historiasDosProjetos,
   estudos,
   listas,
   cargos,

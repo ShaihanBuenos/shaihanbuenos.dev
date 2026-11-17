@@ -16,6 +16,21 @@ const naoIndexar: AstroIntegration = {
   },
 };
 
+// Um rascunho aparece só no site rodando localmente (`astro dev`). Quem
+// decide é o comando, e não o NODE_ENV: uma construção nunca mostra rascunho.
+const rascunhos: AstroIntegration = {
+  name: "rascunhos",
+  hooks: {
+    "astro:config:setup": ({ command, updateConfig }) => {
+      updateConfig({
+        vite: {
+          define: { "import.meta.env.MOSTRAR_RASCUNHOS": JSON.stringify(command === "dev") },
+        },
+      });
+    },
+  },
+};
+
 export default defineConfig({
   site: "https://shaihanbuenos.dev",
   output: "static",
@@ -27,5 +42,5 @@ export default defineConfig({
     defaultLocale: IDIOMA_PADRAO,
     routing: { prefixDefaultLocale: false },
   },
-  integrations: [naoIndexar],
+  integrations: [naoIndexar, rascunhos],
 });

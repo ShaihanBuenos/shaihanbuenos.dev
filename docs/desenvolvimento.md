@@ -113,13 +113,13 @@ Tudo o que o site diz fica em `src/content/`. Trocar uma frase, um estado ou uma
 |---|---|---|
 | `paginas/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
 | `textos/` | Os textos. | Uma pasta por texto: `texto.yaml` e um `.md` por idioma. |
-| `projetos/` | Os projetos e as histórias do projeto. | Uma pasta por projeto: `projeto.yaml`, `marca.svg`, `en.md` e `pt-br.md`. |
+| `projetos/` | Os projetos e as histórias do projeto. | Uma pasta por projeto: `projeto.yaml`, `marca.svg` e a história do projeto em `en.md` e `pt-br.md`. |
 | `estudos/` | Os estudos. | Um `.yaml` por estudo, com os dois idiomas dentro. |
 | `listas/estudos.yaml` | A data "conferida em" da lista de estudos. | Um arquivo só. |
 | `cargos/` | Os cargos da experiência. | Um `.yaml` por cargo, com os dois idiomas dentro. |
 | `pesquisa/` | Os itens de pesquisa: o paper e o TCC. | Um `.yaml` por item, com os dois idiomas dentro. |
 
-O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligações usam. Os campos de cada coleção estão em `src/lib/esquemas.ts`, com um comentário em cada um.
+O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligações usam. Os campos de cada coleção estão em `src/lib/esquemas.ts`.
 
 **O conteúdo que está lá hoje é de exemplo.** Ele é inventado, está marcado com `[Exemplo]` ou `[Example]`, e serve para as páginas poderem ser construídas. Cada arquivo de exemplo sai do repo antes do lançamento, quando o conteúdo de verdade entrar. O repo é público: nada dos dossiês locais entra aqui sem passar pelas regras da seção 11 da spec.
 
@@ -129,7 +129,7 @@ O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligaç
 2. Crie `texto.yaml`, com o que vale para todas as versões:
 
    ```yaml
-   publicadoEm: 2026-01-15
+   publicadoEm: 2026-01-15 # sem aspas
    tipo: artigo # ou nota-de-estudo
    temas: [backend, arquitetura] # de um a três, da lista em src/lib/esquemas.ts
    idiomaOriginal: pt-br # ou en
@@ -150,11 +150,11 @@ O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligaç
    O corpo, em Markdown.
    ```
 
-   `endereco` é a última parte do endereço da página, em palavras do idioma do arquivo: este texto fica em `/pt-br/textos/o-titulo-do-texto`. As imagens do texto ficam na mesma pasta.
+   `endereco` é a última parte do endereço da página, em palavras do idioma do arquivo: este texto fica em `/pt-br/textos/o-titulo-do-texto`. As imagens do texto ficam na mesma pasta. O arquivo é sempre `.md`: o MDX ainda não está ligado, e um `.mdx` seria ignorado.
 
 **Tradução.** Crie o arquivo do outro idioma na mesma pasta, com `titulo`, `resumo` e `endereco` no idioma dele, e mais o campo `traducaoComIA: true` (ou `false`), que toda tradução tem. Nada muda em `texto.yaml`. Um texto sem tradução é só um texto sem esse segundo arquivo.
 
-**Rascunho.** Com `rascunho: true`, o texto aparece só no site rodando localmente (`npm run dev`) e fica fora da construção publicada. Para publicar, apague a linha. O repo é público: o rascunho não aparece no site, mas o arquivo aparece no GitHub.
+**Rascunho.** Com `rascunho: true`, o texto aparece só no site rodando localmente (`npm run dev`) e fica fora de toda construção (`npm run build`). Para publicar, apague a linha. O repo é público: o rascunho não aparece no site, mas o arquivo aparece no GitHub.
 
 **Tema novo.** A lista de temas é fixa: um tema novo entra em `TEMAS`, em `src/lib/esquemas.ts`.
 
@@ -168,10 +168,9 @@ O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligaç
    ordem: 3
    estado: em-desenvolvimento # ou funciona-localmente, ou em-planejamento
    atualizadaEm: 2026-05-20
-   marca: marca.svg
    ```
 
-3. Ponha a marca do projeto na pasta, num arquivo SVG com o nome do campo `marca`.
+3. Ponha a marca do projeto na pasta, num arquivo SVG chamado `marca.svg`.
 4. Crie `en.md` e `pt-br.md`, os dois, com a história do projeto em cada idioma:
 
    ```md
@@ -211,6 +210,8 @@ ligacoes: # tudo opcional
   pesquisa: [nome-do-item-de-pesquisa]
 ```
 
+Um texto que tem o estudo no campo `estudo` (o estudo de origem) já aparece ligado a ele: `ligacoes.textos` é só para os outros textos que o estudo quiser mostrar.
+
 Um estudo que parou sai da lista: apague o arquivo. Ao terminar uma conferência, mude `conferidaEm` em `src/content/listas/estudos.yaml`.
 
 ### Criar um cargo
@@ -245,7 +246,7 @@ A ordem de toda lista sai dos arquivos de conteúdo:
 | Temas de um texto | A ordem em `temas`. |
 | Textos | A data `publicadoEm`: o mais recente vem primeiro. |
 | Cargos | O mês `inicio`: o mais recente vem primeiro. |
-| Estudos | O `status` e os meses `inicio` e `conclusao`. |
+| Estudos | O mês `inicio`: o mais recente vem primeiro. A página separa os estudos em andamento dos concluídos. |
 
 ### O que barra a construção
 
@@ -257,7 +258,7 @@ A conferência do conteúdo roda em toda construção (`npm run build`, e portan
 - uma página fixa, um projeto ou um estudo existe num idioma e falta no outro. Para os textos essa regra não vale: a tradução é opcional;
 - um texto não tem a versão no idioma original, ou uma tradução não diz se foi feita com IA;
 - dois textos têm o mesmo `endereco` no mesmo idioma;
-- um projeto aponta para uma marca que não está na pasta.
+- um projeto não tem a marca do projeto, `marca.svg`, na pasta.
 
 ### Ler o conteúdo numa página
 

@@ -38,3 +38,7 @@ sobre:
   descricao: "[Exemplo] Descrição da página Sobre."
   bio: "[Exemplo] Este parágrafo ocupa o lugar da bio, que ainda vai ser escrita."
   formacao: Bacharelado em Sistemas de Informação, UNISINOS, concluído em 2025
+
+# A página que aparece quando o endereço não existe.
+naoEncontrado:
+  nome: Página não encontrada

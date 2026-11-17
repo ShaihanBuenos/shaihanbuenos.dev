@@ -18,14 +18,16 @@ export const esquemaDasPaginas = z.strictObject({
   estudos: pagina,
   pesquisa: pagina,
   sobre: pagina.extend({ bio: frase, formacao: frase }),
+  // O "não encontrado" só tem o nome: não é uma página do menu nem dos buscadores.
+  naoEncontrado: z.strictObject({ nome: frase }),
 });
 
 export type Frases = z.infer<typeof esquemaDasPaginas>;
 
 const idioma = z.enum(IDIOMAS);
 
-// Um dia, como 2026-01-15.
-const dia = z.coerce.date();
+// Um dia, como 2026-01-15, escrito sem aspas.
+const dia = z.date({ error: "use um dia, como 2026-01-15" });
 
 // A última parte do endereço de uma página, em palavras do idioma dela.
 const endereco = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
@@ -70,20 +72,19 @@ export const ESTADOS_DO_PROJETO = [
   "em-planejamento",
 ] as const;
 
-// O que vale para as duas versões de um projeto: projetos/<projeto>/projeto.yaml.
+// O que vale para os dois idiomas de um projeto: projetos/<projeto>/projeto.yaml.
+// A marca do projeto é o arquivo marca.svg da mesma pasta.
 export const esquemaDoProjeto = z.strictObject({
   nome: frase,
   // A posição na lista de projetos: o menor número vem primeiro.
   ordem: z.number(),
   estado: z.enum(ESTADOS_DO_PROJETO),
   atualizadaEm: dia,
-  // A marca do projeto: o nome de um arquivo SVG na pasta do projeto.
-  marca: z.string().regex(/^[\w-]+\.svg$/, { error: "use o nome de um arquivo .svg da pasta" }),
 });
 
 // A história do projeto num idioma: projetos/<projeto>/<idioma>.md. O corpo
 // leva as decisões de engenharia e "Como foi construído".
-export const esquemaDaVersaoDoProjeto = z.strictObject({
+export const esquemaDaHistoriaDoProjeto = z.strictObject({
   oQueE: frase,
   descricao: frase,
 });
@@ -100,7 +101,8 @@ export const esquemaDoEstudo = z
     conclusao: mes.optional(),
     ligacoes: z
       .strictObject({
-        // Nomes das pastas em textos/.
+        // Nomes das pastas em textos/. Um texto que tem este estudo como
+        // estudo de origem já fica ligado, e não se repete aqui.
         textos: z.array(z.string()).default([]),
         // Nome da pasta em projetos/.
         projeto: z.string().optional(),

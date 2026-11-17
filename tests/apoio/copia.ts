@@ -22,7 +22,8 @@ export interface Mudanca {
 
 export interface Copia {
   pasta: string;
-  apagar: () => Promise<void>;
+  // Apaga a cópia inteira.
+  descartar: () => Promise<void>;
 }
 
 export async function copiar({ escrever = {}, apagar = [] }: Mudanca = {}): Promise<Copia> {
@@ -47,7 +48,7 @@ export async function copiar({ escrever = {}, apagar = [] }: Mudanca = {}): Prom
     await writeFile(join(conteudo, caminho), texto);
   }
 
-  return { pasta, apagar: () => rm(pasta, { recursive: true, force: true }) };
+  return { pasta, descartar: () => rm(pasta, { recursive: true, force: true }) };
 }
 
 export interface Construcao {
@@ -58,8 +59,12 @@ export interface Construcao {
   ler: (arquivo: string) => Promise<string>;
 }
 
-// Roda `astro build` na cópia, como a publicação faz.
-export async function construir(mudanca?: Mudanca): Promise<Construcao> {
+// Roda `astro build` na cópia, como a publicação faz. `ambiente` são
+// variáveis de ambiente a mais para a construção.
+export async function construir(
+  mudanca?: Mudanca,
+  ambiente: Record<string, string> = {},
+): Promise<Construcao> {
   const copia = await copiar(mudanca);
   try {
     const { codigo, saida } = await new Promise<{ codigo: number | null; saida: string }>(
@@ -67,8 +72,8 @@ export async function construir(mudanca?: Mudanca): Promise<Construcao> {
         const processo = spawn(join(raiz, "node_modules/.bin/astro"), ["build"], {
           cwd: copia.pasta,
           // Sem o NODE_ENV de quem chama: um servidor local no mesmo processo
-          // de teste deixa "development" ali, e a construção viraria local.
-          env: { ...process.env, NODE_ENV: undefined, NO_COLOR: "1" },
+          // de teste deixa "development" ali.
+          env: { ...process.env, NODE_ENV: undefined, NO_COLOR: "1", ...ambiente },
         });
         let texto = "";
         processo.stdout.on("data", (parte: Buffer) => (texto += parte.toString()));
@@ -99,6 +104,6 @@ export async function construir(mudanca?: Mudanca): Promise<Construcao> {
       },
     };
   } finally {
-    await copia.apagar();
+    await copia.descartar();
   }
 }

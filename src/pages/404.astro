@@ -1,5 +1,8 @@
 ---
 import Leitura from "../layouts/Leitura.astro";
+import { frasesDe } from "../lib/conteudo.ts";
+
+const frases = await frasesDe("en");
 ---
 
-<Leitura titulo="Page not found" />
+<Leitura titulo={frases.naoEncontrado.nome} />
