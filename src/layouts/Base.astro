@@ -5,7 +5,7 @@ import "../styles/moldura.css";
 import Menu from "../components/Menu.astro";
 import Rodape from "../components/Rodape.astro";
 import { PODE_SER_INDEXADO } from "../lib/configuracao.ts";
-import { FRASES } from "../lib/frases.ts";
+import { frasesDe } from "../lib/conteudo.ts";
 import { idiomaDe, LANG_HTML } from "../lib/idiomas.ts";
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 
 const { titulo } = Astro.props;
 const idioma = idiomaDe(Astro.currentLocale);
+const frases = await frasesDe(idioma);
 ---
 
 <!doctype html>
@@ -26,7 +27,7 @@ const idioma = idiomaDe(Astro.currentLocale);
   </head>
   <body>
     <a class="pular" href="#conteudo">
-      {FRASES[idioma].pular}
+      {frases.comum.pular}
     </a>
     <div class="pagina">
       <div class="moldura">

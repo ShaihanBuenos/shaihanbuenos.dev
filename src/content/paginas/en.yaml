@@ -1,0 +1,40 @@
+# The phrases of the fixed pages, in English. The file pt-br.yaml has the same
+# keys, in Portuguese. Phrases marked with [Example] are still to be written.
+
+# Phrases of the layout shared by every page.
+comum:
+  # The names of the menu and of the language button, for screen readers.
+  menu: Main
+  idioma: Language
+  # The link that skips the menu, for keyboard users.
+  pular: Skip to content
+  # The feed link, in the footer.
+  feed: Feed
+
+inicio:
+  nome: Home
+  descricao: "[Example] Description of the Home page."
+  rotulo: Software Engineer focused on backend and AI
+  apresentacao: I build backend services and systems that use LLMs, and I write code with AI agents guided by specs.
+
+projetos:
+  nome: Projects
+  descricao: "[Example] Description of the Projects page."
+
+textos:
+  nome: Writing
+  descricao: "[Example] Description of the Writing page."
+
+estudos:
+  nome: Studies
+  descricao: "[Example] Description of the Studies page."
+
+pesquisa:
+  nome: Research
+  descricao: "[Example] Description of the Research page."
+
+sobre:
+  nome: About
+  descricao: "[Example] Description of the About page."
+  bio: "[Example] This paragraph stands in for the bio, which is still to be written."
+  formacao: Bachelor's degree in Information Systems, UNISINOS, completed in 2025

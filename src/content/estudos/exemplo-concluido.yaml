@@ -1,0 +1,16 @@
+# Exemplo inventado. Apagar antes do lançamento. Mostra todas as ligações que
+# um estudo pode ter.
+nome:
+  en: "[Example] A completed study"
+  pt-br: "[Exemplo] Um estudo concluído"
+objetivo:
+  en: "[Example] A one-line goal for a study that is done."
+  pt-br: "[Exemplo] O objetivo, numa linha, de um estudo que já terminou."
+status: concluido
+inicio: 2025-03
+conclusao: 2025-11
+ligacoes:
+  textos: [exemplo-de-artigo]
+  certificado: https://example.com/certificado-de-exemplo
+  formacao: true
+  pesquisa: [exemplo-de-paper, exemplo-de-tcc]

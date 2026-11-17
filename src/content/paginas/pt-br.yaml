@@ -1,0 +1,40 @@
+# As frases das páginas fixas, em português. O arquivo en.yaml tem as mesmas
+# chaves, em inglês. As frases marcadas com [Exemplo] ainda vão ser escritas.
+
+# Frases do layout comum a todas as páginas.
+comum:
+  # O nome do menu e o do botão de idioma, para leitores de tela.
+  menu: Principal
+  idioma: Idioma
+  # O link que pula o menu, para quem navega pelo teclado.
+  pular: Pular para o conteúdo
+  # O link do feed, no rodapé.
+  feed: Feed
+
+inicio:
+  nome: Início
+  descricao: "[Exemplo] Descrição da página Início."
+  rotulo: Engenheiro de software com foco em backend e IA
+  apresentacao: Construo serviços de backend e sistemas que usam LLMs, e programo com agentes de IA guiados por especificação.
+
+projetos:
+  nome: Projetos
+  descricao: "[Exemplo] Descrição da página Projetos."
+
+textos:
+  nome: Textos
+  descricao: "[Exemplo] Descrição da página Textos."
+
+estudos:
+  nome: Estudos
+  descricao: "[Exemplo] Descrição da página Estudos."
+
+pesquisa:
+  nome: Pesquisa
+  descricao: "[Exemplo] Descrição da página Pesquisa."
+
+sobre:
+  nome: Sobre
+  descricao: "[Exemplo] Descrição da página Sobre."
+  bio: "[Exemplo] Este parágrafo ocupa o lugar da bio, que ainda vai ser escrita."
+  formacao: Bacharelado em Sistemas de Informação, UNISINOS, concluído em 2025

@@ -1,0 +1,20 @@
+# Exemplo inventado. Apagar antes do lançamento.
+tipo: paper
+ordem: 1
+titulo: "[Example] A Made-Up Paper Title, in the Original English"
+publicacao: "[Example] Example Conference 2026"
+autores:
+  - nome: Shaihan Buenos
+    destaque: true
+  - nome: Autora de Exemplo
+  - nome: Autor de Exemplo
+doi: 10.0000/exemplo.2026.0000000
+resumo:
+  en: "[Example] Two or three sentences that summarize the made-up paper in plain words."
+  pt-br: "[Exemplo] Duas ou três frases que resumem o paper inventado em palavras simples."
+construido:
+  en: "[Example] What Shaihan built in the made-up paper."
+  pt-br: "[Exemplo] O que Shaihan construiu no paper inventado."
+resultado:
+  en: "[Example] The result, with its caveat stated right next to the number."
+  pt-br: "[Exemplo] O resultado, com a ressalva colada ao número."

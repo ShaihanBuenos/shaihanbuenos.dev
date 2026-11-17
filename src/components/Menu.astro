@@ -1,19 +1,19 @@
 ---
 import BotaoIdioma from "./BotaoIdioma.astro";
-import { FRASES } from "../lib/frases.ts";
+import { frasesDe } from "../lib/conteudo.ts";
 import { idiomaDe } from "../lib/idiomas.ts";
 import { enderecoDe, paginaDe, PAGINAS_DO_MENU } from "../lib/paginas.ts";
 
 const idioma = idiomaDe(Astro.currentLocale);
-const frases = FRASES[idioma];
+const frases = await frasesDe(idioma);
 const paginaAtual = paginaDe(Astro.url.pathname);
 ---
 
-<nav class="contatos" aria-label={frases.menu}>
+<nav class="contatos" aria-label={frases.comum.menu}>
   <a
     class="inicio"
     href={enderecoDe("inicio", idioma)}
-    aria-label={`${frases.paginas.inicio}, Shaihan Buenos`}
+    aria-label={`${frases.inicio.nome}, Shaihan Buenos`}
     aria-current={paginaAtual === "inicio" ? "page" : undefined}
   >
     <span class="inteiro">Shaihan Buenos</span>
@@ -26,7 +26,7 @@ const paginaAtual = paginaDe(Astro.url.pathname);
           href={enderecoDe(pagina, idioma)}
           aria-current={pagina === paginaAtual ? "page" : undefined}
         >
-          {frases.paginas[pagina]}
+          {frases[pagina].nome}
         </a>
       </li>
     ))}

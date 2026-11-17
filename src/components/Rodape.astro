@@ -1,9 +1,11 @@
 ---
+import { frasesDe } from "../lib/conteudo.ts";
 import { CONTATO } from "../lib/contato.ts";
 import { enderecoDoFeed } from "../lib/feed.ts";
 import { idiomaDe } from "../lib/idiomas.ts";
 
 const idioma = idiomaDe(Astro.currentLocale);
+const frases = await frasesDe(idioma);
 ---
 
 <footer class="rodape">
@@ -15,7 +17,7 @@ const idioma = idiomaDe(Astro.currentLocale);
       </li>
     ))}
     <li>
-      <a href={enderecoDoFeed(idioma)}>Feed</a>
+      <a href={enderecoDoFeed(idioma)}>{frases.comum.feed}</a>
     </li>
   </ul>
 </footer>
