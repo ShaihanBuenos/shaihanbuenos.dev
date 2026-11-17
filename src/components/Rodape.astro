@@ -1,0 +1,21 @@
+---
+import { CONTATO } from "../lib/contato.ts";
+import { enderecoDoFeed } from "../lib/feed.ts";
+import { idiomaDe } from "../lib/idiomas.ts";
+
+const idioma = idiomaDe(Astro.currentLocale);
+---
+
+<footer class="rodape">
+  <span>Shaihan Buenos · Porto Alegre</span>
+  <ul>
+    {CONTATO.map(({ nome, endereco }) => (
+      <li>
+        <a href={endereco}>{nome}</a>
+      </li>
+    ))}
+    <li>
+      <a href={enderecoDoFeed(idioma)}>Feed</a>
+    </li>
+  </ul>
+</footer>

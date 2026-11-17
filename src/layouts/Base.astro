@@ -1,5 +1,11 @@
 ---
+import "../styles/fontes.css";
+import "../styles/base.css";
+import "../styles/moldura.css";
+import Menu from "../components/Menu.astro";
+import Rodape from "../components/Rodape.astro";
 import { PODE_SER_INDEXADO } from "../lib/configuracao.ts";
+import { FRASES } from "../lib/frases.ts";
 import { idiomaDe, LANG_HTML } from "../lib/idiomas.ts";
 
 interface Props {
@@ -19,9 +25,18 @@ const idioma = idiomaDe(Astro.currentLocale);
     <title>{titulo}</title>
   </head>
   <body>
-    <main>
-      <h1>{titulo}</h1>
-      <slot />
-    </main>
+    <a class="pular" href="#conteudo">
+      {FRASES[idioma].pular}
+    </a>
+    <div class="pagina">
+      <div class="moldura">
+        <Menu />
+        <main id="conteudo">
+          <slot />
+        </main>
+        <Rodape />
+      </div>
+      <div class="dentes" aria-hidden="true"></div>
+    </div>
   </body>
 </html>

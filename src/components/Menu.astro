@@ -1,0 +1,43 @@
+---
+import BotaoIdioma from "./BotaoIdioma.astro";
+import { FRASES } from "../lib/frases.ts";
+import { idiomaDe } from "../lib/idiomas.ts";
+import { enderecoDe, paginaDe, PAGINAS_DO_MENU } from "../lib/paginas.ts";
+
+const idioma = idiomaDe(Astro.currentLocale);
+const frases = FRASES[idioma];
+const paginaAtual = paginaDe(Astro.url.pathname);
+---
+
+<nav class="contatos" aria-label={frases.menu}>
+  <a
+    class="inicio"
+    href={enderecoDe("inicio", idioma)}
+    aria-label={`${frases.paginas.inicio}, Shaihan Buenos`}
+    aria-current={paginaAtual === "inicio" ? "page" : undefined}
+  >
+    <span class="inteiro">Shaihan Buenos</span>
+    <span class="iniciais">SB</span>
+  </a>
+  <ul>
+    {PAGINAS_DO_MENU.map((pagina) => (
+      <li>
+        <a
+          href={enderecoDe(pagina, idioma)}
+          aria-current={pagina === paginaAtual ? "page" : undefined}
+        >
+          {frases.paginas[pagina]}
+        </a>
+      </li>
+    ))}
+  </ul>
+  <BotaoIdioma />
+</nav>
+
+<script>
+  // No celular, as páginas ficam numa faixa que rola na horizontal: traz a
+  // página atual para dentro da faixa quando ela começa fora da tela.
+  document
+    .querySelector('.contatos li [aria-current="page"]')
+    ?.scrollIntoView({ inline: "center", block: "nearest" });
+</script>
