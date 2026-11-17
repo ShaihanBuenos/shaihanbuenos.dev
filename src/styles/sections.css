@@ -46,10 +46,8 @@
   color: var(--ink);
 }
 
-/* The phrase that opens the body of a section. In a project story, it is the
-   first paragraph of "How it was built". */
-.lead,
-.story-built .body > p:first-child {
+/* The phrase that opens the body of a section. */
+.lead {
   font-family: var(--display);
   font-size: clamp(1.3rem, 2.3cqw, 1.9rem);
   font-weight: 300;

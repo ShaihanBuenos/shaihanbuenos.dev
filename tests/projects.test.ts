@@ -214,9 +214,15 @@ description: Test description.
 
 **Choice.** Test choice.
 
+**Ruled out.** Test alternative.
+
 ### Second test decision
 
 **Problem.** Another test problem.
+
+**Choice.** Another test choice.
+
+**Ruled out.** Another test alternative.
 
 ## Test built
 
@@ -297,7 +303,11 @@ describe("the projects come from the content", { concurrency: true }, () => {
       "First test decision",
       "Second test decision",
     ]);
-    assert.deepEqual(elements(story, "dt").map(textOf), ["Problem", "Choice", "Problem"]);
+    assert.deepEqual(elements(story, "dt").map(textOf).slice(0, 3), [
+      "Problem",
+      "Choice",
+      "Ruled out",
+    ]);
     assert.match(textOf(story), /Test credit\./);
   });
 });
@@ -348,7 +358,7 @@ describe("the files of a project story", { concurrency: true }, () => {
     });
     assert.ok(built.failed, "the build passed");
     assert.match(built.output, /projects\/example-project\/en\.md/);
-    assert.match(built.output, /two to four engineering decisions/);
+    assert.match(built.output, /from 2 to 4 engineering decisions/);
   });
 
   // The captures and the diagram of a project live in its folder, and the

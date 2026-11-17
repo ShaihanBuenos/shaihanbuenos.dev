@@ -10,7 +10,7 @@ const currentPage = pageAt(Astro.url.pathname);
 // On a page that is not on the menu, as a project story, the page above it.
 const currentSection = sectionAt(Astro.url.pathname);
 
-function currentMark(page: (typeof MENU_PAGES)[number]): "page" | "true" | undefined {
+function ariaCurrentOf(page: (typeof MENU_PAGES)[number]): "page" | "true" | undefined {
   if (page === currentPage) return "page";
   return page === currentSection ? "true" : undefined;
 }
@@ -29,7 +29,7 @@ function currentMark(page: (typeof MENU_PAGES)[number]): "page" | "true" | undef
   <ul>
     {MENU_PAGES.map((page) => (
       <li>
-        <a href={pathOf(page, language)} aria-current={currentMark(page)}>
+        <a href={pathOf(page, language)} aria-current={ariaCurrentOf(page)}>
           {phrases[page].name}
         </a>
       </li>

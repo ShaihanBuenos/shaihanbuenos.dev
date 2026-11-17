@@ -10,9 +10,11 @@ import type { Element, ElementContent, Root, RootContent } from "hast";
 
 type HastPlugin = NonNullable<SatteriProcessorOptions["hastPlugins"]>[number];
 
-// A project story has from two to four engineering decisions.
+// How many engineering decisions a project story has.
 const MIN_DECISIONS = 2;
 const MAX_DECISIONS = 4;
+// A decision has the problem, the choice and what was ruled out.
+const DECISION_ITEMS = 3;
 
 // The story file inside src/content, such as "projects/example/en.md", or
 // nothing when the Markdown file is not a project story.
@@ -42,12 +44,12 @@ function textOf(node: ElementContent): string {
 // title, and then each title with what follows it.
 function splitAt(
   nodes: ElementContent[],
-  title: string,
+  tagName: string,
 ): { before: ElementContent[]; parts: { title: Element; body: ElementContent[] }[] } {
   const before: ElementContent[] = [];
   const parts: { title: Element; body: ElementContent[] }[] = [];
   for (const node of nodes) {
-    if (isElement(node, title)) parts.push({ title: node, body: [] });
+    if (isElement(node, tagName)) parts.push({ title: node, body: [] });
     else (parts.at(-1)?.body ?? before).push(node);
   }
   return { before, parts };
@@ -104,14 +106,52 @@ function bodyOf(nodes: ElementContent[]): ElementContent[] {
   return body;
 }
 
-// The links of the nodes that lead out of the site.
-function linksOutOf(nodes: ElementContent[]): string[] {
-  return nodes.flatMap((node) => {
-    if (!isElement(node)) return [];
-    const { href } = node.properties;
-    const leaves = node.tagName === "a" && typeof href === "string" && !/^[/#]/.test(href);
-    return [...(leaves ? [href] : []), ...linksOutOf(node.children)];
-  });
+// Every element among the nodes, at any depth.
+function elementsIn(nodes: ElementContent[]): Element[] {
+  return nodes.flatMap((node) => (isElement(node) ? [node, ...elementsIn(node.children)] : []));
+}
+
+// Whether there is HTML written by hand among the nodes, at any depth. The
+// processor keeps it as it is, so nothing here can check what it holds.
+function hasRawHtml(nodes: ElementContent[]): boolean {
+  return nodes.some(
+    (node) => (node.type as string) === "raw" || (isElement(node) && hasRawHtml(node.children)),
+  );
+}
+
+// An address inside the site: a page ("/research") or a place on the page.
+function staysInTheSite(address: string): boolean {
+  return /^(\/(?!\/)|#)/.test(address);
+}
+
+// An address that names a site, as "https://…" and "//…" do.
+function isRemote(address: string): boolean {
+  return /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(address);
+}
+
+// What a project story may not hold, if there is any: the problem, for the error.
+function forbiddenIn(nodes: ElementContent[]): string | undefined {
+  if (hasRawHtml(nodes)) {
+    return "a project story is written in Markdown only, without HTML tags, so its links can be checked: a project story has no link to a repo or a demo";
+  }
+  for (const { tagName, properties } of elementsIn(nodes)) {
+    const { href, src } = properties;
+    if (tagName === "a" && typeof href === "string" && !staysInTheSite(href)) {
+      return `a project story has no link to a repo or a demo, and "${href}" leaves the site`;
+    }
+    if (tagName === "img" && typeof src === "string" && isRemote(src)) {
+      return `the images of a story live in the folder of the project, and "${src}" comes from outside`;
+    }
+  }
+  return undefined;
+}
+
+// The first paragraph of "How it was built" is the phrase that opens the
+// section: the agent credit.
+function withLead(body: ElementContent[]): ElementContent[] {
+  const first = body.at(0);
+  if (!first || !isElement(first, "p")) return body;
+  return [{ ...first, properties: { ...first.properties, className: ["lead"] } }, ...body.slice(1)];
 }
 
 function section(classes: string[], title: Element, body: ElementContent[]): Element {
@@ -120,7 +160,7 @@ function section(classes: string[], title: Element, body: ElementContent[]): Ele
 
 // The body of a project story, with its structure. `file` names the story
 // in the errors.
-export function structureOf(root: Root, file: string): Root {
+function structureOf(root: Root, file: string): Root {
   const refuse = (problem: string): never => {
     throw new Error(`${file}: ${problem}`);
   };
@@ -129,10 +169,8 @@ export function structureOf(root: Root, file: string): Root {
     (node): node is ElementContent => node.type !== "doctype" && !isBlank(node),
   );
 
-  const link = linksOutOf(nodes).at(0);
-  if (link !== undefined) {
-    refuse(`a project story has no link to a repo or a demo, and "${link}" leaves the site`);
-  }
+  const forbidden = forbiddenIn(nodes);
+  if (forbidden !== undefined) refuse(forbidden);
 
   const { before, parts } = splitAt(nodes, "h2");
   if (before.length > 0) {
@@ -150,8 +188,19 @@ export function structureOf(root: Root, file: string): Root {
   const count = decisions.parts.length;
   if (count < MIN_DECISIONS || count > MAX_DECISIONS) {
     refuse(
-      `a project story has from two to four engineering decisions, each under a ### title; found ${count}`,
+      `a project story has from ${MIN_DECISIONS} to ${MAX_DECISIONS} engineering decisions, each under a ### title; found ${count}`,
     );
+  }
+
+  for (const { title, body } of decisions.parts) {
+    if (body.filter((node) => itemOf(node)).length < DECISION_ITEMS) {
+      refuse(
+        `the decision "${textOf(title)}" has the problem, the choice and what was ruled out, each in a paragraph that opens in bold`,
+      );
+    }
+  }
+  if (builtPart.body.length === 0) {
+    refuse('"How it was built", the second part, is empty, and it holds the agent credit');
   }
 
   return {
@@ -163,7 +212,7 @@ export function structureOf(root: Root, file: string): Root {
           element("article", ["decision"], [title, ...bodyOf(body)]),
         ),
       ]),
-      section(["sapphire", "story-built"], builtPart.title, bodyOf(builtPart.body)),
+      section(["sapphire", "story-built"], builtPart.title, withLead(bodyOf(builtPart.body))),
     ],
   };
 }

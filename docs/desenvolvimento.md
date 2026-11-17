@@ -214,9 +214,10 @@ A página da história mostra, nesta ordem: a marca do projeto e o nome, o estad
 
 - Duas partes, cada uma sob um título `##`: primeiro as decisões de engenharia, depois "Como foi construído". Os títulos são escritos no idioma do arquivo.
 - De duas a quatro decisões, cada uma sob um título `###`.
-- Um parágrafo que começa com uma frase em negrito (`**O problema.** ...`) vira um item da decisão: a frase em negrito é a legenda e o resto é a resposta.
+- Cada decisão tem o problema, a escolha e o que foi descartado. Um parágrafo que começa com uma frase em negrito (`**O problema.** ...`) vira um item da decisão: a frase em negrito é a legenda e o resto é a resposta. Uma decisão tem pelo menos esses três itens.
 - O primeiro parágrafo de "Como foi construído" aparece em destaque.
 - Nenhum link sai do site: uma história do projeto não tem link para repo nem para demo. Links para páginas do site (`/research`) podem.
+- O corpo é só Markdown, sem tags de HTML: é o que deixa a construção conferir os links.
 
 **Imagens.** As capturas e o diagrama de um projeto ficam na pasta dele, ao lado dos arquivos da história, e entram no corpo pelo Markdown:
 
@@ -224,7 +225,7 @@ A página da história mostra, nesta ordem: a marca do projeto e o nome, o estad
 ![O que a imagem mostra, para quem não a vê](./diagrama.svg "A legenda, que aparece abaixo da imagem.")
 ```
 
-A imagem fica sozinha no parágrafo e aparece com a moldura de um fio; a legenda, entre aspas, é opcional. Um arquivo de imagem serve aos dois idiomas, com o texto alternativo e a legenda escritos em cada um. Use SVG para diagramas e PNG para capturas, com no máximo a largura da coluna em dobro (cerca de 1600 px). Hoje nenhum projeto de exemplo tem imagem.
+A imagem fica sozinha no parágrafo e aparece com a moldura de um fio; a legenda, entre aspas, é opcional. Cada imagem é um arquivo só, que encolhe até a largura da tela: um diagrama largo precisa continuar legível em 390 px. Um arquivo de imagem serve aos dois idiomas, com o texto alternativo e a legenda escritos em cada um. Use SVG para diagramas e PNG para capturas, com no máximo a largura da coluna em dobro (cerca de 1600 px). Hoje nenhum projeto de exemplo tem imagem.
 
 ### Criar um estudo
 
@@ -297,7 +298,7 @@ A conferência do conteúdo roda em toda construção (`npm run build`, e portan
 - um texto não tem a versão no idioma original, ou uma tradução não diz se foi feita com IA;
 - dois textos têm o mesmo `slug` no mesmo idioma;
 - um projeto não tem a marca do projeto, `mark.svg`, na pasta;
-- o corpo de uma história do projeto não tem as duas partes, tem menos de duas ou mais de quatro decisões, tem texto antes da primeira parte ou tem um link que sai do site.
+- o corpo de uma história do projeto não tem as duas partes, tem menos de duas ou mais de quatro decisões, tem uma decisão sem os três itens, tem "Como foi construído" vazio, tem texto antes da primeira parte, tem um link que sai do site, uma imagem de fora da pasta do projeto ou uma tag de HTML.
 
 ### Ler o conteúdo numa página
 

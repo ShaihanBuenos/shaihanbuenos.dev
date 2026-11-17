@@ -30,7 +30,7 @@
 }
 
 .story-id h1 {
-  font-size: clamp(3.4rem, 10.4cqw, 8.75rem);
+  font-size: clamp(3.4rem, min(10.4cqw, 14.2svh), 8.75rem);
   font-weight: 200;
   line-height: 0.86;
   letter-spacing: -0.04em;
