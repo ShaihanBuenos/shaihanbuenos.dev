@@ -56,6 +56,8 @@ Os testes do movimento, em `tests/motion.test.ts`, olham as páginas, o CSS e o 
 
 Os testes da descoberta, em `tests/discovery.test.ts`, olham os dois feeds, o `<head>` de cada página, as imagens de compartilhamento, o mapa do site e o `robots.txt`: com o conteúdo de exemplo e em cópias com um texto criado, traduzido e revisado, e com a chave do lançamento ligada. Ver "Descoberta", abaixo.
 
+Os testes da issue de conferência, em `tests/check-issue.test.ts`, não olham o site: rodam `scripts/open-check-issue` com um `gh` falso, sem a rede, e leem o arquivo do workflow. Ver "A issue de conferência", abaixo.
+
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
 ## Construir
@@ -100,8 +102,10 @@ A saída é só de arquivos estáticos.
 | `src/lib/share-image.ts` | As imagens de compartilhamento: quais existem, onde fica cada uma e o que cada uma diz. |
 | `src/lib/share-image-drawing.ts` | O desenho de uma imagem de compartilhamento, e o PNG. |
 | `src/lib/structured-data.ts` | Os dados estruturados: a pessoa do Início e o artigo de um texto. |
-| `tests/` | Os testes do site construído. |
+| `tests/` | Os testes do site construído e os da issue de conferência. |
 | `scripts/check` | A conferência completa. |
+| `scripts/open-check-issue` | O script que abre a issue de conferência (ver "A issue de conferência", abaixo). |
+| `.github/workflows/check-issue.yml` | A tarefa agendada que roda esse script a cada três meses. |
 
 ## O código é em inglês
 
@@ -430,7 +434,7 @@ A lista de estudos (`/studies` e `/pt-br/estudos`) mostra primeiro os estudos em
 
 Um estudo sem ligações mostra só o nome, o objetivo e o status. A página não tem porcentagem nem contagens. O nome do arquivo é o `id` do estudo na página: a página de um texto leva ao estudo de origem por `/studies#<nome-do-estudo>`.
 
-Um estudo que parou sai da lista: apague o arquivo. Ao terminar uma conferência, mude `checkedOn` em `src/content/lists/studies.yaml`.
+Um estudo que parou sai da lista: apague o arquivo. Ao terminar uma conferência, mude `checkedOn` em `src/content/lists/studies.yaml` (ver "A issue de conferência", abaixo).
 
 ### Criar um item de pesquisa
 
@@ -563,3 +567,54 @@ const { texts, projects, studies, roles, research } = await content();
 ```
 
 É ali que as versões de cada idioma são reunidas, que as listas são ordenadas, que as ligações são conferidas e que os rascunhos saem da construção publicada. Uma página que lesse a coleção direto mostraria os rascunhos.
+
+## A issue de conferência
+
+A conferência é a revisão que Shaihan faz a cada três meses para confirmar que as páginas fixas continuam certas e iguais nos dois idiomas. Quem lembra dela é uma tarefa agendada do GitHub Actions, `.github/workflows/check-issue.yml`, que abre uma issue com a lista de conferência, atribuída a `ShaihanBuenos` e com a label `conferência`.
+
+### Quando roda
+
+Às 12:17 UTC (9h17 em Porto Alegre) do dia 1º de fevereiro, maio, agosto e novembro. O GitHub pode atrasar uma tarefa agendada quando está cheio; a issue pode chegar um pouco depois da hora.
+
+Num repo público, o GitHub desliga as tarefas agendadas depois de 60 dias sem nenhuma atividade no repo, e avisa por e-mail. Se isso acontecer, religue em **Actions → Check issue → Enable workflow**, ou com `gh workflow enable check-issue.yml`.
+
+### Disparar à mão
+
+```sh
+gh workflow run check-issue.yml
+gh run watch    # acompanha a execução
+```
+
+Também dá pelo site: **Actions → Check issue → Run workflow**. O disparo à mão só existe depois que o arquivo do workflow está no `master`.
+
+### O que o workflow faz
+
+Só chama `scripts/open-check-issue`. O que a issue diz e a decisão de abrir ou não ficam no script, que fala com o GitHub pelo `gh`. O workflow tem uma permissão só, `issues: write`, que serve para listar e abrir issues e para criar a label. Baixar o código não pede permissão enquanto o repo for público; se ele virar privado, o workflow precisa também de `contents: read`.
+
+Para ver a issue sem abrir nada:
+
+```sh
+scripts/open-check-issue --dry-run                  # com o mês de hoje no título
+scripts/open-check-issue --dry-run --month 2027-02  # com outro mês
+```
+
+Com `--dry-run`, o script só lê a lista de issues abertas. Sem `--dry-run`, o script abre a issue de verdade.
+
+### Como a segunda issue é evitada
+
+A marca de uma issue de conferência é a label `conferência`, e não o título. Antes de abrir, o script procura uma issue aberta com essa label. Se achar, não abre outra, diz qual está aberta e termina sem erro. Então:
+
+- a próxima issue só vem depois que a anterior for fechada;
+- mudar o título de uma issue de conferência não muda nada;
+- tirar a label de uma issue aberta faz a tarefa abrir outra;
+- uma issue aberta à mão com a label `conferência` segura a próxima.
+
+O script cria a label se ela não existir. Ela não é uma label de triagem: as cinco de `docs/agents/triage-labels.md` continuam as mesmas. Dois disparos ao mesmo tempo não abrem duas issues: o workflow roda um de cada vez.
+
+### O que fazer ao receber a issue
+
+1. Passe pela lista de conferência, marcando cada item: o status dos estudos (o que parou sai da lista), o cargo atual, o estado dos projetos, a bio e se as duas versões das páginas fixas ainda dizem a mesma coisa. Cada item diz em que arquivo de `src/content/` olhar.
+2. Corrija o que mudou, como em "Conteúdo", acima.
+3. Mude `checkedOn`, em `src/content/lists/studies.yaml`, para o ano e o mês em que terminou, como `2027-02`. É a data "conferida em" que a lista de estudos mostra.
+4. Rode `scripts/check` e publique as mudanças.
+5. Feche a issue. Enquanto ela estiver aberta, a tarefa não abre a próxima.

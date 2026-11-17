@@ -1,0 +1,31 @@
+# Opens the check issue every three months (section 10 of the spec). What the
+# issue says, and whether one is opened at all, is up to the script.
+name: Check issue
+
+on:
+  schedule:
+    # At 12:17 UTC on the first day of February, May, August and November.
+    # Off the full hour, when GitHub delays scheduled runs the most.
+    - cron: "17 12 1 2,5,8,11 *"
+  workflow_dispatch:
+
+# The token can write issues and labels, and nothing else. The checkout needs
+# no permission while the repo is public.
+permissions:
+  issues: write
+
+# Two runs at once could both find no open check issue.
+concurrency:
+  group: check-issue
+
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Open the check issue
+        run: scripts/open-check-issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
