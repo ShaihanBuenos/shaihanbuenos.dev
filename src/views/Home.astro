@@ -1,0 +1,183 @@
+---
+import "../styles/plan.css";
+import "../styles/sections.css";
+import Base from "../layouts/Base.astro";
+import { content, versionIn } from "../lib/content.ts";
+import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
+import { languageOf, HTML_LANG, SHORT_NAME } from "../lib/languages.ts";
+import { pathOf, projectPathOf, textPathOf } from "../lib/pages.ts";
+
+const language = languageOf(Astro.currentLocale);
+const { pages, research, projects, roles, texts, studies } = await content();
+const phrases = pages[language];
+
+const paper = research.find((item) => item.type === "paper");
+
+// The three most recent texts, each in the version this page shows.
+const recentTexts = texts
+  .slice(0, 3)
+  .map((text) => ({ ...text, shown: versionIn(text, language) }));
+
+const studiesInProgress = studies.filter(({ status }) => status === "in-progress");
+
+// The experience goes from the year of the first role to the year the last
+// one ended, or to "today" while there is a current role.
+const firstYear = roles.at(-1)?.start.slice(0, 4);
+const lastYear = roles.every(({ end }) => end !== undefined)
+  ? roles
+      .map(({ end = "" }) => end.slice(0, 4))
+      .sort()
+      .at(-1)
+  : undefined;
+---
+
+<Base title="Shaihan Buenos">
+  <div class="plan">
+    <header class="block core">
+      <h1>
+        Shaihan <br />
+        Buenos
+      </h1>
+      <div>
+        <p class="label">{phrases.home.label}</p>
+        <p class="intro">{phrases.home.intro}</p>
+      </div>
+    </header>
+    {paper && (
+      <a class="block research" href="#research">
+        <span class="caption">
+          {phrases.research.name} · {paper.venue}
+        </span>
+        <strong>{phrases.home.blocks.research}</strong>
+      </a>
+    )}
+    <a class="block method" href="#projects">
+      <span class="caption">{phrases.home.blocks.methodCaption}</span>
+      <strong>{phrases.home.blocks.method}</strong>
+    </a>
+    <a class="block experience" href={pathOf("about", language)}>
+      <span class="caption">
+        {phrases.home.blocks.experienceCaption}
+        {firstYear && (
+          <>
+            {" · "}
+            <time datetime={firstYear}>{firstYear}</time> –{" "}
+            {lastYear ? <time datetime={lastYear}>{lastYear}</time> : phrases.home.today}
+          </>
+        )}
+      </span>
+      <strong>{phrases.home.blocks.experience}</strong>
+    </a>
+    <div class="plan-projects">
+      {projects.map((project) => (
+        <a class="block project" href={projectPathOf(project.id, language)}>
+          <span class="caption">{phrases.projects.states[project.state]}</span>
+          <strong>{project.name}</strong>
+        </a>
+      ))}
+    </div>
+    <a class="block exit writing" href={pathOf("writing", language)}>
+      <strong>{phrases.writing.name}</strong>
+    </a>
+    <a class="block exit studies" href={pathOf("studies", language)}>
+      <strong>{phrases.studies.name}</strong>
+    </a>
+    <span class="plan-end" aria-hidden="true"></span>
+  </div>
+
+  {paper && (
+    <section class="section copper" id="research">
+      <h2>{phrases.research.name}</h2>
+      <div class="body">
+        <p class="lead" lang="en">
+          {paper.title}
+        </p>
+        <p class="caption">{paper.venue}</p>
+        <p>{phrases.home.paper}</p>
+        <p class="more">
+          <a href={pathOf("research", language)}>{phrases.home.more.research}</a>
+        </p>
+      </div>
+    </section>
+  )}
+
+  <section class="section" id="projects">
+    <h2>{phrases.projects.name}</h2>
+    <div class="body">
+      <ul class="rows">
+        {projects.map((project) => (
+          <li>
+            <a class="row" href={projectPathOf(project.id, language)}>
+              <span class="mark" aria-hidden="true" set:html={project.mark} />
+              <h3>{project.name}</h3>
+              <p>{project.stories[language].whatItIs}</p>
+              <span class="caption">{phrases.projects.states[project.state]}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="more">
+        <a href={pathOf("projects", language)}>{phrases.home.more.projects}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section sapphire" id="writing">
+    <h2>{phrases.writing.name}</h2>
+    <div class="body">
+      <ul class="list">
+        {recentTexts.map(({ type, publishedOn, shown }) => (
+          <li>
+            <a href={textPathOf(shown.version.slug, shown.language)}>
+              <strong lang={shown.language === language ? undefined : HTML_LANG[shown.language]}>
+                {shown.version.title}
+              </strong>
+              <span class="caption">
+                {phrases.writing.types[type]} ·{" "}
+                <time datetime={isoDayOf(publishedOn)}>{dayIn(publishedOn, language)}</time>
+                {shown.language !== language && (
+                  <>
+                    {" · "}
+                    <span lang={HTML_LANG[shown.language]}>{SHORT_NAME[shown.language]}</span>
+                  </>
+                )}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="more">
+        <a href={pathOf("writing", language)}>{phrases.home.more.writing}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="studies">
+    <h2>{phrases.studies.name}</h2>
+    <div class="body">
+      <ul class="list">
+        {studiesInProgress.map(({ name, start }) => (
+          <li>
+            <strong>{name[language]}</strong>
+            <span class="caption">
+              {phrases.home.since} <time datetime={start}>{monthIn(start, language)}</time>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p class="more">
+        <a href={pathOf("studies", language)}>{phrases.home.more.studies}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section grey" id="about">
+    <h2>{phrases.about.name}</h2>
+    <div class="body">
+      <p>{phrases.about.bio}</p>
+      <p class="more">
+        <a href={pathOf("about", language)}>{phrases.home.more.about}</a>
+      </p>
+    </div>
+  </section>
+</Base>

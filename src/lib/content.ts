@@ -18,6 +18,19 @@ export type Text = CollectionEntry<"texts">["data"] & {
   versions: Partial<Record<Language, TextVersion>>;
 };
 
+// The version of a text that a page in this language shows: the one in the
+// page's language when it exists, and the original when it does not.
+export function versionIn(
+  text: Text,
+  language: Language,
+): { version: TextVersion; language: Language } {
+  for (const candidate of [language, text.originalLanguage]) {
+    const version = text.versions[candidate];
+    if (version) return { version, language: candidate };
+  }
+  throw new Error(`texts/${text.id}: the version in the original language is missing`);
+}
+
 // The project story in one language.
 export type ProjectStory = CollectionEntry<"projectStories">["data"] & {
   // The file of the story, for the page to show the body with `render()`.

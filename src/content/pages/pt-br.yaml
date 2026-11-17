@@ -16,14 +16,44 @@ home:
   description: "[Exemplo] Descrição da página Início."
   label: Engenheiro de software com foco em backend e IA
   intro: Construo serviços de backend e sistemas que usam LLMs, e programo com agentes de IA guiados por especificação.
+  # The blocks of the floor plan: the title of each one and, where the caption
+  # does not come from another file, the caption.
+  blocks:
+    research: Sistemas que usam LLMs
+    methodCaption: Método
+    method: Agentes guiados por especificação
+    experienceCaption: Experiência
+    experience: Serviços de backend
+  # The end of the experience while the current role has none.
+  today: hoje
+  # The paper callout: one plain sentence, without numbers.
+  paper: "[Exemplo] Uma frase simples sobre o paper, sem números."
+  # Comes before the start month of a study in progress.
+  since: desde
+  # The link that closes each section.
+  more:
+    research: Sobre a pesquisa
+    projects: Todos os projetos
+    writing: Todos os textos
+    studies: Todos os estudos
+    about: Mais sobre mim
 
 projects:
   name: Projetos
   description: "[Exemplo] Descrição da página Projetos."
+  # The name of each project state.
+  states:
+    works-locally: funciona localmente
+    in-development: em desenvolvimento
+    in-planning: em planejamento
 
 writing:
   name: Textos
   description: "[Exemplo] Descrição da página Textos."
+  # The name of each text type.
+  types:
+    article: artigo
+    study-note: nota de estudo
 
 studies:
   name: Estudos

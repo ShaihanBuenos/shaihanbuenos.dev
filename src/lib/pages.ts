@@ -19,6 +19,16 @@ export function pathOf(page: FixedPage, language: Language): string {
   return PATHS[page][language];
 }
 
+// The path of a project story: the name of the project's folder closes it.
+export function projectPathOf(id: string, language: Language): string {
+  return `${pathOf("projects", language)}/${id}`;
+}
+
+// The path of one version of a text, under the prefix of its own language.
+export function textPathOf(slug: string, language: Language): string {
+  return `${pathOf("writing", language)}/${slug}`;
+}
+
 // The fixed page that answers at a path, if there is one. During the build,
 // Astro gives the path of the generated file, with `.html`; in the dev
 // server, it gives the path as the visitor requests it.

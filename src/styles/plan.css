@@ -1,0 +1,299 @@
+/* The floor plan: the first screen of the Home page. A grid of whole cells,
+   with the lines showing behind, and blocks that darken where they cross.
+   Phone first: the phone has a plan of its own, 10 columns by 22 rows. */
+.plan {
+  --u: calc(100cqw / 10);
+  /* The height of a row, so the 22 rows fit the first screen. */
+  --v: max(32px, calc((100svh - 82px) / 22));
+  display: grid;
+  grid-template-columns: repeat(10, var(--u));
+  grid-auto-rows: var(--v);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--u) var(--v);
+}
+
+.plan .block {
+  /* The full color of the block, for when it has the focus or the pointer. */
+  --full: var(--h-grey);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 10px 12px;
+  color: var(--ink);
+  text-decoration: none;
+  mix-blend-mode: multiply;
+}
+
+.plan .block strong {
+  display: block;
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+/* The core: the opaque rectangle of the name. It is not a link, and it stays
+   under the layers that cross it. */
+.plan .core {
+  grid-area: 1 / 1 / 11 / 10;
+  padding: 26px 14px calc(var(--v) + 10px);
+  border: 1.5px solid var(--ink);
+  border-left: 0;
+  background: var(--ground);
+  mix-blend-mode: normal;
+}
+
+.plan .core h1 {
+  font-size: min(19.5cqw, 12svh);
+  font-weight: 200;
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+}
+
+.plan .label {
+  font-size: 1.06rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.plan .intro {
+  margin-top: 0.35em;
+  font-size: 0.93rem;
+  line-height: 1.4;
+  color: var(--mut);
+}
+
+/* Research, method and experience cross below the core. In each one the
+   caption sits in the corner opposite to the title. */
+.plan .research {
+  --full: var(--h-copper);
+  grid-area: 10 / 4 / 14 / 11;
+  align-items: flex-end;
+  background: var(--l-copper);
+  text-align: right;
+}
+
+.plan .method {
+  --full: var(--h-sapphire);
+  grid-area: 13 / 1 / 17 / 6;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  background: var(--l-sapphire);
+}
+
+.plan .experience {
+  grid-area: 16 / 3 / 19 / 11;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  background: var(--l-grey);
+  text-align: right;
+}
+
+.plan .research strong,
+.plan .experience strong {
+  font-size: 1.55rem;
+}
+
+.plan .method strong {
+  font-size: 1.22rem;
+}
+
+/* The projects close the plan in a row, however many they are. */
+.plan-projects {
+  display: grid;
+  grid-area: 19 / 1 / 22 / 11;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+/* Three projects over ten columns: four, three and three. */
+.plan-projects:has(> :nth-child(3):last-child) {
+  grid-template-columns: minmax(0, 4fr) minmax(0, 3fr) minmax(0, 3fr);
+}
+
+.plan .project {
+  --full: var(--h-copper);
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 4px;
+  /* A strip of the sheet separates two projects. */
+  margin-right: 6px;
+  padding: 8px 8px 8px 10px;
+  background: var(--l-copper-2);
+}
+
+.plan .project:last-child {
+  margin-right: 0;
+}
+
+.plan .project strong {
+  font-size: 0.98rem;
+}
+
+.plan .project .caption {
+  font-size: 0.5rem;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+/* The exit cells only exist on a computer: on a phone the menu already
+   leads to the same pages. */
+.plan .exit {
+  display: none;
+}
+
+/* The teeth that close the plan. */
+.plan-end {
+  grid-area: 22 / 1 / 23 / 11;
+  align-self: end;
+  height: 10px;
+  background-image: linear-gradient(90deg, var(--ink) 0 34%, transparent 34%);
+  background-size: var(--u) 10px;
+}
+
+/* The signature: the block with the focus goes to its full color, and the
+   others lose the color and keep a one-pixel outline. */
+.plan:has(a.block:focus-visible) a.block:not(.exit, :focus-visible) {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.plan a.block:focus-visible {
+  outline-offset: -4px;
+  background-color: var(--full);
+}
+
+@media (hover: hover) {
+  .plan:has(a.block:hover) a.block:not(.exit, :hover) {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+
+  .plan a.block:hover {
+    background-color: var(--full);
+  }
+}
+
+/* On a computer: the plan of 26 columns by 16 rows. */
+@media (min-width: 1001px) {
+  .plan {
+    --u: calc(100cqw / 26);
+    --v: min(var(--u), max(42px, calc((100svh - 62px) / 16)));
+    grid-template-columns: repeat(26, var(--u));
+  }
+
+  .plan .block {
+    padding: clamp(10px, 1.15cqw, 18px);
+  }
+
+  .plan .core {
+    grid-area: 3 / 2 / 11 / 16;
+    padding: clamp(14px, 1.9cqw, 26px) clamp(14px, 2.1cqw, 30px) calc(var(--v) + 8px);
+    border-left: 1.5px solid var(--ink);
+  }
+
+  .plan .core h1 {
+    font-size: min(9.2cqw, 13svh);
+  }
+
+  .plan .label {
+    font-size: clamp(1rem, 1.72cqw, 1.45rem);
+  }
+
+  .plan .intro {
+    max-width: calc(var(--u) * 11.2);
+    font-size: clamp(0.9rem, 1.22cqw, 1.04rem);
+  }
+
+  .plan .research {
+    grid-area: 2 / 15 / 6 / 26;
+  }
+
+  .plan .method {
+    grid-area: 5 / 14 / 13 / 20;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .plan .method .caption {
+    align-self: flex-start;
+    margin-left: 46%;
+    text-align: left;
+  }
+
+  .plan .experience {
+    grid-area: 10 / 2 / 16 / 12;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: calc(var(--v) + 12px);
+    text-align: left;
+  }
+
+  .plan .research strong,
+  .plan .experience strong {
+    font-size: clamp(1.3rem, 2.7cqw, 2.3rem);
+  }
+
+  .plan .method strong {
+    font-size: clamp(1.1rem, 2cqw, 1.7rem);
+  }
+
+  /* The projects stack in a column, with a strip between them. */
+  .plan-projects,
+  .plan-projects:has(> :nth-child(3):last-child) {
+    grid-area: 7 / 21 / 16 / 26;
+    grid-auto-flow: row;
+    grid-auto-rows: minmax(0, 1fr);
+    grid-template-columns: none;
+  }
+
+  .plan .project {
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 0 clamp(4px, 0.8cqw, 12px);
+    padding: clamp(10px, 1.15cqw, 18px);
+  }
+
+  .plan .project strong,
+  .plan .exit strong {
+    font-size: clamp(1rem, 1.55cqw, 1.3rem);
+  }
+
+  .plan .project .caption {
+    font-size: 0.72rem;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+
+  /* The exit cells: no color, a dashed line and only the title. */
+  .plan .exit {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: clamp(4px, 0.8cqw, 12px);
+    border: 1.5px dashed var(--ink);
+    mix-blend-mode: normal;
+  }
+
+  .plan .exit.writing {
+    grid-area: 14 / 13 / 16 / 16;
+  }
+
+  .plan .exit.studies {
+    grid-area: 14 / 17 / 16 / 20;
+  }
+
+  .plan-end {
+    grid-area: 16 / 1 / 17 / 27;
+  }
+}
+
+@media (min-width: 1251px) {
+  .plan .core h1 {
+    font-size: clamp(3.4rem, min(10.4cqw, 14.2svh), 8.75rem);
+  }
+}
