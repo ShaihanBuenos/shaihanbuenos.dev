@@ -16,14 +16,44 @@ home:
   description: "[Example] Description of the Home page."
   label: Software Engineer focused on backend and AI
   intro: I build backend services and systems that use LLMs, and I write code with AI agents guided by specs.
+  # The blocks of the floor plan: the title of each one and, where the caption
+  # does not come from another file, the caption.
+  blocks:
+    research: Systems that use LLMs
+    methodCaption: Method
+    method: Agents guided by specs
+    experienceCaption: Experience
+    experience: Backend services
+  # The end of the experience while the current role has none.
+  today: today
+  # The paper callout: one plain sentence, without numbers.
+  paper: "[Example] One plain sentence about the paper, without numbers."
+  # Comes before the start month of a study in progress.
+  since: since
+  # The link that closes each section.
+  more:
+    research: About the research
+    projects: All projects
+    writing: All texts
+    studies: All studies
+    about: More about me
 
 projects:
   name: Projects
   description: "[Example] Description of the Projects page."
+  # The name of each project state.
+  states:
+    works-locally: works locally
+    in-development: in development
+    in-planning: in planning
 
 writing:
   name: Writing
   description: "[Example] Description of the Writing page."
+  # The name of each text type.
+  types:
+    article: article
+    study-note: study note
 
 studies:
   name: Studies

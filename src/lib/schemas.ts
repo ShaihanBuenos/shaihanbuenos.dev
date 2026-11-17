@@ -5,6 +5,10 @@ import { LANGUAGES } from "./languages.ts";
 
 const phrase = z.string().trim().min(1);
 
+export const TEXT_TYPES = ["article", "study-note"] as const;
+
+export const PROJECT_STATES = ["works-locally", "in-development", "in-planning"] as const;
+
 // What every fixed page has: its name on the menu and the page description.
 const page = z.strictObject({ name: phrase, description: phrase });
 
@@ -13,9 +17,37 @@ const page = z.strictObject({ name: phrase, description: phrase });
 export const pagesSchema = z.strictObject({
   // Phrases of the layout shared by every page.
   common: z.strictObject({ menu: phrase, language: phrase, skip: phrase, feed: phrase }),
-  home: page.extend({ label: phrase, intro: phrase }),
-  projects: page,
-  writing: page,
+  home: page.extend({
+    label: phrase,
+    intro: phrase,
+    // The blocks of the floor plan: the title of each one and, where the
+    // caption is not a piece of content, the caption.
+    blocks: z.strictObject({
+      research: phrase,
+      methodCaption: phrase,
+      method: phrase,
+      experienceCaption: phrase,
+      experience: phrase,
+    }),
+    // The end of the experience while the current role has none: "today".
+    today: phrase,
+    // The paper callout: one plain sentence, without numbers.
+    paper: phrase,
+    // Comes before the start month of a study in progress: "since".
+    since: phrase,
+    // The link that closes each section.
+    more: z.strictObject({
+      research: phrase,
+      projects: phrase,
+      writing: phrase,
+      studies: phrase,
+      about: phrase,
+    }),
+  }),
+  // `states` holds the name of each project state.
+  projects: page.extend({ states: z.record(z.enum(PROJECT_STATES), phrase) }),
+  // `types` holds the name of each text type.
+  writing: page.extend({ types: z.record(z.enum(TEXT_TYPES), phrase) }),
   studies: page,
   research: page,
   about: page.extend({ bio: phrase, education: phrase }),
@@ -46,8 +78,6 @@ const inBothLanguages = z.strictObject({ en: phrase, "pt-br": phrase });
 // The topics of a text. The list is fixed and can grow: a new topic goes here.
 export const TOPICS = ["backend", "frontend", "architecture", "ai", "career", "academic"] as const;
 
-export const TEXT_TYPES = ["article", "study-note"] as const;
-
 // What holds for every version of a text: texts/<text>/text.yaml.
 export const textSchema = z.strictObject({
   publishedOn: day,
@@ -72,8 +102,6 @@ export const textVersionSchema = z.strictObject({
   // Only on a translation: whether it was made with AI.
   translatedWithAI: z.boolean().optional(),
 });
-
-export const PROJECT_STATES = ["works-locally", "in-development", "in-planning"] as const;
 
 // What holds for both languages of a project: projects/<project>/project.yaml.
 // The project mark is the file mark.svg in the same folder.

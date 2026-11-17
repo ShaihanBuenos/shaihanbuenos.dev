@@ -40,6 +40,8 @@ npm test            # constrói o site e roda os testes
 
 Os testes em `tests/` olham o site construído: sobem a pasta `dist/` num servidor local e pedem cada endereço, como um visitante faria. Eles conferem que cada endereço responde no idioma certo e que nada pode ser indexado. Testes de uma função ficam ao lado dela, em `src/lib/<nome>.test.ts`.
 
+Os testes do Início, em `tests/home.test.ts`, olham a página construída com o conteúdo de exemplo e a de uma cópia com o conteúdo trocado.
+
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
 ## Construir
@@ -59,13 +61,15 @@ A saída é só de arquivos estáticos.
 | `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. |
 | `src/pages/pt-br/` | As páginas em português. |
 | `src/layouts/Base.astro` | O layout comum a todas as páginas: a moldura, o menu, o botão de idioma e o rodapé. |
-| `src/layouts/Reading.astro` | A coluna de leitura simples, para as páginas de texto. Por enquanto, todas as páginas vazias usam esta. |
+| `src/layouts/Reading.astro` | A coluna de leitura simples, para as páginas de texto. Por enquanto, todas as páginas ainda vazias usam esta. |
+| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas. Hoje, só `Home.astro`, o Início. |
 | `src/components/` | As peças comuns: menu, botão de idioma, rodapé. |
-| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura) e `reading` (a leitura). Parte do celular e cresce com `min-width`. |
+| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura), `plan` (a planta do Início) e `sections` (as seções, as linhas de projeto e as listas). Parte do celular e cresce com `min-width`. |
 | `public/fonts/` | As três fontes, servidas pelo próprio site. |
 | `src/lib/config.ts` | A chave do lançamento (ver abaixo). |
 | `src/lib/languages.ts` | Os dois idiomas e o `lang` de cada um. |
-| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas e o equivalente de cada uma, para o botão de idioma. |
+| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada uma, para o botão de idioma, e os endereços de uma história do projeto e de um texto. |
+| `src/lib/dates.ts` | Como as datas do conteúdo são escritas em cada idioma. |
 | `src/content/` | Os arquivos de conteúdo (ver "Conteúdo", abaixo). |
 | `src/content.config.ts` | As coleções: em que pasta ficam os arquivos de cada uma. |
 | `src/lib/schemas.ts` | Os campos de cada coleção e as listas fixas: temas, tipos de texto, estados e status. |
@@ -79,7 +83,6 @@ As próximas partes do site entram nestas pastas, quando existirem:
 
 | Caminho | O que vai guardar |
 |---|---|
-| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas. |
 | `src/scripts/` | O JavaScript que roda no navegador. |
 
 ## O código é em inglês
@@ -117,7 +120,7 @@ Tudo o que o site diz fica em `src/content/`. Trocar uma frase, um estado ou uma
 
 | Pasta | O que guarda | Formato |
 |---|---|---|
-| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
+| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, as frases do Início (blocos da planta, chamada do paper, links das seções), os nomes dos estados do projeto e dos tipos de texto, bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
 | `texts/` | Os textos. | Uma pasta por texto: `text.yaml` e um `.md` por idioma. |
 | `projects/` | Os projetos e as histórias do projeto. | Uma pasta por projeto: `project.yaml`, `mark.svg` e a história do projeto em `en.md` e `pt-br.md`. |
 | `studies/` | Os estudos. | Um `.yaml` por estudo, com os dois idiomas dentro. |

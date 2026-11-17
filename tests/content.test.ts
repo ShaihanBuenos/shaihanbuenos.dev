@@ -6,6 +6,7 @@ import { setTimeout } from "node:timers/promises";
 import { dev } from "astro";
 import type { Content } from "../src/lib/content.ts";
 import { build, type Build, copySite } from "./support/copy.ts";
+import { PAGES } from "./support/phrases.ts";
 
 // What `content()` gives the pages in a build, read from the probe.
 async function contentOf(built: Build): Promise<Content> {
@@ -18,39 +19,6 @@ function assertStopped({ failed, output }: Build, ...clues: RegExp[]): void {
   assert.ok(failed, "the build passed");
   for (const clue of clues) assert.match(output, clue);
 }
-
-// A whole phrases file, with test phrases. The language of the phrases does
-// not matter to the build, so the same text stands in for either language.
-const PAGES = `common:
-  menu: Main
-  language: Language
-  skip: Skip to content
-  feed: Feed
-home:
-  name: Home
-  description: Test description.
-  label: Test label
-  intro: Test intro.
-projects:
-  name: Works
-  description: Test description.
-writing:
-  name: Writing
-  description: Test description.
-studies:
-  name: Studies
-  description: Test description.
-research:
-  name: Research
-  description: Test description.
-about:
-  name: About
-  description: Test description.
-  bio: Test bio.
-  education: Test education.
-notFound:
-  name: Gone missing
-`;
 
 const PROJECT = `name: Example Project
 order: 1
