@@ -1,0 +1,158 @@
+---
+import TextItem from "../components/TextItem.astro";
+import Reading from "../layouts/Reading.astro";
+import { type Study, content } from "../lib/content.ts";
+import { monthIn } from "../lib/dates.ts";
+import { type Language, languageOf, HTML_LANG } from "../lib/languages.ts";
+import { pathOf, projectPathOf } from "../lib/pages.ts";
+
+const language = languageOf(Astro.currentLocale);
+const { pages, projects, research, studies, studyList, texts } = await content();
+const phrases = pages[language];
+
+// What the links of a study lead to. `links.texts` already holds the texts
+// to show, in order and without the drafts.
+function linksOf({ links }: Study) {
+  return {
+    texts: texts.filter(({ id }) => links.texts.includes(id)),
+    project: projects.find(({ id }) => id === links.project),
+    certificate: links.certificate,
+    education: links.education,
+    research: research.filter(({ id }) => links.research.includes(id)),
+  };
+}
+
+// The certificate is the only link that leaves the site: it shows where it
+// leads, as "example.com".
+function siteOf(address: string): string {
+  return new URL(address).hostname.replace(/^www\./, "");
+}
+
+// A title written in another language is marked with that language.
+function langOf(written: Language): string | undefined {
+  return written === language ? undefined : HTML_LANG[written];
+}
+
+// The groups of the page: the studies in progress first, then the completed
+// ones under the year they were completed, from the most recent year to the
+// oldest. A group without studies is not shown.
+const inProgress = studies.filter(({ status }) => status === "in-progress");
+const completedIn = Map.groupBy(
+  studies.filter(({ end }) => end !== undefined),
+  ({ end = "" }) => end.slice(0, 4),
+);
+const groups: { year?: string; studies: Study[] }[] = [
+  ...(inProgress.length > 0 ? [{ studies: inProgress }] : []),
+  ...[...completedIn]
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([year, studies]) => ({ year, studies })),
+];
+---
+
+<Reading title={phrases.studies.name}>
+  <p slot="header" class="caption">
+    {phrases.studies.checkedOn}{" "}
+    <time datetime={studyList.checkedOn}>{monthIn(studyList.checkedOn, language)}</time>
+  </p>
+
+  {groups.map(({ year, studies }) => (
+    <section class="study-group">
+      <h2>
+        {year === undefined ? (
+          phrases.studies.inProgress
+        ) : (
+          <>
+            {phrases.studies.completedIn} <time datetime={year}>{year}</time>
+          </>
+        )}
+      </h2>
+      {studies
+        .map((study) => ({ study, links: linksOf(study) }))
+        .map(({ study, links }) => (
+          <article class="study" id={study.id}>
+            <h3>{study.name[language]}</h3>
+            <p class="goal">{study.goal[language]}</p>
+            <p class="caption captions">
+              <span class:list={["study-status", study.status]}>
+                {phrases.studies.statuses[study.status]}
+              </span>
+              {study.end === undefined ? (
+                <span>
+                  {phrases.studies.since}{" "}
+                  <time datetime={study.start}>{monthIn(study.start, language)}</time>
+                </span>
+              ) : (
+                <span>
+                  <time datetime={study.start}>{monthIn(study.start, language)}</time> –{" "}
+                  <time datetime={study.end}>{monthIn(study.end, language)}</time>
+                </span>
+              )}
+            </p>
+            {(links.texts.length > 0 ||
+              links.project ||
+              links.certificate ||
+              links.education ||
+              links.research.length > 0) && (
+              <dl class="study-links">
+                {links.texts.length > 0 && (
+                  <>
+                    <dt class="caption">{phrases.studies.links.texts}</dt>
+                    <dd>
+                      <ul class="text-list">
+                        {links.texts.map((text) => (
+                          <TextItem text={text} level={4} />
+                        ))}
+                      </ul>
+                    </dd>
+                  </>
+                )}
+                {links.project && (
+                  <>
+                    <dt class="caption">{phrases.studies.links.project}</dt>
+                    <dd>
+                      <a href={projectPathOf(links.project.id, language)}>{links.project.name}</a>
+                    </dd>
+                  </>
+                )}
+                {links.certificate && (
+                  <>
+                    <dt class="caption">{phrases.studies.links.certificate}</dt>
+                    <dd>
+                      <a href={links.certificate}>{siteOf(links.certificate)}</a>
+                    </dd>
+                  </>
+                )}
+                {links.education && (
+                  <>
+                    <dt class="caption">{phrases.studies.links.education}</dt>
+                    <dd>
+                      <a href={pathOf("about", language)}>{phrases.about.education}</a>
+                    </dd>
+                  </>
+                )}
+                {links.research.length > 0 && (
+                  <>
+                    <dt class="caption">{phrases.studies.links.research}</dt>
+                    <dd>
+                      {links.research.map((item) => (
+                        <a href={pathOf("research", language)}>
+                          {item.type === "paper" ? (
+                            <span lang={langOf("en")}>{item.title}</span>
+                          ) : (
+                            <>
+                              <span lang={langOf("pt-br")}>{item.title}</span>
+                              {language === "en" && ` (${item.translatedTitle})`}
+                            </>
+                          )}
+                        </a>
+                      ))}
+                    </dd>
+                  </>
+                )}
+              </dl>
+            )}
+          </article>
+        ))}
+    </section>
+  ))}
+</Reading>

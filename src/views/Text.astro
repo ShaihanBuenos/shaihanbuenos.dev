@@ -4,7 +4,7 @@ import Reading from "../layouts/Reading.astro";
 import { type Text, content } from "../lib/content.ts";
 import { dayIn, isoDayOf } from "../lib/dates.ts";
 import { languageOf, otherLanguage, HTML_LANG } from "../lib/languages.ts";
-import { pathOf, textEquivalentOf, textPathOf } from "../lib/pages.ts";
+import { pathOf, studyPathOf, textEquivalentOf, textPathOf } from "../lib/pages.ts";
 
 interface Props {
   text: Text;
@@ -71,7 +71,7 @@ const study = studies.find(({ id }) => id === text.study);
       <dl>
         <dt class="caption">{phrases.writing.study}</dt>
         <dd>
-          <a href={pathOf("studies", language)}>{study.name[language]}</a>
+          <a href={studyPathOf(study.id, language)}>{study.name[language]}</a>
         </dd>
       </dl>
     )}

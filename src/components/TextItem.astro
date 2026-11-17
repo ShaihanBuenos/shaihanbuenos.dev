@@ -1,0 +1,43 @@
+---
+import LanguageMark from "./LanguageMark.astro";
+import { type Text, phrasesOf, versionIn } from "../lib/content.ts";
+import { dayIn, isoDayOf } from "../lib/dates.ts";
+import { languageOf, HTML_LANG } from "../lib/languages.ts";
+import { textPathOf } from "../lib/pages.ts";
+
+interface Props {
+  text: Text;
+  // The level of the title of the item: the one below the title above the list.
+  level: 2 | 4;
+}
+
+const { text, level } = Astro.props;
+const language = languageOf(Astro.currentLocale);
+const phrases = await phrasesOf(language);
+const Title = `h${level}` as const;
+
+// The version this page shows: the one in the page's language when there is
+// one, and the original, with the language mark, when there is not.
+const shown = versionIn(text, language);
+const inOtherLanguage = shown.language !== language;
+const lang = inOtherLanguage ? HTML_LANG[shown.language] : undefined;
+---
+
+<li>
+  <Title>
+    <a href={textPathOf(shown.version.slug, shown.language)} hreflang={lang} lang={lang}>
+      {shown.version.title}
+    </a>
+  </Title>
+  <p class="summary" lang={lang}>
+    {shown.version.summary}
+  </p>
+  <p class="caption captions">
+    <span class:list={["text-type", text.type]}>{phrases.writing.types[text.type]}</span>
+    <time datetime={isoDayOf(text.publishedOn)}>{dayIn(text.publishedOn, language)}</time>
+    {text.topics.map((topic) => (
+      <span>{phrases.writing.topics[topic]}</span>
+    ))}
+    {inOtherLanguage && <LanguageMark language={shown.language} />}
+  </p>
+</li>

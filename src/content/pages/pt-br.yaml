@@ -28,8 +28,6 @@ home:
   today: hoje
   # The paper callout: one plain sentence, without numbers.
   paper: "[Exemplo] Uma frase simples sobre o paper, sem números."
-  # Comes before the start month of a study in progress.
-  since: desde
   # The link that closes each section.
   more:
     research: Sobre a pesquisa
@@ -83,6 +81,25 @@ writing:
 studies:
   name: Estudos
   description: "[Exemplo] Descrição da página Estudos."
+  # Comes before the month of the last check of the study list.
+  checkedOn: conferida em
+  # The title of the group of the studies in progress.
+  inProgress: Em andamento
+  # Comes before the year in the title of a group of completed studies.
+  completedIn: Concluídos em
+  # The name of each study status.
+  statuses:
+    in-progress: em andamento
+    completed: concluído
+  # Comes before the start month of a study in progress.
+  since: desde
+  # What comes before each kind of link of a study.
+  links:
+    texts: Textos
+    project: Projeto
+    certificate: Certificado
+    education: Formação
+    research: Pesquisa
 
 research:
   name: Pesquisa

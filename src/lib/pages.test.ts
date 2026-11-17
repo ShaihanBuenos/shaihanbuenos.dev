@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { equivalentOf, projectPathOf, sectionAt, textEquivalentOf, textPathOf } from "./pages.ts";
+import {
+  equivalentOf,
+  projectPathOf,
+  sectionAt,
+  studyPathOf,
+  textEquivalentOf,
+  textPathOf,
+} from "./pages.ts";
 
 test("the equivalent of a fixed page is the same page in the other language", () => {
   assert.equal(equivalentOf("/projects", "en"), "/pt-br/projetos");
@@ -29,6 +36,11 @@ test("outside the fixed pages, the equivalent is the other language's Home", () 
 test("a project story lives under the Projects page of its language", () => {
   assert.equal(projectPathOf("example-project", "en"), "/projects/example-project");
   assert.equal(projectPathOf("example-project", "pt-br"), "/pt-br/projetos/example-project");
+});
+
+test("a study lives on the Studies page of its language, under the name of its file", () => {
+  assert.equal(studyPathOf("example-study", "en"), "/studies#example-study");
+  assert.equal(studyPathOf("example-study", "pt-br"), "/pt-br/estudos#example-study");
 });
 
 test("a version of a text lives under the Writing page of its language", () => {

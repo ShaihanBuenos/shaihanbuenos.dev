@@ -29,6 +29,12 @@ export function textPathOf(slug: string, language: Language): string {
   return `${pathOf("writing", language)}/${slug}`;
 }
 
+// The path of a study: it has no page of its own, so the path leads to the
+// study on the study list, which carries the name of the study's file as id.
+export function studyPathOf(id: string, language: Language): string {
+  return `${pathOf("studies", language)}#${id}`;
+}
+
 // Where the language button leads on the page of a text. Each version has
 // its own slug, so the path does not tell: the page gives the slug of the
 // version in the other language, when the text has one. Without it, the

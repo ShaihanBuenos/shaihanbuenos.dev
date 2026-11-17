@@ -28,8 +28,6 @@ home:
   today: today
   # The paper callout: one plain sentence, without numbers.
   paper: "[Example] One plain sentence about the paper, without numbers."
-  # Comes before the start month of a study in progress.
-  since: since
   # The link that closes each section.
   more:
     research: About the research
@@ -83,6 +81,25 @@ writing:
 studies:
   name: Studies
   description: "[Example] Description of the Studies page."
+  # Comes before the month of the last check of the study list.
+  checkedOn: checked in
+  # The title of the group of the studies in progress.
+  inProgress: In progress
+  # Comes before the year in the title of a group of completed studies.
+  completedIn: Completed in
+  # The name of each study status.
+  statuses:
+    in-progress: in progress
+    completed: completed
+  # Comes before the start month of a study in progress.
+  since: since
+  # What comes before each kind of link of a study.
+  links:
+    texts: Texts
+    project: Project
+    certificate: Certificate
+    education: Education
+    research: Research
 
 research:
   name: Research
