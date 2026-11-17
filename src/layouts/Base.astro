@@ -1,0 +1,27 @@
+---
+import { PODE_SER_INDEXADO } from "../lib/configuracao.ts";
+import { idiomaDe, LANG_HTML } from "../lib/idiomas.ts";
+
+interface Props {
+  titulo: string;
+}
+
+const { titulo } = Astro.props;
+const idioma = idiomaDe(Astro.currentLocale);
+---
+
+<!doctype html>
+<html lang={LANG_HTML[idioma]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {!PODE_SER_INDEXADO && <meta name="robots" content="noindex" />}
+    <title>{titulo}</title>
+  </head>
+  <body>
+    <main>
+      <h1>{titulo}</h1>
+      <slot />
+    </main>
+  </body>
+</html>

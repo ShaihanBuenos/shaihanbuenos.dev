@@ -7,3 +7,11 @@
 .impeccable/mocks/
 .impeccable/questions/
 .impeccable/hook.cache.json
+# dependências e saídas do projeto Astro
+node_modules/
+dist/
+.astro/
+.wrangler/
+.env*
+.dev.vars*
+.DS_Store

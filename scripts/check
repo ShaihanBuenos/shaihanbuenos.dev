@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# A conferência completa do site, num comando só: formato, lint, tipos, testes e construção.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+passo() {
+  local nome=$1 comando=$2
+  echo "==> $nome: $comando"
+  if ! bash -c "$comando"; then
+    echo "✗ a conferência falhou em: $nome" >&2
+    exit 1
+  fi
+}
+
+# Gera os tipos dos módulos virtuais do Astro, que o lint e a conferência de tipos usam.
+passo sync 'npx astro sync'
+passo formato 'npx prettier --check .'
+passo lint 'npx eslint . --max-warnings 0'
+passo tipos 'npx astro check'
+# `npm test` constrói o site antes de rodar os testes.
+passo testes 'npm test'
+echo "✓ conferência passou"
