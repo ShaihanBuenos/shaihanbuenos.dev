@@ -42,7 +42,15 @@ const PAGES = [
   { page: "About", en: "/about", pt: "/pt-br/sobre" },
 ];
 
-for (const { page, en, pt } of PAGES) {
+// Section 4 of the spec: a project story lives under the Projects page of
+// its language, and the name of the project's folder closes the address.
+const STORIES = ["example-project", "another-example-project"].map((project) => ({
+  page: `The story of ${project}`,
+  en: `/projects/${project}`,
+  pt: `/pt-br/projetos/${project}`,
+}));
+
+for (const { page, en, pt } of [...PAGES, ...STORIES]) {
   test(`${page} answers in English at ${en}`, async () => {
     const response = await request(en);
     assert.equal(response.status, 200);
@@ -101,7 +109,7 @@ const MENU = {
 // Every page that exists today, with the "not found" of each language.
 // `equivalent` is where the language button leads.
 const ALL_PAGES = [
-  ...PAGES.flatMap(({ page, en, pt }) => [
+  ...[...PAGES, ...STORIES].flatMap(({ page, en, pt }) => [
     { name: `${page} in English`, path: en, language: "en" as const, equivalent: pt },
     { name: `${page} in Portuguese`, path: pt, language: "pt" as const, equivalent: en },
   ]),
@@ -148,6 +156,24 @@ for (const { name, path } of ALL_PAGES) {
   });
 }
 
+// A project story is not on the menu: the menu marks Projects, the page above it.
+for (const { page, en, pt } of STORIES) {
+  for (const [path, projects] of [
+    [en, "/projects"],
+    [pt, "/pt-br/projetos"],
+  ] as const) {
+    test(`${page} at ${path}: the menu marks ${projects} as the page above it`, async () => {
+      const menu = linksOf(element(await (await request(path)).text(), "nav"));
+      assert.deepEqual(
+        menu
+          .filter(({ attributes }) => "aria-current" in attributes)
+          .map(({ attributes }) => [attributes.href, attributes["aria-current"]]),
+        [[projects, "true"]],
+      );
+    });
+  }
+}
+
 // The language button: "EN" and "PT", with the current language marked and
 // the other one as a link to the equivalent of the page.
 const SHORT_NAME = { en: "EN", pt: "PT" };
@@ -165,7 +191,9 @@ for (const { name, path, language, equivalent } of ALL_PAGES) {
     );
     assert.equal(toTheOther[0]?.attributes.hreflang, { en: "en", pt: "pt-BR" }[other]);
 
-    const marked = menu.match(/<(\w+)\b[^>]*\baria-current="true"[^>]*>([^<]*)</);
+    // Inside the button: on a project story the menu also marks Projects.
+    const button = element(menu, "div");
+    const marked = button.match(/<(\w+)\b[^>]*\baria-current="true"[^>]*>([^<]*)</);
     assert.equal(marked?.[1], "span", "the current language is a link");
     assert.equal(marked[2].trim(), SHORT_NAME[language]);
   });

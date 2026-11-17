@@ -32,6 +32,8 @@ projects:
     works-locally: test works locally
     in-development: test in development
     in-planning: test in planning
+  updatedOn: test updated on
+  others: Test other projects
 writing:
   name: Writing
   description: Test description.

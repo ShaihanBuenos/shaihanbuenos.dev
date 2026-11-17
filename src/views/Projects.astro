@@ -1,0 +1,20 @@
+---
+import "../styles/sections.css";
+import ProjectRows from "../components/ProjectRows.astro";
+import Base from "../layouts/Base.astro";
+import { content } from "../lib/content.ts";
+import { languageOf } from "../lib/languages.ts";
+
+const language = languageOf(Astro.currentLocale);
+const { pages, projects } = await content();
+const phrases = pages[language];
+---
+
+<Base title={phrases.projects.name}>
+  <section class="section">
+    <h1>{phrases.projects.name}</h1>
+    <div class="body">
+      <ProjectRows projects={projects} level={2} />
+    </div>
+  </section>
+</Base>

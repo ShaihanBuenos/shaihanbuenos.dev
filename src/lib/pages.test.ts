@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { equivalentOf, projectPathOf, textPathOf } from "./pages.ts";
+import { equivalentOf, projectPathOf, sectionAt, textPathOf } from "./pages.ts";
 
 test("the equivalent of a fixed page is the same page in the other language", () => {
   assert.equal(equivalentOf("/projects", "en"), "/pt-br/projetos");
@@ -34,4 +34,24 @@ test("a project story lives under the Projects page of its language", () => {
 test("a version of a text lives under the Writing page of its language", () => {
   assert.equal(textPathOf("an-example", "en"), "/writing/an-example");
   assert.equal(textPathOf("um-exemplo", "pt-br"), "/pt-br/textos/um-exemplo");
+});
+
+test("the equivalent of a project story is the same story in the other language", () => {
+  assert.equal(equivalentOf("/projects/example-project", "en"), "/pt-br/projetos/example-project");
+  assert.equal(
+    equivalentOf("/pt-br/projetos/example-project", "pt-br"),
+    "/projects/example-project",
+  );
+  assert.equal(
+    equivalentOf("/projects/example-project.html", "en"),
+    "/pt-br/projetos/example-project",
+  );
+});
+
+test("a project story belongs to the Projects page, and a fixed page to itself", () => {
+  assert.equal(sectionAt("/projects/example-project"), "projects");
+  assert.equal(sectionAt("/pt-br/projetos/example-project.html"), "projects");
+  assert.equal(sectionAt("/pt-br/sobre"), "about");
+  assert.equal(sectionAt("/pt-br/nao-existe"), undefined);
+  assert.equal(sectionAt("/does-not-exist"), undefined);
 });

@@ -46,6 +46,10 @@ projects:
     works-locally: works locally
     in-development: in development
     in-planning: in planning
+  # Comes before the "updated on" date of a project story.
+  updatedOn: updated on
+  # The title of the section of a project story that leads to the others.
+  others: Other projects
 
 writing:
   name: Writing

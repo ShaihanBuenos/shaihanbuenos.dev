@@ -2,11 +2,18 @@
 import LanguageButton from "./LanguageButton.astro";
 import { phrasesOf } from "../lib/content.ts";
 import { languageOf } from "../lib/languages.ts";
-import { pathOf, pageAt, MENU_PAGES } from "../lib/pages.ts";
+import { pathOf, pageAt, sectionAt, MENU_PAGES } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
 const phrases = await phrasesOf(language);
 const currentPage = pageAt(Astro.url.pathname);
+// On a page that is not on the menu, as a project story, the page above it.
+const currentSection = sectionAt(Astro.url.pathname);
+
+function currentMark(page: (typeof MENU_PAGES)[number]): "page" | "true" | undefined {
+  if (page === currentPage) return "page";
+  return page === currentSection ? "true" : undefined;
+}
 ---
 
 <nav class="menu" aria-label={phrases.common.menu}>
@@ -22,7 +29,7 @@ const currentPage = pageAt(Astro.url.pathname);
   <ul>
     {MENU_PAGES.map((page) => (
       <li>
-        <a href={pathOf(page, language)} aria-current={page === currentPage ? "page" : undefined}>
+        <a href={pathOf(page, language)} aria-current={currentMark(page)}>
           {phrases[page].name}
         </a>
       </li>
@@ -33,8 +40,8 @@ const currentPage = pageAt(Astro.url.pathname);
 
 <script>
   // On a phone, the pages sit in a strip that scrolls sideways: bring the
-  // current page into the strip when it starts off screen.
+  // marked page into the strip when it starts off screen.
   document
-    .querySelector('.menu li [aria-current="page"]')
+    .querySelector(".menu li [aria-current]")
     ?.scrollIntoView({ inline: "center", block: "nearest" });
 </script>

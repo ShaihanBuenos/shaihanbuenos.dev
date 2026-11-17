@@ -1,6 +1,7 @@
 ---
 import "../styles/plan.css";
 import "../styles/sections.css";
+import ProjectRows from "../components/ProjectRows.astro";
 import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
@@ -104,18 +105,7 @@ const lastYear = roles.every(({ end }) => end !== undefined)
   <section class="section" id="projects">
     <h2>{phrases.projects.name}</h2>
     <div class="body">
-      <ul class="rows">
-        {projects.map((project) => (
-          <li>
-            <a class="row" href={projectPathOf(project.id, language)}>
-              <span class="mark" aria-hidden="true" set:html={project.mark} />
-              <h3>{project.name}</h3>
-              <p>{project.stories[language].whatItIs}</p>
-              <span class="caption">{phrases.projects.states[project.state]}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      <ProjectRows projects={projects} level={3} />
       <p class="more">
         <a href={pathOf("projects", language)}>{phrases.home.more.projects}</a>
       </p>

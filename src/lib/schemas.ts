@@ -44,8 +44,14 @@ export const pagesSchema = z.strictObject({
       about: phrase,
     }),
   }),
-  // `states` holds the name of each project state.
-  projects: page.extend({ states: z.record(z.enum(PROJECT_STATES), phrase) }),
+  projects: page.extend({
+    // The name of each project state.
+    states: z.record(z.enum(PROJECT_STATES), phrase),
+    // Comes before the "updated on" date of a project story.
+    updatedOn: phrase,
+    // The title of the section of a project story that leads to the others.
+    others: phrase,
+  }),
   // `types` holds the name of each text type.
   writing: page.extend({ types: z.record(z.enum(TEXT_TYPES), phrase) }),
   studies: page,

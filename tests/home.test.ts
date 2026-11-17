@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
+import { element, elements, hrefsOf, textOf } from "./support/html.ts";
 import { PAGES } from "./support/phrases.ts";
 
 const root = new URL("..", import.meta.url).pathname;
@@ -15,34 +16,6 @@ const HOME = { en: "index.html", pt: "pt-br.html" };
 // The Home page with the example content, as `npm test` has just built it.
 function exampleHome(language: keyof typeof HOME): Promise<string> {
   return readFile(`${root}dist/${HOME[language]}`, "utf8");
-}
-
-// The first element with this name (and this id, when given), with
-// everything inside it.
-function element(html: string, name: string, id?: string): string {
-  const opening = id === undefined ? `<${name}\\b` : `<${name}\\b[^>]*\\bid="${id}"`;
-  const found = html.match(new RegExp(`${opening}[\\s\\S]*?</${name}>`))?.[0];
-  assert.ok(found, `the page has no <${name}>${id === undefined ? "" : ` with the id "${id}"`}`);
-  return found;
-}
-
-// Every element with this name, in the order they appear.
-function elements(html: string, name: string): string[] {
-  return html.match(new RegExp(`<${name}\\b[\\s\\S]*?</${name}>`, "g")) ?? [];
-}
-
-// What a visitor reads in a piece of HTML.
-function textOf(html: string): string {
-  return html
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, "&")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function hrefsOf(html: string): string[] {
-  return [...html.matchAll(/<a\b[^>]*\bhref="([^"]*)"/g)].map(([, href = ""]) => href);
 }
 
 // PRODUCT.md: the label and the intro of each language.

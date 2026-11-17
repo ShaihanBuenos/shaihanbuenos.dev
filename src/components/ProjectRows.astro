@@ -1,0 +1,29 @@
+---
+import { type Project, phrasesOf } from "../lib/content.ts";
+import { languageOf } from "../lib/languages.ts";
+import { projectPathOf } from "../lib/pages.ts";
+
+interface Props {
+  projects: Project[];
+  // The level of the title of each row: the one below the title above the rows.
+  level: 2 | 3;
+}
+
+const { projects, level } = Astro.props;
+const language = languageOf(Astro.currentLocale);
+const phrases = await phrasesOf(language);
+const Name = `h${level}` as const;
+---
+
+<ul class="rows">
+  {projects.map((project) => (
+    <li>
+      <a class="row" href={projectPathOf(project.id, language)}>
+        <span class="mark" aria-hidden="true" set:html={project.mark} />
+        <Name>{project.name}</Name>
+        <p>{project.stories[language].whatItIs}</p>
+        <span class="caption">{phrases.projects.states[project.state]}</span>
+      </a>
+    </li>
+  ))}
+</ul>
