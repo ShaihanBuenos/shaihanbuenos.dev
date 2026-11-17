@@ -186,6 +186,8 @@ test("the body of a story is two sections: the decisions and how it was built", 
   assert.equal(textOf(element(decisions, "h2")), "Engineering decisions");
   assert.equal(elements(decisions, "article").length, 2);
   assert.equal(textOf(element(built, "h2")), "How it was built");
+  // The agent credit opens the section, as its lead.
+  assert.match(element(built, "p"), /^<p class="lead">\[Example\] The agent credit goes here/);
   assert.equal(elements(built, "article").length, 0);
 });
 

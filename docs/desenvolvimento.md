@@ -35,7 +35,7 @@ Cada parte também roda sozinha:
 npm run format      # arruma o formato dos arquivos (Prettier)
 npm run lint        # regras de TypeScript (ESLint)
 npm run typecheck   # tipos e erros nos arquivos .astro e .ts
-npm test            # constrói o site e roda os testes
+npm test            # constrói o site do zero e roda os testes
 ```
 
 Os testes em `tests/` olham o site construído: sobem a pasta `dist/` num servidor local e pedem cada endereço, como um visitante faria. Eles conferem que cada endereço responde no idioma certo e que nada pode ser indexado. Testes de uma função ficam ao lado dela, em `src/lib/<nome>.test.ts`.
@@ -218,6 +218,8 @@ A página da história mostra, nesta ordem: a marca do projeto e o nome, o estad
 - O primeiro parágrafo de "Como foi construído" aparece em destaque.
 - Nenhum link sai do site: uma história do projeto não tem link para repo nem para demo. Links para páginas do site (`/research`) podem.
 - O corpo é só Markdown, sem tags de HTML: é o que deixa a construção conferir os links.
+
+Quem dá essa estrutura ao corpo é `src/lib/project-story.ts`. O Astro guarda o Markdown já processado entre uma construção e outra: depois de mudar esse arquivo, rode `npx astro build --force` (ou `npm test`, que já faz isso), ou a página continua com a estrutura antiga. Mudar um arquivo de conteúdo não pede nada disso.
 
 **Imagens.** As capturas e o diagrama de um projeto ficam na pasta dele, ao lado dos arquivos da história, e entram no corpo pelo Markdown:
 
