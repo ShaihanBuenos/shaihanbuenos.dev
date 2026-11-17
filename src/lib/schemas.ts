@@ -12,6 +12,10 @@ export const PROJECT_STATES = ["works-locally", "in-development", "in-planning"]
 // What every fixed page has: its name on the menu and the page description.
 const page = z.strictObject({ name: phrase, description: phrase });
 
+// The topics of a text. The list is fixed and can grow: a new topic goes
+// here, with its name in both phrases files.
+export const TOPICS = ["backend", "frontend", "architecture", "ai", "career", "academic"] as const;
+
 // The phrases of the fixed pages in one language. Each language has one file
 // in this shape, so a page missing from one of them stops the build.
 export const pagesSchema = z.strictObject({
@@ -52,8 +56,27 @@ export const pagesSchema = z.strictObject({
     // The title of the section of a project story that leads to the others.
     others: phrase,
   }),
-  // `types` holds the name of each text type.
-  writing: page.extend({ types: z.record(z.enum(TEXT_TYPES), phrase) }),
+  writing: page.extend({
+    // The name of each text type.
+    types: z.record(z.enum(TEXT_TYPES), phrase),
+    // The name of each topic.
+    topics: z.record(z.enum(TOPICS), phrase),
+    // The link that closes the page of a text and leads back to the list.
+    all: phrase,
+    // Comes before the date of the content revision of a text.
+    updatedOn: phrase,
+    // Comes before the study a text came from.
+    study: phrase,
+    // The translation note. A translation shown in this language was always
+    // written in the other one, so `from` names the other language.
+    translationNote: z.strictObject({
+      from: phrase,
+      // The link to the original.
+      original: phrase,
+      // The notice of a translation made with AI.
+      withAI: phrase,
+    }),
+  }),
   studies: page,
   research: page,
   about: page.extend({ bio: phrase, education: phrase }),
@@ -80,9 +103,6 @@ const slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
 
 // A phrase written in both languages, in a single file.
 const inBothLanguages = z.strictObject({ en: phrase, "pt-br": phrase });
-
-// The topics of a text. The list is fixed and can grow: a new topic goes here.
-export const TOPICS = ["backend", "frontend", "architecture", "ai", "career", "academic"] as const;
 
 // What holds for every version of a text: texts/<text>/text.yaml.
 export const textSchema = z.strictObject({

@@ -325,10 +325,12 @@ O retângulo opaco do nome: fundo de chão, fio de 1.5px, o nome em Display, o r
 - **Aviso:** um parágrafo com fio tracejado de 1.5px e `padding: .8rem 1rem`, para dizer que o conteúdo da página ainda é de exemplo.
 
 ### Página de leitura (provisório, ainda sem revisão)
-- **Cabeçalho:** título, resumo em tinta suave a 1.2rem e uma linha de legendas com o tipo, a data e os temas. Fecha com um fio de 1.5px.
+- **Cabeçalho:** título, resumo em tinta suave a 1.2rem e uma linha de legendas com o tipo, a data, a data de atualização quando houver e os temas. Fecha com um fio de 1.5px.
+- **Nota de tradução:** só numa tradução, uma frase em tinta a 1rem no fim do cabeçalho, com o link para o original em safira.
 - **Tipo de texto:** um quadradinho antes da legenda, em cobre para artigo e em safira para nota de estudo.
 - **Corpo:** coluna com espaço de 1.25rem entre blocos. Listas com marcador quadrado em cobre de texto. Frase em destaque sobre `f-sapphire`, em fonte de display peso 300 a 1.3rem. Código curto e blocos de código sobre `f-grey`, em monoespaçado, com rolagem lateral própria.
-- **Lista de textos:** data em legenda à esquerda, título em fonte de texto peso 600 a 1.25rem, resumo em tinta suave. O título sob o ponteiro ganha um sublinhado de 2px em cobre.
+- **Fim do texto:** um fio de 1.5px, o estudo de origem (o rótulo em legenda e o nome como link) e o link de ação que volta à lista, em peso 500.
+- **Lista de textos:** data em legenda à esquerda, título em fonte de texto peso 600 a 1.25rem, resumo em tinta suave e, por último, a linha de legendas com o tipo, os temas e a marca de idioma. O título sob o ponteiro ganha um sublinhado de 2px em cobre. No celular, a data fica na linha de legendas, depois do tipo; a coluna da data entra a partir de 561px.
 
 ### Foco e seleção
 - **Foco do teclado:** contorno de 2px em safira, afastado 3px.

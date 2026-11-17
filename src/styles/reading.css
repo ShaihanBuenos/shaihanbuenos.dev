@@ -33,6 +33,44 @@
   color: var(--mut);
 }
 
+/* The line of captions of a text: the text type, the dates, the topics and,
+   on a list, the language mark. */
+.captions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.1rem;
+  align-items: center;
+}
+
+/* The text type: a small square before the caption, in copper for an
+   article and in sapphire for a study note. */
+.text-type {
+  display: inline-flex;
+  gap: 0.55em;
+  align-items: center;
+}
+
+.text-type::before {
+  content: "";
+  width: 0.8em;
+  aspect-ratio: 1;
+  background: var(--copper);
+}
+
+.text-type.study-note::before {
+  background: var(--sapphire);
+}
+
+.translation-note {
+  font-size: 1rem;
+}
+
+/* The link to the original sits inside the sentence: the padding gives it
+   the height of a touch target without moving the lines. */
+.translation-note a {
+  padding-block: 0.6rem;
+}
+
 /* The body of a text. */
 .prose {
   display: flex;
@@ -126,6 +164,99 @@
   margin: 0.8rem 0;
   border: 0;
   border-top: 1px solid var(--line);
+}
+
+/* What closes the page of a text: the study it came from and the way back
+   to the list. */
+.reading-end {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+  border-top: 1.5px solid var(--ink);
+  font-size: 1rem;
+}
+
+/* The way back to the list is an action link. */
+.reading-end p {
+  font-weight: 500;
+}
+
+.reading-end a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* ---------- the list of texts ---------- */
+
+/* Phone first: the title, the summary and then the captions, with the date
+   among them. On a wider screen the date moves to a narrow column of its own. */
+.text-list {
+  margin-top: 0.7rem;
+}
+
+.text-list li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.3rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.text-list li:first-child {
+  border-top: 0;
+}
+
+.text-list h2 {
+  font-family: var(--text);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.text-list h2 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* The whole item is the touch target of its title. */
+.text-list h2 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+@media (hover: hover) {
+  .text-list h2 a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--copper);
+  }
+}
+
+.text-list .summary {
+  color: var(--mut);
+}
+
+.text-list .captions {
+  margin-top: 0.3rem;
+}
+
+@media (min-width: 561px) {
+  .text-list li {
+    padding-left: 8rem;
+  }
+
+  .text-list time {
+    position: absolute;
+    top: 1.75rem;
+    left: 0;
+    width: 6.5rem;
+  }
 }
 
 @media (min-width: 801px) {

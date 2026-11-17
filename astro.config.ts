@@ -45,7 +45,11 @@ export default defineConfig({
     defaultLocale: DEFAULT_LANGUAGE,
     routing: { prefixDefaultLocale: false },
   },
-  // The Markdown of a project story gets the structure of its page.
-  markdown: { processor: satteri({ hastPlugins: [projectStoryPlugin] }) },
+  markdown: {
+    // The Markdown of a project story gets the structure of its page.
+    processor: satteri({ hastPlugins: [projectStoryPlugin] }),
+    // Code sits on the grey of the site (DESIGN.md), with no theme of its own.
+    syntaxHighlight: false,
+  },
   integrations: [noindex, drafts],
 });

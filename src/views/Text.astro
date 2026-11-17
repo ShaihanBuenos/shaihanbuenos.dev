@@ -1,0 +1,82 @@
+---
+import { render } from "astro:content";
+import Reading from "../layouts/Reading.astro";
+import { type Text, content } from "../lib/content.ts";
+import { dayIn, isoDayOf } from "../lib/dates.ts";
+import { languageOf, otherLanguage, HTML_LANG } from "../lib/languages.ts";
+import { pathOf, textEquivalentOf, textPathOf } from "../lib/pages.ts";
+
+interface Props {
+  text: Text;
+}
+
+const { text } = Astro.props;
+const language = languageOf(Astro.currentLocale);
+const { pages, studies } = await content();
+const phrases = pages[language];
+
+// The page of a version only exists in the language of that version.
+const version = text.versions[language];
+if (!version) throw new Error(`texts/${text.id}: there is no version in ${language}`);
+const { Content } = await render(version.file);
+
+// A version in a language other than the original one is a translation, and
+// its translation note leads to the original.
+const original =
+  language === text.originalLanguage ? undefined : text.versions[text.originalLanguage];
+
+// The language button leads to the other version, when the text has one.
+const equivalent = textEquivalentOf(text.versions[otherLanguage(language)]?.slug, language);
+
+// The study the text came from.
+const study = studies.find(({ id }) => id === text.study);
+---
+
+<Reading title={version.title} equivalent={equivalent}>
+  <Fragment slot="header">
+    <p class="summary">{version.summary}</p>
+    <p class="caption captions">
+      <span class:list={["text-type", text.type]}>{phrases.writing.types[text.type]}</span>
+      <time datetime={isoDayOf(text.publishedOn)}>{dayIn(text.publishedOn, language)}</time>
+      {text.updatedOn && (
+        <span>
+          {phrases.writing.updatedOn}{" "}
+          <time datetime={isoDayOf(text.updatedOn)}>{dayIn(text.updatedOn, language)}</time>
+        </span>
+      )}
+      {text.topics.map((topic) => (
+        <span>{phrases.writing.topics[topic]}</span>
+      ))}
+    </p>
+    {original && (
+      <p class="translation-note">
+        {phrases.writing.translationNote.from}{" "}
+        {version.translatedWithAI && `${phrases.writing.translationNote.withAI} `}
+        <a
+          href={textPathOf(original.slug, text.originalLanguage)}
+          hreflang={HTML_LANG[text.originalLanguage]}
+        >
+          {phrases.writing.translationNote.original}
+        </a>
+      </p>
+    )}
+  </Fragment>
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  <div class="reading-end">
+    {study && (
+      <dl>
+        <dt class="caption">{phrases.writing.study}</dt>
+        <dd>
+          <a href={pathOf("studies", language)}>{study.name[language]}</a>
+        </dd>
+      </dl>
+    )}
+    <p>
+      <a href={pathOf("writing", language)}>{phrases.writing.all}</a>
+    </p>
+  </div>
+</Reading>

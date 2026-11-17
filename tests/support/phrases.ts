@@ -40,6 +40,20 @@ writing:
   types:
     article: test article
     study-note: test study note
+  topics:
+    backend: test backend
+    frontend: test frontend
+    architecture: test architecture
+    ai: test ai
+    career: test career
+    academic: test academic
+  all: Test all texts
+  updatedOn: test revised on
+  study: test source study
+  translationNote:
+    from: Test translated from.
+    original: Test read the original
+    withAI: Test made with AI.
 studies:
   name: Studies
   description: Test description.

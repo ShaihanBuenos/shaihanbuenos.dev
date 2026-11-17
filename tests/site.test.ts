@@ -50,7 +50,24 @@ const STORIES = ["example-project", "another-example-project"].map((project) => 
   pt: `/pt-br/projetos/${project}`,
 }));
 
-for (const { page, en, pt } of [...PAGES, ...STORIES]) {
+// Section 5 of the spec: each version of a text lives under the Writing page
+// of its language, at its own slug. The example article has both versions.
+const TRANSLATED_TEXT = {
+  page: "The example article",
+  en: "/writing/example-article-with-translation",
+  pt: "/pt-br/textos/exemplo-de-artigo-com-traducao",
+};
+
+// The example study note was written in English and has no translation.
+const UNTRANSLATED_TEXT = "/writing/example-study-note-without-translation";
+
+test(`The example study note answers in English at ${UNTRANSLATED_TEXT}`, async () => {
+  const response = await request(UNTRANSLATED_TEXT);
+  assert.equal(response.status, 200);
+  assert.equal(langOf(await response.text()), "en");
+});
+
+for (const { page, en, pt } of [...PAGES, ...STORIES, TRANSLATED_TEXT]) {
   test(`${page} answers in English at ${en}`, async () => {
     const response = await request(en);
     assert.equal(response.status, 200);
@@ -109,10 +126,18 @@ const MENU = {
 // Every page that exists today, with the "not found" of each language.
 // `equivalent` is where the language button leads.
 const ALL_PAGES = [
-  ...[...PAGES, ...STORIES].flatMap(({ page, en, pt }) => [
+  ...[...PAGES, ...STORIES, TRANSLATED_TEXT].flatMap(({ page, en, pt }) => [
     { name: `${page} in English`, path: en, language: "en" as const, equivalent: pt },
     { name: `${page} in Portuguese`, path: pt, language: "pt" as const, equivalent: en },
   ]),
+  // Section 4 of the spec: on a text without a translation, the language
+  // button leads to the list of texts of the other language.
+  {
+    name: "The example study note, without a translation",
+    path: UNTRANSLATED_TEXT,
+    language: "en" as const,
+    equivalent: "/pt-br/textos",
+  },
   {
     name: '"Not found" in English',
     path: "/does-not-exist",
@@ -156,22 +181,26 @@ for (const { name, path } of ALL_PAGES) {
   });
 }
 
-// A project story is not on the menu: the menu marks Projects, the page above it.
-for (const { page, en, pt } of STORIES) {
-  for (const [path, projects] of [
+// A project story and a text are not on the menu: the menu marks the page
+// above them, Projects or Writing.
+for (const [path, above] of [
+  ...STORIES.flatMap(({ en, pt }) => [
     [en, "/projects"],
     [pt, "/pt-br/projetos"],
-  ] as const) {
-    test(`${page} at ${path}: the menu marks ${projects} as the page above it`, async () => {
-      const menu = linksOf(element(await (await request(path)).text(), "nav"));
-      assert.deepEqual(
-        menu
-          .filter(({ attributes }) => "aria-current" in attributes)
-          .map(({ attributes }) => [attributes.href, attributes["aria-current"]]),
-        [[projects, "true"]],
-      );
-    });
-  }
+  ]),
+  [TRANSLATED_TEXT.en, "/writing"],
+  [TRANSLATED_TEXT.pt, "/pt-br/textos"],
+  [UNTRANSLATED_TEXT, "/writing"],
+] as const) {
+  test(`${path}: the menu marks ${above} as the page above it`, async () => {
+    const menu = linksOf(element(await (await request(path)).text(), "nav"));
+    assert.deepEqual(
+      menu
+        .filter(({ attributes }) => "aria-current" in attributes)
+        .map(({ attributes }) => [attributes.href, attributes["aria-current"]]),
+      [[above, "true"]],
+    );
+  });
 }
 
 // The language button: "EN" and "PT", with the current language marked and

@@ -1,0 +1,12 @@
+---
+import { type Language, HTML_LANG, SHORT_NAME } from "../lib/languages.ts";
+
+interface Props {
+  // The language of the version shown, which is not the language of the page.
+  language: Language;
+}
+
+const { language } = Astro.props;
+---
+
+<span lang={HTML_LANG[language]}>{SHORT_NAME[language]}</span>

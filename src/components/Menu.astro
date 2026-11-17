@@ -4,6 +4,12 @@ import { phrasesOf } from "../lib/content.ts";
 import { languageOf } from "../lib/languages.ts";
 import { pathOf, pageAt, sectionAt, MENU_PAGES } from "../lib/pages.ts";
 
+interface Props {
+  // Where the language button leads, when the path of the page does not tell it.
+  equivalent?: string | undefined;
+}
+
+const { equivalent } = Astro.props;
 const language = languageOf(Astro.currentLocale);
 const phrases = await phrasesOf(language);
 const currentPage = pageAt(Astro.url.pathname);
@@ -35,7 +41,7 @@ function ariaCurrentOf(page: (typeof MENU_PAGES)[number]): "page" | "true" | und
       </li>
     ))}
   </ul>
-  <LanguageButton />
+  <LanguageButton equivalent={equivalent} />
 </nav>
 
 <script>

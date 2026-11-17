@@ -3,9 +3,14 @@ import { phrasesOf } from "../lib/content.ts";
 import { languageOf, LANGUAGES, HTML_LANG, SHORT_NAME } from "../lib/languages.ts";
 import { equivalentOf } from "../lib/pages.ts";
 
+interface Props {
+  // The equivalent of the page, when its path does not tell it.
+  equivalent?: string | undefined;
+}
+
 const currentLanguage = languageOf(Astro.currentLocale);
 const phrases = await phrasesOf(currentLanguage);
-const equivalent = equivalentOf(Astro.url.pathname, currentLanguage);
+const equivalent = Astro.props.equivalent ?? equivalentOf(Astro.url.pathname, currentLanguage);
 ---
 
 <div class="language" role="group" aria-label={phrases.common.language}>

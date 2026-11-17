@@ -29,6 +29,20 @@ export function textPathOf(slug: string, language: Language): string {
   return `${pathOf("writing", language)}/${slug}`;
 }
 
+// Where the language button leads on the page of a text. Each version has
+// its own slug, so the path does not tell: the page gives the slug of the
+// version in the other language, when the text has one. Without it, the
+// button leads to the other language's list of texts.
+export function textEquivalentOf(
+  slugInOtherLanguage: string | undefined,
+  language: Language,
+): string {
+  const other = otherLanguage(language);
+  return slugInOtherLanguage === undefined
+    ? pathOf("writing", other)
+    : textPathOf(slugInOtherLanguage, other);
+}
+
 // A path as the visitor requests it. During the build, Astro gives the path
 // of the generated file, with `.html`; in the dev server, it gives the path
 // as requested.
@@ -57,7 +71,8 @@ export function sectionAt(path: string): FixedPage | undefined {
 
 // Where the language button leads: the same page in the other language. A
 // project story leads to the same story. Outside these, as on "not found",
-// it leads to the other language's Home.
+// it leads to the other language's Home. The page of a text does not use
+// this: it gives its own equivalent, from `textEquivalentOf`.
 export function equivalentOf(path: string, language: Language): string {
   const other = otherLanguage(language);
   const stories = `${pathOf("projects", language)}/`;

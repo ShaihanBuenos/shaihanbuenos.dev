@@ -44,6 +44,8 @@ Os testes do Início, em `tests/home.test.ts`, olham a página construída com o
 
 Os testes de Projetos, em `tests/projects.test.ts`, olham a lista e as histórias do projeto do mesmo jeito: com o conteúdo de exemplo e em cópias com uma pasta de projeto criada, apagada ou trocada.
 
+Os testes de Textos, em `tests/writing.test.ts`, olham a lista de textos e a página de um texto: com o conteúdo de exemplo e numa cópia com textos criados, um deles com tradução.
+
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
 ## Construir
@@ -60,17 +62,17 @@ A saída é só de arquivos estáticos.
 | Caminho | O que guarda |
 |---|---|
 | `astro.config.ts` | A configuração do Astro: endereço do site, idiomas, formato da saída e o arquivo `_headers`. |
-| `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. `projects/[project].astro` gera uma página por pasta de projeto. |
-| `src/pages/pt-br/` | As páginas em português. |
+| `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. `projects/[project].astro` gera uma página por pasta de projeto, e `writing/[text].astro`, uma página por texto que tem versão em inglês. |
+| `src/pages/pt-br/` | As páginas em português. `textos/[text].astro` gera uma página por texto que tem versão em português. |
 | `src/layouts/Base.astro` | O layout comum a todas as páginas: a moldura, o menu, o botão de idioma e o rodapé. |
-| `src/layouts/Reading.astro` | A coluna de leitura simples, para as páginas de texto. Por enquanto, todas as páginas ainda vazias usam esta. |
-| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos) e `ProjectStory.astro` (a história do projeto). |
-| `src/components/` | As peças comuns: menu, botão de idioma, rodapé e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos. |
-| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. |
+| `src/layouts/Reading.astro` | A coluna de leitura simples: o título e, abaixo dele, o que a página puser. É a da lista de textos e da página de um texto. Por enquanto, todas as páginas ainda vazias também usam esta. |
+| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos), `ProjectStory.astro` (a história do projeto), `Writing.astro` (a lista de textos) e `Text.astro` (a página de um texto). |
+| `src/components/` | As peças comuns: menu, botão de idioma, rodapé e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos, e a marca de idioma (`LanguageMark.astro`), usada no Início e na lista de textos. |
+| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura: a coluna, o corpo de um texto e a lista de textos), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. |
 | `public/fonts/` | As três fontes, servidas pelo próprio site. |
 | `src/lib/config.ts` | A chave do lançamento (ver abaixo). |
 | `src/lib/languages.ts` | Os dois idiomas e o `lang` de cada um. |
-| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada página, para o botão de idioma, e os endereços de uma história do projeto e de um texto. |
+| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada página, para o botão de idioma, os endereços de uma história do projeto e de um texto, e o equivalente de um texto. |
 | `src/lib/project-story.ts` | A estrutura do corpo de uma história do projeto: transforma o Markdown nas seções da página e barra o corpo fora do formato. |
 | `src/lib/dates.ts` | Como as datas do conteúdo são escritas em cada idioma. |
 | `src/content/` | Os arquivos de conteúdo (ver "Conteúdo", abaixo). |
@@ -98,7 +100,9 @@ Cada termo do `GLOSSARY.md` tem um nome só no código, anotado ali em "No códi
 
 O inglês fica na raiz e o português em `/pt-br`. Cada página fixa existe nos dois idiomas, com o endereço escrito no seu idioma: `/projects` e `/pt-br/projetos`. Os endereços não têm barra no fim.
 
-Uma página nova precisa de um arquivo em `src/pages/` e outro em `src/pages/pt-br/`. O `lang` sai sozinho, pelo lugar do arquivo. Uma página fixa nova também entra em `src/lib/pages.ts`, com o endereço de cada idioma: é dali que o botão de idioma tira o equivalente. Numa história do projeto, o botão leva à mesma história no outro idioma, e o menu marca Projetos. Fora das páginas fixas e das histórias, o botão leva ao Início do outro idioma.
+Uma página nova precisa de um arquivo em `src/pages/` e outro em `src/pages/pt-br/`. O `lang` sai sozinho, pelo lugar do arquivo. Uma página fixa nova também entra em `src/lib/pages.ts`, com o endereço de cada idioma: é dali que o botão de idioma tira o equivalente. Numa história do projeto, o botão leva à mesma história no outro idioma, e o menu marca Projetos. Fora das páginas fixas, das histórias e dos textos, o botão leva ao Início do outro idioma.
+
+Cada versão de um texto tem um endereço só, sob o prefixo do seu idioma e com o `slug` do seu arquivo: `/writing/<slug>` ou `/pt-br/textos/<slug>`. Um texto sem tradução não ganha página no outro idioma: a lista de lá mostra o original, com a marca de idioma, e leva ao endereço dele. Na página de um texto, o menu marca Textos e o botão de idioma leva à outra versão; sem tradução, leva à lista de textos do outro idioma. Como o `slug` muda de um idioma para o outro, o endereço não diz qual é o equivalente: a página do texto (`src/views/Text.astro`) é que o entrega ao layout, com `textEquivalentOf`, de `src/lib/pages.ts`.
 
 O "não encontrado" tem uma página por idioma: `404.html` na raiz e `pt-br/404.html`. Quem escolhe qual mostrar é a hospedagem. Na Cloudflare, isso pede a opção que procura o `404.html` mais próximo do endereço pedido (`not_found_handling = "404-page"`), que entra com a configuração da prévia. Rodando com `npm run dev`, a página em português já aparece para endereços sob `/pt-br`.
 
@@ -123,7 +127,7 @@ Tudo o que o site diz fica em `src/content/`. Trocar uma frase, um estado ou uma
 
 | Pasta | O que guarda | Formato |
 |---|---|---|
-| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, as frases do Início (blocos da planta, chamada do paper, links das seções), os nomes dos estados do projeto e dos tipos de texto, bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
+| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, as frases do Início (blocos da planta, chamada do paper, links das seções), os nomes dos estados do projeto, dos tipos de texto e dos temas, as frases da página de um texto (a nota de tradução, "atualizado em", "estudo de origem"), bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
 | `texts/` | Os textos. | Uma pasta por texto: `text.yaml` e um `.md` por idioma. |
 | `projects/` | Os projetos e as histórias do projeto. | Uma pasta por projeto: `project.yaml`, `mark.svg` e a história do projeto em `en.md` e `pt-br.md`. |
 | `studies/` | Os estudos. | Um `.yaml` por estudo, com os dois idiomas dentro. |
@@ -164,11 +168,13 @@ O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligaç
 
    `slug` é a última parte do endereço da página, em palavras do idioma do arquivo: este texto fica em `/pt-br/textos/o-titulo-do-texto`. As imagens do texto ficam na mesma pasta. O arquivo é sempre `.md`: o MDX ainda não está ligado, e um `.mdx` seria ignorado.
 
-**Tradução.** Crie o arquivo do outro idioma na mesma pasta, com `title`, `summary` e `slug` no idioma dele, e mais o campo `translatedWithAI: true` (ou `false`), que toda tradução tem. Nada muda em `text.yaml`. Um texto sem tradução é só um texto sem esse segundo arquivo.
+A página do texto mostra o título, o resumo de uma linha, o tipo de texto, a data, a data de atualização quando houver, os temas, o corpo e, no fim, o estudo de origem, com link para a lista de estudos. O corpo é o Markdown do arquivo, sem mudança. Um bloco de código aparece sobre o cinza do site, sem cores por linguagem.
+
+**Tradução.** Crie o arquivo do outro idioma na mesma pasta, com `title`, `summary` e `slug` no idioma dele, e mais o campo `translatedWithAI: true` (ou `false`), que toda tradução tem. Nada muda em `text.yaml`. Um texto sem tradução é só um texto sem esse segundo arquivo. A página da tradução mostra a nota de tradução: o idioma original, o link para o original e, com `translatedWithAI: true`, o aviso de que foi feita com IA.
 
 **Rascunho.** Com `draft: true`, o texto aparece só no site rodando localmente (`npm run dev`) e fica fora de toda construção (`npm run build`). Para publicar, apague a linha. O repo é público: o rascunho não aparece no site, mas o arquivo aparece no GitHub.
 
-**Tema novo.** A lista de temas é fixa: um tema novo entra em `TOPICS`, em `src/lib/schemas.ts`.
+**Tema novo.** A lista de temas é fixa: um tema novo entra em `TOPICS`, em `src/lib/schemas.ts`, e ganha o nome nos dois idiomas, em `writing.topics`, nos dois arquivos de `src/content/pages/`.
 
 ### Criar um projeto
 
