@@ -1,7 +1,7 @@
 ---
 import "../styles/plan.css";
-import Base from "../layouts/Base.astro";
 import "../styles/sections.css";
+import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
 import { languageOf, HTML_LANG, SHORT_NAME } from "../lib/languages.ts";
@@ -20,10 +20,15 @@ const recentTexts = texts
 
 const studiesInProgress = studies.filter(({ status }) => status === "in-progress");
 
-// The experience goes from the year of the first role to the end of the
-// latest one, or to "today" while the latest one is the current role.
+// The experience goes from the year of the first role to the year the last
+// one ended, or to "today" while there is a current role.
 const firstYear = roles.at(-1)?.start.slice(0, 4);
-const lastYear = roles.at(0)?.end?.slice(0, 4);
+const lastYear = roles.every(({ end }) => end !== undefined)
+  ? roles
+      .map(({ end = "" }) => end.slice(0, 4))
+      .sort()
+      .at(-1)
+  : undefined;
 ---
 
 <Base title="Shaihan Buenos">
@@ -106,7 +111,7 @@ const lastYear = roles.at(0)?.end?.slice(0, 4);
               <span class="mark" aria-hidden="true" set:html={project.mark} />
               <h3>{project.name}</h3>
               <p>{project.stories[language].whatItIs}</p>
-              <span class="caption state">{phrases.projects.states[project.state]}</span>
+              <span class="caption">{phrases.projects.states[project.state]}</span>
             </a>
           </li>
         ))}

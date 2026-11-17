@@ -104,31 +104,30 @@
 
 /* The projects close the plan in a row, however many they are. */
 .plan-projects {
-  display: flex;
+  display: grid;
   grid-area: 19 / 1 / 22 / 11;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+/* Three projects over ten columns: four, three and three. */
+.plan-projects:has(> :nth-child(3):last-child) {
+  grid-template-columns: minmax(0, 4fr) minmax(0, 3fr) minmax(0, 3fr);
 }
 
 .plan .project {
   --full: var(--h-copper);
-  flex: 3 1 0;
   flex-direction: column-reverse;
   justify-content: flex-end;
   gap: 4px;
+  /* A strip of the sheet separates two projects. */
+  margin-right: 6px;
   padding: 8px 8px 8px 10px;
-  /* The gap between two projects is a strip without color. */
-  border: 0 solid transparent;
-  border-right-width: 6px;
   background: var(--l-copper-2);
-  background-clip: padding-box;
 }
 
 .plan .project:last-child {
-  border-right-width: 0;
-}
-
-/* Three projects over ten columns: four, three and three. */
-.plan .project:first-child:nth-last-child(3) {
-  flex-grow: 4;
+  margin-right: 0;
 }
 
 .plan .project strong {
@@ -198,7 +197,7 @@
   }
 
   .plan .core h1 {
-    font-size: clamp(3.4rem, min(10.4cqw, 14.2svh), 8.75rem);
+    font-size: min(9.2cqw, 13svh);
   }
 
   .plan .label {
@@ -245,19 +244,19 @@
   }
 
   /* The projects stack in a column, with a strip between them. */
-  .plan-projects {
-    flex-direction: column;
+  .plan-projects,
+  .plan-projects:has(> :nth-child(3):last-child) {
     grid-area: 7 / 21 / 16 / 26;
+    grid-auto-flow: row;
+    grid-auto-rows: minmax(0, 1fr);
+    grid-template-columns: none;
   }
 
-  .plan .project,
-  .plan .project:first-child:nth-last-child(3) {
-    flex: 1 1 0;
+  .plan .project {
     flex-direction: column;
     justify-content: space-between;
+    margin: 0 0 clamp(4px, 0.8cqw, 12px);
     padding: clamp(10px, 1.15cqw, 18px);
-    border-right-width: 0;
-    border-bottom-width: clamp(4px, 0.8cqw, 12px);
   }
 
   .plan .project strong,
@@ -293,8 +292,8 @@
   }
 }
 
-@media (min-width: 1001px) and (max-width: 1250px) {
+@media (min-width: 1251px) {
   .plan .core h1 {
-    font-size: min(9.2cqw, 13svh);
+    font-size: clamp(3.4rem, min(10.4cqw, 14.2svh), 8.75rem);
   }
 }

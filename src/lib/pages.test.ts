@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { equivalentOf } from "./pages.ts";
+import { equivalentOf, projectPathOf, textPathOf } from "./pages.ts";
 
 test("the equivalent of a fixed page is the same page in the other language", () => {
   assert.equal(equivalentOf("/projects", "en"), "/pt-br/projetos");
@@ -24,4 +24,14 @@ test("the path works with or without the generated file name", () => {
 test("outside the fixed pages, the equivalent is the other language's Home", () => {
   assert.equal(equivalentOf("/404.html", "en"), "/pt-br");
   assert.equal(equivalentOf("/pt-br/nao-existe", "pt-br"), "/");
+});
+
+test("a project story lives under the Projects page of its language", () => {
+  assert.equal(projectPathOf("example-project", "en"), "/projects/example-project");
+  assert.equal(projectPathOf("example-project", "pt-br"), "/pt-br/projetos/example-project");
+});
+
+test("a version of a text lives under the Writing page of its language", () => {
+  assert.equal(textPathOf("an-example", "en"), "/writing/an-example");
+  assert.equal(textPathOf("um-exemplo", "pt-br"), "/pt-br/textos/um-exemplo");
 });

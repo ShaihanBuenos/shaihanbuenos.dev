@@ -88,7 +88,7 @@ result:
   pt-br: Resultado de teste de 93,4%, com a ressalva.
 `;
 
-describe("Home with changed content", { concurrency: true }, () => {
+describe("the content of Home", { concurrency: true }, () => {
   // A copy of the site with test phrases in English, another paper, the
   // order of the projects swapped, and two more texts: the newest one, in
   // Portuguese only, and the oldest one.
