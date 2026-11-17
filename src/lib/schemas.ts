@@ -32,6 +32,7 @@ export const pagesSchema = z.strictObject({
       research: phrase,
       methodCaption: phrase,
       method: phrase,
+      // Also the title of the experience on the About page.
       experienceCaption: phrase,
       experience: phrase,
     }),
@@ -88,7 +89,8 @@ export const pagesSchema = z.strictObject({
     statuses: z.record(z.enum(STUDY_STATUSES), phrase),
     // Comes before the start month of a study in progress: "since".
     since: phrase,
-    // What comes before each kind of link of a study.
+    // What comes before each kind of link of a study. `education` is also
+    // the title of the education on the About page.
     links: z.strictObject({
       texts: phrase,
       project: phrase,
@@ -107,7 +109,17 @@ export const pagesSchema = z.strictObject({
     // The caption of the paper's diagram.
     diagramCaption: phrase,
   }),
-  about: page.extend({ bio: phrase, education: phrase }),
+  about: page.extend({
+    bio: phrase,
+    // The alternative text of the avatar.
+    avatarAlt: phrase,
+    // The end of a period while the role is the current one: "Present".
+    present: phrase,
+    // The education, in one line.
+    education: phrase,
+    // The title of the section of the contact.
+    contact: phrase,
+  }),
   // "Not found" only has a name: it is not on the menu nor in search engines.
   notFound: z.strictObject({ name: phrase }),
 });

@@ -101,8 +101,10 @@
   letter-spacing: 0;
 }
 
+/* The lists of a text, and the achievements of a role. */
 .prose ul,
-.prose ol {
+.prose ol,
+.achievements {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -110,7 +112,8 @@
   padding-left: 1.3rem;
 }
 
-.prose ul {
+.prose ul,
+.achievements {
   list-style: square;
 }
 
@@ -118,7 +121,8 @@
   list-style: decimal;
 }
 
-.prose li::marker {
+.prose li::marker,
+.achievements li::marker {
   color: var(--copper-text);
 }
 
@@ -254,12 +258,14 @@
 
 /* ---------- the study list ---------- */
 
-/* The groups: the studies in progress and each year of completed ones. */
-.study-group {
+/* The groups: the studies in progress and each year of completed ones. The
+   sections of About are titled the same way. */
+.study-group,
+.about-section {
   margin-top: 2.6rem;
 }
 
-.study-group h2 {
+:is(.study-group, .about-section) h2 {
   padding-bottom: 0.9rem;
   font-size: 1.7rem;
   font-weight: 400;
@@ -267,10 +273,11 @@
   letter-spacing: -0.02em;
 }
 
-/* A study is an entry of a timeline. Phone first: the name, the goal, the
-   captions and then the links. On a wider screen the captions move to the
-   right of the name. */
-.study {
+/* A study is an entry of a timeline, and so is a company of the experience.
+   Phone first: the name, the goal, the captions and then the links. On a
+   wider screen the captions move to the right of the name. */
+.study,
+.company {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.3rem 1.2rem;
@@ -280,7 +287,7 @@
   scroll-margin-top: 1rem;
 }
 
-.study h3 {
+:is(.study, .company) h3 {
   font-size: 1.35rem;
   font-weight: 400;
   line-height: 1.2;
@@ -411,6 +418,67 @@
   font-size: 1.35rem;
 }
 
+/* ---------- the About page ---------- */
+
+/* The bio next to the avatar. Phone first: the avatar over the bio. */
+.about-bio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.2rem;
+  padding-top: 2rem;
+  font-size: 1.125rem;
+  line-height: 1.68;
+}
+
+/* The avatar is pixel art of 48 by 48: it is shown at a whole multiple of
+   that, with sharp pixels. */
+.about-bio img {
+  display: block;
+  width: 96px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+/* Where the page stops when a link leads to a section. */
+.about-section {
+  scroll-margin-top: 1rem;
+}
+
+/* The roles of a company, each under a thin line. Phone first: the title,
+   the period, the line of context and then the achievements. On a wider
+   screen the period moves to the right of the title. */
+.roles {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roles > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.3rem 1.2rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.roles > li:last-child {
+  padding-bottom: 0.3rem;
+}
+
+.roles h4 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.roles .context {
+  color: var(--mut);
+}
+
+.achievements {
+  margin-top: 0.5rem;
+}
+
 @media (min-width: 561px) {
   .research-item dl {
     grid-template-columns: 8.5rem minmax(0, 1fr);
@@ -435,18 +503,33 @@
     width: 6.5rem;
   }
 
-  .study {
+  .study,
+  .company,
+  .roles > li {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: baseline;
   }
 
-  .study > .captions {
+  .study > .captions,
+  :is(.company, .roles > li) > .caption {
     grid-area: 1 / 2;
     margin-top: 0;
   }
 
-  .study > :is(.goal, .study-links) {
+  .study > :is(.goal, .study-links),
+  .company > .roles,
+  .roles > li > :is(.context, .achievements) {
     grid-column: 1 / -1;
+  }
+
+  /* The avatar sits to the left of the bio, a step larger. */
+  .about-bio {
+    grid-template-columns: 144px minmax(0, 1fr);
+    gap: 1.6rem;
+  }
+
+  .about-bio img {
+    width: 144px;
   }
 
   .study-links {

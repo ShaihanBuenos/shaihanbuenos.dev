@@ -89,8 +89,8 @@ function bylineOf(paper: string) {
   };
 }
 
-// The e-mail of the contact, from section 7.6 of the spec.
-const CONTACT = "mailto:hi@shaihanbuenos.dev";
+// The contact is a section of the About page (section 7.6 of the spec).
+const CONTACT = { en: "/about#contact", pt: "/pt-br/sobre#contact" };
 
 // The DOI of the paper, from issue #10.
 const DOI = "https://doi.org/10.1109/HAXD70072.2026.11621018";
@@ -139,8 +139,8 @@ test("the paper shows no e-mail", async () => {
 });
 
 // Section 7.5 of the spec: what it is, the summary, what Shaihan built, the
-// result and "available on request", which leads to the contact. Section 7.6
-// gives the address of the contact.
+// result and "available on request", which leads to the contact, on the
+// About page of the same language.
 test("the thesis shows what it is, the summary, what was built, the result and “available on request”, leading to the contact", async () => {
   const [, inEnglish = ""] = itemsOf(await examplePage("en"));
   assert.deepEqual(fieldsOf(inEnglish), [
@@ -152,7 +152,7 @@ test("the thesis shows what it is, the summary, what was built, the result and �
       text: "[Example] The result, with its caveat stated right next to the number.",
     },
   ]);
-  assert.deepEqual(linksOf(inEnglish), [{ text: "Available on request", href: CONTACT }]);
+  assert.deepEqual(linksOf(inEnglish), [{ text: "Available on request", href: CONTACT.en }]);
 
   const [, inPortuguese = ""] = itemsOf(await examplePage("pt"));
   assert.deepEqual(fieldsOf(inPortuguese), [
@@ -161,7 +161,7 @@ test("the thesis shows what it is, the summary, what was built, the result and �
     { label: "O que construí", text: "[Exemplo] O que Shaihan construiu no TCC inventado." },
     { label: "Resultado", text: "[Exemplo] O resultado, com a ressalva colada ao número." },
   ]);
-  assert.deepEqual(linksOf(inPortuguese), [{ text: "Disponível a pedido", href: CONTACT }]);
+  assert.deepEqual(linksOf(inPortuguese), [{ text: "Disponível a pedido", href: CONTACT.pt }]);
 });
 
 // Section 7.5 of the spec: the paper has a diagram and the thesis has no
@@ -183,14 +183,13 @@ test("the paper has the place of its diagram, with a caption, and the thesis has
 });
 
 // Section 7.5 of the spec: no PDF on the site, and no figure copied from the
-// works. The link by the DOI is the only one that leaves the site, besides
-// the contact.
-test("Research has no link to a PDF, no image from outside the site, and only the DOI and the contact leave the site", async () => {
+// works. The link by the DOI is the only one that leaves the site.
+test("Research has no link to a PDF, no image from outside the site, and only the DOI leaves the site", async () => {
   for (const language of ["en", "pt"] as const) {
     const page = await examplePage(language);
     assert.deepEqual(
       hrefsOf(page).filter((href) => !href.startsWith("/")),
-      [DOI, CONTACT],
+      [DOI],
       language,
     );
     assert.doesNotMatch(page, /pdf/i, language);

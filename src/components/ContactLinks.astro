@@ -1,0 +1,12 @@
+---
+import { CONTACT } from "../lib/contact.ts";
+
+// The contact channels, each one as an item of the list that holds them: the
+// one of the footer and the one of the About page.
+---
+
+{CONTACT.map(({ name, href }) => (
+  <li>
+    <a href={href}>{name}</a>
+  </li>
+))}

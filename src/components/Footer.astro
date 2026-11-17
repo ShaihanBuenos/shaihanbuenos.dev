@@ -1,6 +1,6 @@
 ---
+import ContactLinks from "./ContactLinks.astro";
 import { phrasesOf } from "../lib/content.ts";
-import { CONTACT } from "../lib/contact.ts";
 import { feedPathOf } from "../lib/feed.ts";
 import { languageOf } from "../lib/languages.ts";
 
@@ -11,11 +11,7 @@ const phrases = await phrasesOf(language);
 <footer class="footer">
   <span>Shaihan Buenos · Porto Alegre</span>
   <ul>
-    {CONTACT.map(({ name, href }) => (
-      <li>
-        <a href={href}>{name}</a>
-      </li>
-    ))}
+    <ContactLinks />
     <li>
       <a href={feedPathOf(language)}>{phrases.common.feed}</a>
     </li>

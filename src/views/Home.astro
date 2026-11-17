@@ -6,6 +6,7 @@ import ProjectRows from "../components/ProjectRows.astro";
 import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
+import { periodOf } from "../lib/experience.ts";
 import { foreignLangOf, languageOf } from "../lib/languages.ts";
 import { pathOf, projectPathOf, researchItemPathOf, textPathOf } from "../lib/pages.ts";
 
@@ -24,13 +25,9 @@ const studiesInProgress = studies.filter(({ status }) => status === "in-progress
 
 // The experience goes from the year of the first role to the year the last
 // one ended, or to "today" while there is a current role.
-const firstYear = roles.at(-1)?.start.slice(0, 4);
-const lastYear = roles.every(({ end }) => end !== undefined)
-  ? roles
-      .map(({ end = "" }) => end.slice(0, 4))
-      .sort()
-      .at(-1)
-  : undefined;
+const experience = periodOf(roles);
+const firstYear = experience?.start.slice(0, 4);
+const lastYear = experience?.end?.slice(0, 4);
 ---
 
 <Base title="Shaihan Buenos">

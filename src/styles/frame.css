@@ -120,13 +120,16 @@
   border-top: 1.5px solid var(--ink);
 }
 
-.footer ul {
+/* The list of the contacts, in the footer and on the About page. */
+.footer ul,
+.contact-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
 }
 
-.footer a {
+.footer a,
+.contact-list a {
   display: flex;
   align-items: center;
   min-height: 44px;
@@ -139,7 +142,7 @@
 }
 
 @media (hover: hover) {
-  .footer a:hover {
+  :is(.footer, .contact-list) a:hover {
     background: var(--ink);
     color: var(--sheet);
   }
@@ -209,7 +212,8 @@
     min-height: 0;
   }
 
-  .footer a {
+  .footer a,
+  .contact-list a {
     min-height: 0;
   }
 }

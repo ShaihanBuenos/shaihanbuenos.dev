@@ -1,9 +1,9 @@
 ---
 import ResearchTitle from "../components/ResearchTitle.astro";
 import Reading from "../layouts/Reading.astro";
-import { EMAIL } from "../lib/contact.ts";
 import { type ResearchItem, content } from "../lib/content.ts";
 import { languageOf } from "../lib/languages.ts";
+import { aboutSectionPathOf } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
 const { pages, research } = await content();
@@ -53,7 +53,7 @@ function fieldsOf(item: ResearchItem): { label: string; text: string }[] {
         {item.type === "paper" ? (
           <a href={`https://doi.org/${item.doi}`}>{phrases.research.readPaper}</a>
         ) : (
-          <a href={EMAIL.href}>{phrases.research.onRequest}</a>
+          <a href={aboutSectionPathOf("contact", language)}>{phrases.research.onRequest}</a>
         )}
       </p>
       {item.type === "paper" && (
