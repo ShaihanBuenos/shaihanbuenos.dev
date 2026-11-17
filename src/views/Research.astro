@@ -49,12 +49,6 @@ function fieldsOf(item: ResearchItem): { label: string; text: string }[] {
           </>
         ))}
       </dl>
-      {item.type === "paper" && (
-        <figure>
-          <div class="diagram-place" aria-hidden="true" />
-          <figcaption>{phrases.research.diagram}</figcaption>
-        </figure>
-      )}
       <p class="action">
         {item.type === "paper" ? (
           <a href={`https://doi.org/${item.doi}`}>{phrases.research.readPaper}</a>
@@ -62,6 +56,12 @@ function fieldsOf(item: ResearchItem): { label: string; text: string }[] {
           <a href={EMAIL.href}>{phrases.research.onRequest}</a>
         )}
       </p>
+      {item.type === "paper" && (
+        <figure>
+          <div class="diagram-place" aria-hidden="true" />
+          <figcaption>{phrases.research.diagramCaption}</figcaption>
+        </figure>
+      )}
     </article>
   ))}
 </Reading>

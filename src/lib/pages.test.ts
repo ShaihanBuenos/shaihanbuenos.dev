@@ -3,7 +3,7 @@ import { test } from "node:test";
 import {
   equivalentOf,
   projectPathOf,
-  researchPathOf,
+  researchItemPathOf,
   sectionAt,
   studyPathOf,
   textEquivalentOf,
@@ -45,8 +45,8 @@ test("a study lives on the Studies page of its language, under the name of its f
 });
 
 test("a research item lives on the Research page of its language, under the name of its file", () => {
-  assert.equal(researchPathOf("example-paper", "en"), "/research#example-paper");
-  assert.equal(researchPathOf("example-paper", "pt-br"), "/pt-br/pesquisa#example-paper");
+  assert.equal(researchItemPathOf("example-paper", "en"), "/research#example-paper");
+  assert.equal(researchItemPathOf("example-paper", "pt-br"), "/pt-br/pesquisa#example-paper");
 });
 
 test("a version of a text lives under the Writing page of its language", () => {

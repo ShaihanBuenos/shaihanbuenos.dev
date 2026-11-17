@@ -38,7 +38,7 @@ export function studyPathOf(id: string, language: Language): string {
 // The path of a research item: it has no page of its own, so the path leads
 // to the item on the Research page, which carries the name of the item's
 // file as id.
-export function researchPathOf(id: string, language: Language): string {
+export function researchItemPathOf(id: string, language: Language): string {
   return `${pathOf("research", language)}#${id}`;
 }
 

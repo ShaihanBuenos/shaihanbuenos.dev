@@ -181,12 +181,15 @@
   font-size: 1rem;
 }
 
-/* The way back to the list is an action link. */
-.reading-end p {
+/* The action links: the way back to the list, and the link of a research
+   item. */
+.reading-end p,
+.research-item .action {
   font-weight: 500;
 }
 
-.reading-end a {
+.reading-end a,
+.research-item .action a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -379,7 +382,7 @@
 }
 
 .research-item figure {
-  margin-top: 1.4rem;
+  margin-top: 0.8rem;
 }
 
 /* The place of a diagram that is still to be drawn: the frame of the
@@ -395,16 +398,9 @@
   color: var(--mut);
 }
 
-/* The link that closes an item: to the paper, or to the contact. */
+/* The action link of an item: to the paper, or to the contact. */
 .research-item .action {
   margin-top: 0.6rem;
-  font-weight: 500;
-}
-
-.research-item .action a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
 }
 
 .research-item.thesis {

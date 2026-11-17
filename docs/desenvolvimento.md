@@ -314,10 +314,10 @@ whatItIs:
 
 A página Pesquisa (`/research` e `/pt-br/pesquisa`) mostra os itens na ordem de `order`. Cada item mostra o título e os campos; os rótulos dos campos vêm de `research`, nos arquivos de `src/content/pages/`.
 
-- **Paper:** o título fica em inglês nos dois idiomas. Depois vêm o lugar da publicação, os autores, o resumo, o que foi construído, o resultado, o lugar do diagrama e o link "Ler no IEEE Xplore", que leva a `https://doi.org/<doi>`. É o único link da página que sai do site, fora o do contato.
+- **Paper:** o título fica em inglês nos dois idiomas. Depois vêm o lugar da publicação, os autores, o resumo, o que foi construído, o resultado, o link "Ler no IEEE Xplore", que leva a `https://doi.org/<doi>`, e o lugar do diagrama. O link é o único link da página que sai do site, fora o do contato.
 - **TCC:** o título fica em português, com a tradução entre parênteses na página em inglês. Depois vêm o que é, o resumo, o que foi construído, o resultado e "disponível a pedido", que abre um e-mail para o contato. Não tem imagem.
 
-O diagrama do paper ainda não foi desenhado: a página guarda o lugar dele, com a legenda de `research.diagram`. A página não tem PDF nem figura copiada dos trabalhos. Os números de cada trabalho ficam só no arquivo dele, e a regra de saúde da seção 11 da spec vale para cada frase: pacientes sempre "simulados", e número só junto da ressalva.
+O diagrama do paper ainda não foi desenhado: a página guarda o lugar dele, com a legenda de `research.diagramCaption`. A página não tem PDF nem figura copiada dos trabalhos. Os números de cada trabalho ficam só no arquivo dele, e a regra de saúde da seção 11 da spec vale para cada frase: pacientes sempre "simulados", e número só junto da ressalva.
 
 O nome do arquivo é o `id` do item na página: a lista de estudos e o Início levam a ele por `/research#<nome-do-item>`.
 

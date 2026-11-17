@@ -89,6 +89,9 @@ function bylineOf(paper: string) {
   };
 }
 
+// The e-mail of the contact, from section 7.6 of the spec.
+const CONTACT = "mailto:hi@shaihanbuenos.dev";
+
 // The DOI of the paper, from issue #10.
 const DOI = "https://doi.org/10.1109/HAXD70072.2026.11621018";
 
@@ -149,9 +152,7 @@ test("the thesis shows what it is, the summary, what was built, the result and �
       text: "[Example] The result, with its caveat stated right next to the number.",
     },
   ]);
-  assert.deepEqual(linksOf(inEnglish), [
-    { text: "Available on request", href: "mailto:hi@shaihanbuenos.dev" },
-  ]);
+  assert.deepEqual(linksOf(inEnglish), [{ text: "Available on request", href: CONTACT }]);
 
   const [, inPortuguese = ""] = itemsOf(await examplePage("pt"));
   assert.deepEqual(fieldsOf(inPortuguese), [
@@ -160,9 +161,7 @@ test("the thesis shows what it is, the summary, what was built, the result and �
     { label: "O que construí", text: "[Exemplo] O que Shaihan construiu no TCC inventado." },
     { label: "Resultado", text: "[Exemplo] O resultado, com a ressalva colada ao número." },
   ]);
-  assert.deepEqual(linksOf(inPortuguese), [
-    { text: "Disponível a pedido", href: "mailto:hi@shaihanbuenos.dev" },
-  ]);
+  assert.deepEqual(linksOf(inPortuguese), [{ text: "Disponível a pedido", href: CONTACT }]);
 });
 
 // Section 7.5 of the spec: the paper has a diagram and the thesis has no
@@ -191,7 +190,7 @@ test("Research has no link to a PDF, no image from outside the site, and only th
     const page = await examplePage(language);
     assert.deepEqual(
       hrefsOf(page).filter((href) => !href.startsWith("/")),
-      [DOI, "mailto:hi@shaihanbuenos.dev"],
+      [DOI, CONTACT],
       language,
     );
     assert.doesNotMatch(page, /pdf/i, language);
@@ -382,4 +381,10 @@ describe("the research items come from the content", { concurrency: true }, () =
       [`${THESIS_TITLE} ([Example] A made-up thesis title, translated)`, "Test Paper Title"],
     );
   });
+});
+
+// Section 7.5 of the spec lists the link by the DOI before the diagram.
+test("the paper shows the link by the DOI before the place of the diagram", async () => {
+  const [paper = ""] = itemsOf(await examplePage("en"));
+  assert.ok(paper.indexOf(DOI) < paper.indexOf("<figure"));
 });

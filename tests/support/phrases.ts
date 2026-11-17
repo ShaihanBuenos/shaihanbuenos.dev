@@ -79,7 +79,7 @@ research:
     result: Test result
   readPaper: Test read the paper
   onRequest: Test on request
-  diagram: Test diagram caption.
+  diagramCaption: Test diagram caption.
 about:
   name: About
   description: Test description.

@@ -115,7 +115,7 @@ research:
   # What the thesis says in place of a file. It is the link to the contact.
   onRequest: Available on request
   # The caption of the paper's diagram. The diagram itself is still to be drawn.
-  diagram: "[Example] The architecture diagram, redrawn in the style of the site, goes here."
+  diagramCaption: "[Example] The architecture diagram, redrawn in the style of the site, goes here."
 
 about:
   name: About

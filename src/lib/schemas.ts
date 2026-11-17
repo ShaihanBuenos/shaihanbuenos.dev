@@ -105,7 +105,7 @@ export const pagesSchema = z.strictObject({
     // What the thesis says in place of a file. It is the link to the contact.
     onRequest: phrase,
     // The caption of the paper's diagram.
-    diagram: phrase,
+    diagramCaption: phrase,
   }),
   about: page.extend({ bio: phrase, education: phrase }),
   // "Not found" only has a name: it is not on the menu nor in search engines.

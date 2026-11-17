@@ -5,7 +5,7 @@ import Reading from "../layouts/Reading.astro";
 import { type Study, content } from "../lib/content.ts";
 import { monthIn } from "../lib/dates.ts";
 import { languageOf } from "../lib/languages.ts";
-import { pathOf, projectPathOf, researchPathOf } from "../lib/pages.ts";
+import { pathOf, projectPathOf, researchItemPathOf } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
 const { pages, projects, research, studies, studyList, texts } = await content();
@@ -131,7 +131,7 @@ const groups = [undefined, ...years].flatMap((year) => {
                   <dt class="caption">{phrases.studies.links.research}</dt>
                   <dd>
                     {links.research.map((item) => (
-                      <a href={researchPathOf(item.id, language)}>
+                      <a href={researchItemPathOf(item.id, language)}>
                         <ResearchTitle item={item} />
                       </a>
                     ))}

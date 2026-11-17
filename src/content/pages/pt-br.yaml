@@ -115,7 +115,7 @@ research:
   # What the thesis says in place of a file. It is the link to the contact.
   onRequest: Disponível a pedido
   # The caption of the paper's diagram. The diagram itself is still to be drawn.
-  diagram: "[Exemplo] O diagrama da arquitetura, redesenhado no estilo do site, entra aqui."
+  diagramCaption: "[Exemplo] O diagrama da arquitetura, redesenhado no estilo do site, entra aqui."
 
 about:
   name: Sobre
