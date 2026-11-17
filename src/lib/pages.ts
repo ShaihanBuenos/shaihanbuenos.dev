@@ -33,7 +33,10 @@ export function textPathOf(slug: string, language: Language): string {
 // its own slug, so the path does not tell: the page gives the slug of the
 // version in the other language, when the text has one. Without it, the
 // button leads to the other language's list of texts.
-export function textEquivalentOf(slugInOtherLanguage: string | undefined, language: Language) {
+export function textEquivalentOf(
+  slugInOtherLanguage: string | undefined,
+  language: Language,
+): string {
   const other = otherLanguage(language);
   return slugInOtherLanguage === undefined
     ? pathOf("writing", other)

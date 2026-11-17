@@ -47,9 +47,10 @@ writing:
     ai: test ai
     career: test career
     academic: test academic
+  all: Test all texts
   updatedOn: test revised on
   study: test source study
-  translation:
+  translationNote:
     from: Test translated from.
     original: Test read the original
     withAI: Test made with AI.

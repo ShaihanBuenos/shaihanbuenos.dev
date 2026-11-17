@@ -43,6 +43,13 @@ function itemsOf(list: string) {
       captions: textOf(captions),
       publishedOn: captions.match(/<time datetime="([^"]*)"/)?.[1],
       mark: languageMarkOf(item),
+      // The language the title, its link and the summary are marked with,
+      // when it is not the language of the page.
+      lang: {
+        title: item.match(/<a\b[^>]*\blang="([^"]*)"/)?.[1] ?? null,
+        link: item.match(/<a\b[^>]*\bhreflang="([^"]*)"/)?.[1] ?? null,
+        summary: summary.match(/^<p\b[^>]*\blang="([^"]*)"/)?.[1] ?? null,
+      },
     };
   });
 }
@@ -53,14 +60,16 @@ function itemsOf(list: string) {
 test("a text without a translation is on both lists, once on each, and opens at the original", async () => {
   const href = "/writing/example-study-note-without-translation";
   const title = "[Example] An example study note without a translation";
-  for (const [language, mark] of [
-    ["en", null],
-    ["pt", ["en", "EN"]],
+  const inItsLanguage = { title: null, link: null, summary: null };
+  const inEnglish = { title: "en", link: "en", summary: "en" };
+  for (const [language, mark, lang] of [
+    ["en", null, inItsLanguage],
+    ["pt", ["en", "EN"], inEnglish],
   ] as const) {
     const items = itemsOf(await examplePage(LIST[language]));
     assert.deepEqual(
-      items.filter((item) => item.title === title).map((item) => [item.href, item.mark]),
-      [[href, mark]],
+      items.filter((item) => item.title === title).map((item) => [item.href, item.mark, item.lang]),
+      [[href, mark, lang]],
       language,
     );
   }
@@ -80,6 +89,7 @@ const EXAMPLE_LIST = {
       captions: "study note Mar 10, 2026 AI",
       publishedOn: "2026-03-10",
       mark: null,
+      lang: { title: null, link: null, summary: null },
     },
     {
       title: "[Example] An example article with a translation",
@@ -88,6 +98,7 @@ const EXAMPLE_LIST = {
       captions: "article Jan 15, 2026 backend architecture",
       publishedOn: "2026-01-15",
       mark: null,
+      lang: { title: null, link: null, summary: null },
     },
   ],
   pt: [
@@ -98,6 +109,7 @@ const EXAMPLE_LIST = {
       captions: "nota de estudo 10 de mar. de 2026 IA EN",
       publishedOn: "2026-03-10",
       mark: ["en", "EN"],
+      lang: { title: "en", link: "en", summary: "en" },
     },
     {
       title: "[Exemplo] Um artigo de exemplo com tradução",
@@ -107,6 +119,7 @@ const EXAMPLE_LIST = {
       captions: "artigo 15 de jan. de 2026 backend arquitetura",
       publishedOn: "2026-01-15",
       mark: null,
+      lang: { title: null, link: null, summary: null },
     },
   ],
 };
@@ -266,9 +279,9 @@ for (const [name, file] of [
 }
 
 describe("the texts come from the content", { concurrency: true }, () => {
-  // A copy of the site with test phrases in English and two more texts: the
-  // newest one, written in Portuguese and translated to English without AI,
-  // and the oldest one, in English only.
+  // A copy of the site with test phrases in English and three more texts:
+  // the newest one, written in Portuguese and translated to English without
+  // AI, one in Portuguese only, and the oldest one, in English only.
   const changed = build({
     write: {
       "pages/en.yaml": PAGES,
@@ -278,6 +291,10 @@ describe("the texts come from the content", { concurrency: true }, () => {
         "---\ntitle: Texto mais novo\nsummary: Resumo de teste.\nslug: texto-mais-novo\n---\n\nCorpo de teste.\n",
       "texts/newest-text/en.md":
         "---\ntitle: Newest text\nsummary: Test summary.\nslug: newest-text\ntranslatedWithAI: false\n---\n\nTest body.\n",
+      "texts/portuguese-only/text.yaml":
+        "publishedOn: 2025-06-01\ntype: article\ntopics: [academic]\noriginalLanguage: pt-br\n",
+      "texts/portuguese-only/pt-br.md":
+        "---\ntitle: Só em português\nsummary: Resumo.\nslug: so-em-portugues\n---\n\nCorpo.\n",
       "texts/oldest-text/text.yaml":
         "publishedOn: 2025-01-01\ntype: study-note\ntopics: [frontend]\noriginalLanguage: en\n",
       "texts/oldest-text/en.md":
@@ -297,8 +314,14 @@ describe("the texts come from the content", { concurrency: true }, () => {
         ["/writing/newest-text", "2026-05-01"],
         ["/writing/example-study-note-without-translation", "2026-03-10"],
         ["/writing/example-article-with-translation", "2026-01-15"],
+        ["/pt-br/textos/so-em-portugues", "2025-06-01"],
         ["/writing/oldest-text", "2025-01-01"],
       ],
+    );
+    // A text only in Portuguese carries the language mark on the English list.
+    assert.deepEqual(
+      inEnglish.map(({ mark }) => mark),
+      [null, null, null, ["pt-BR", "PT"], null],
     );
     const inPortuguese = itemsOf(await changedPage(LIST.pt));
     assert.deepEqual(
@@ -307,6 +330,7 @@ describe("the texts come from the content", { concurrency: true }, () => {
         ["/pt-br/textos/texto-mais-novo", null],
         ["/writing/example-study-note-without-translation", "EN"],
         ["/pt-br/textos/exemplo-de-artigo-com-traducao", null],
+        ["/pt-br/textos/so-em-portugues", null],
         ["/writing/oldest-text", "EN"],
       ],
     );
@@ -319,6 +343,7 @@ describe("the texts come from the content", { concurrency: true }, () => {
     await assert.rejects(built.read(TEXT.pt("newest-text")));
     await assert.rejects(built.read(TEXT.en("texto-mais-novo")));
     await assert.rejects(built.read(TEXT.pt("oldest-text")));
+    await assert.rejects(built.read(TEXT.en("so-em-portugues")));
   });
 
   test("the names of the type and of the topics, and the phrases of the page, come from the phrases file", async () => {

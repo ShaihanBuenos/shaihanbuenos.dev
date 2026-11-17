@@ -20,9 +20,10 @@ const version = text.versions[language];
 if (!version) throw new Error(`texts/${text.id}: there is no version in ${language}`);
 const { Content } = await render(version.file);
 
-// A version in a language other than the original one is a translation.
-const original = text.versions[text.originalLanguage];
-const isTranslation = language !== text.originalLanguage;
+// A version in a language other than the original one is a translation, and
+// its translation note leads to the original.
+const original =
+  language === text.originalLanguage ? undefined : text.versions[text.originalLanguage];
 
 // The language button leads to the other version, when the text has one.
 const equivalent = textEquivalentOf(text.versions[otherLanguage(language)]?.slug, language);
@@ -34,7 +35,7 @@ const study = studies.find(({ id }) => id === text.study);
 <Reading title={version.title} equivalent={equivalent}>
   <Fragment slot="header">
     <p class="summary">{version.summary}</p>
-    <p class="caption meta">
+    <p class="caption captions">
       <span class:list={["text-type", text.type]}>{phrases.writing.types[text.type]}</span>
       <time datetime={isoDayOf(text.publishedOn)}>{dayIn(text.publishedOn, language)}</time>
       {text.updatedOn && (
@@ -47,15 +48,15 @@ const study = studies.find(({ id }) => id === text.study);
         <span>{phrases.writing.topics[topic]}</span>
       ))}
     </p>
-    {isTranslation && original && (
+    {original && (
       <p class="translation-note">
-        {phrases.writing.translation.from}{" "}
-        {version.translatedWithAI && `${phrases.writing.translation.withAI} `}
+        {phrases.writing.translationNote.from}{" "}
+        {version.translatedWithAI && `${phrases.writing.translationNote.withAI} `}
         <a
           href={textPathOf(original.slug, text.originalLanguage)}
           hreflang={HTML_LANG[text.originalLanguage]}
         >
-          {phrases.writing.translation.original}
+          {phrases.writing.translationNote.original}
         </a>
       </p>
     )}
@@ -74,8 +75,8 @@ const study = studies.find(({ id }) => id === text.study);
         </dd>
       </dl>
     )}
-    <p class="more">
-      <a href={pathOf("writing", language)}>{phrases.home.more.writing}</a>
+    <p>
+      <a href={pathOf("writing", language)}>{phrases.writing.all}</a>
     </p>
   </div>
 </Reading>

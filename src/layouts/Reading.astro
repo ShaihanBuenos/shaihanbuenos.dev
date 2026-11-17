@@ -2,6 +2,8 @@
 import "../styles/reading.css";
 import Base from "./Base.astro";
 
+// The slot "header" holds what follows the title inside the header: the
+// summary and the captions of a text.
 interface Props {
   title: string;
   // Where the language button leads, when the path of the page does not tell it.
@@ -15,7 +17,6 @@ const { title, equivalent } = Astro.props;
   <div class="reading">
     <header class="reading-header">
       <h1>{title}</h1>
-      <!-- What follows the title: the summary and the captions of a text. -->
       <slot name="header" />
     </header>
     <slot />

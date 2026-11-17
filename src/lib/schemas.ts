@@ -61,13 +61,15 @@ export const pagesSchema = z.strictObject({
     types: z.record(z.enum(TEXT_TYPES), phrase),
     // The name of each topic.
     topics: z.record(z.enum(TOPICS), phrase),
+    // The link that closes the page of a text and leads back to the list.
+    all: phrase,
     // Comes before the date of the content revision of a text.
     updatedOn: phrase,
     // Comes before the study a text came from.
     study: phrase,
     // The translation note. A translation shown in this language was always
     // written in the other one, so `from` names the other language.
-    translation: z.strictObject({
+    translationNote: z.strictObject({
       from: phrase,
       // The link to the original.
       original: phrase,
