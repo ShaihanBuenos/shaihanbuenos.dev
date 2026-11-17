@@ -183,7 +183,7 @@ describe("the feed follows the content", { concurrency: true }, () => {
     "texts/new-note/text.yaml":
       "publishedOn: 2026-05-01\ntype: study-note\ntopics: [career]\noriginalLanguage: pt-br\n",
     "texts/new-note/pt-br.md":
-      "---\ntitle: Nota nova\nsummary: Resumo de teste.\nslug: nota-nova\n---\n\nCorpo de teste, com um [link do site](/pt-br/sobre).\n\n![Figura de teste](./figure.svg)\n",
+      "---\ntitle: Nota nova\nsummary: Resumo de teste.\nslug: nota-nova\n---\n\nCorpo de teste, com um [link do site](/pt-br/sobre) e um [link do texto](#parte).\n\n## Parte\n\n![Figura de teste](./figure.svg)\n",
     "texts/new-note/figure.svg": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="10" height="10"><title>Test figure</title></svg>\n`,
   };
   const ORIGINAL = `${SITE}/pt-br/textos/nota-nova`;
@@ -225,6 +225,8 @@ describe("the feed follows the content", { concurrency: true }, () => {
   test("a link of the body that stays on the site is written in full", async () => {
     const newest = (await itemsIn(before, FEED.en)).at(0);
     assert.match(newest?.body ?? "", new RegExp(`<a href="${SITE}/pt-br/sobre">`));
+    // A link to a part of the text leads to that part on the page of the text.
+    assert.match(newest?.body ?? "", new RegExp(`<a href="${ORIGINAL}#parte">`));
   });
 
   test("an image of the text's folder is in the feed, at the address the site serves it from", async () => {

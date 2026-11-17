@@ -4,9 +4,10 @@
 import type { APIContext } from "astro";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { render } from "astro:content";
-import { type Text, content, versionIn } from "./content.ts";
+import { content, lastChangeOf, versionIn } from "./content.ts";
 import { type Language, DEFAULT_LANGUAGE, HTML_LANG } from "./languages.ts";
 import { addressOf, pathOf, textPathOf } from "./pages.ts";
+import { NAME } from "./site.ts";
 
 // The path of each language's feed.
 export function feedPathOf(language: Language): string {
@@ -15,10 +16,10 @@ export function feedPathOf(language: Language): string {
 
 // The name of each language's feed, for the feed readers and for the <head>.
 export function feedNameOf(writing: string): string {
-  return `Shaihan Buenos · ${writing}`;
+  return `${NAME} · ${writing}`;
 }
 
-function escape(text: string): string {
+function escapeXml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -35,11 +36,6 @@ function cdata(html: string): string {
 // The day of the content as the feed format writes it.
 function feedDayOf(day: Date): string {
   return day.toUTCString();
-}
-
-// The last day a text changed: the content revision, or the publication.
-function lastChangeOf({ publishedOn, updatedOn }: Text): Date {
-  return updatedOn ?? publishedOn;
 }
 
 export async function feed(language: Language, { site }: APIContext): Promise<Response> {
@@ -69,28 +65,31 @@ export async function feed(language: Language, { site }: APIContext): Promise<Re
     const translationNote =
       shown.language === text.originalLanguage
         ? ""
-        : `<p>${escape(note.from)} ${
-            shown.version.translatedWithAI ? `${escape(note.withAI)} ` : ""
-          }<a href="${id}" hreflang="${HTML_LANG[text.originalLanguage]}">${escape(
+        : `<p>${escapeXml(note.from)} ${
+            shown.version.translatedWithAI ? `${escapeXml(note.withAI)} ` : ""
+          }<a href="${id}" hreflang="${HTML_LANG[text.originalLanguage]}">${escapeXml(
             note.original,
           )}</a></p>\n`;
-    // Outside the site, an address that starts at the root leads nowhere.
+    // Outside the site, an address that starts at the root leads nowhere,
+    // and a link to a part of the text has no page to look for the part in.
+    const page = address(textPathOf(shown.version.slug, shown.language));
     const body = html.replace(
-      /\b(href|src)="(\/[^"]*)"/g,
-      (_, attribute: string, path: string) => `${attribute}="${address(path)}"`,
+      /\b(href|src)="([/#][^"]*)"/g,
+      (_, attribute: string, path: string) =>
+        `${attribute}="${path.startsWith("#") ? page + path : address(path)}"`,
     );
 
     items.push(`    <item>
-      <title>${escape(shown.version.title)}</title>
-      <link>${address(textPathOf(shown.version.slug, shown.language))}</link>
+      <title>${escapeXml(shown.version.title)}</title>
+      <link>${page}</link>
       <guid isPermaLink="true">${id}</guid>
       <pubDate>${feedDayOf(text.publishedOn)}</pubDate>${
         text.updatedOn
           ? `\n      <atom:updated>${text.updatedOn.toISOString().replace(".000", "")}</atom:updated>`
           : ""
       }
-      <category>${escape(phrases.writing.types[text.type])}</category>
-      <description>${escape(shown.version.summary)}</description>
+      <category>${escapeXml(phrases.writing.types[text.type])}</category>
+      <description>${escapeXml(shown.version.summary)}</description>
       <content:encoded>${cdata(translationNote + body)}</content:encoded>
     </item>
 `);
@@ -106,9 +105,9 @@ export async function feed(language: Language, { site }: APIContext): Promise<Re
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>${escape(feedNameOf(phrases.writing.name))}</title>
+    <title>${escapeXml(feedNameOf(phrases.writing.name))}</title>
     <link>${address(pathOf("writing", language))}</link>
-    <description>${escape(phrases.writing.description)}</description>
+    <description>${escapeXml(phrases.writing.description)}</description>
     <language>${HTML_LANG[language]}</language>${
       lastChange ? `\n    <lastBuildDate>${feedDayOf(lastChange)}</lastBuildDate>` : ""
     }

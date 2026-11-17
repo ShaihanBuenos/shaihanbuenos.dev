@@ -6,9 +6,7 @@ import type { Content, Project, Text } from "./content.ts";
 import { type Language, LANGUAGES, homeOf } from "./languages.ts";
 import { projectPathOf, textPathOf } from "./pages.ts";
 import type { Phrases, TEXT_TYPES } from "./schemas.ts";
-
-export const NAME = "Shaihan Buenos";
-export const DOMAIN = "shaihanbuenos.dev";
+import { DOMAIN, NAME } from "./site.ts";
 
 // The size every share image has, the one the sites that show it expect.
 export const SHARE_IMAGE_SIZE = { width: 1200, height: 630 } as const;

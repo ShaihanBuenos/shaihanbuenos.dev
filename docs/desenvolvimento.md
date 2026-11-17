@@ -95,6 +95,8 @@ A saída é só de arquivos estáticos.
 | `src/lib/content.ts` | O conteúdo já reunido e conferido. As páginas leem o conteúdo por aqui. |
 | `src/lib/contact.ts` | Os canais do contato, mostrados no rodapé e na página Sobre. |
 | `src/lib/feed.ts` | O feed de cada idioma. |
+| `src/lib/site.ts` | O nome do site e o domínio, para onde o site diz o próprio nome: o título da aba, os feeds, as imagens de compartilhamento e os dados estruturados. |
+| `src/fontkit.d.ts` | Os tipos da parte do `fontkit` que o desenho das imagens usa; o pacote não traz os seus. |
 | `src/lib/share-image.ts` | As imagens de compartilhamento: quais existem, onde fica cada uma e o que cada uma diz. |
 | `src/lib/share-image-drawing.ts` | O desenho de uma imagem de compartilhamento, e o PNG. |
 | `src/lib/structured-data.ts` | Os dados estruturados: a pessoa do Início e o artigo de um texto. |
@@ -142,8 +144,8 @@ Há um feed por idioma: `/rss.xml` e `/pt-br/rss.xml`, no formato RSS 2.0. Quem 
 
 - Cada feed traz todos os textos uma única vez, artigos e notas de estudo juntos, do mais recente ao mais antigo. O texto entra na versão do idioma do feed quando ela existe, e no original quando não existe. Rascunho não entra.
 - Cada item tem o título, o endereço da versão mostrada, a data de publicação, o tipo de texto (`<category>`, com o nome do tipo no idioma do feed), o resumo de uma linha (`<description>`) e o texto inteiro (`<content:encoded>`), com os endereços escritos por extenso e as imagens da pasta do texto. Uma tradução leva a nota de tradução no começo do texto.
-- O identificador do item (`<guid>`) é o endereço do original, nos dois feeds. Por isso uma tradução criada depois não cria item novo: o item continua o mesmo e passa a mostrar a tradução no feed do idioma dela.
-- Uma revisão de conteúdo (`updatedOn`) não muda o identificador nem a data de publicação: o item ganha `<atom:updated>` com a data da revisão, e o texto novo.
+- O identificador do item (`<guid>`) é o endereço do original, nos dois feeds. Por isso uma tradução criada depois não cria item novo: o item continua o mesmo e passa a mostrar a tradução no feed do idioma dela. Pelo mesmo motivo, não mude o `slug` do original de um texto já publicado: o endereço antigo deixa de responder, e os leitores de feed veem um item novo.
+- Uma revisão de conteúdo (`updatedOn`) não muda o identificador nem a data de publicação: o item ganha `<atom:updated>` com a data da revisão, e o texto novo. O leitor de feed atualiza o item que já tem; nem todo leitor avisa de novo.
 - A data do feed (`<lastBuildDate>`) é a da última publicação ou revisão, e não a do dia da construção: o mesmo conteúdo gera o mesmo feed.
 - O nome do feed é "Shaihan Buenos · " mais o nome da página de textos (`writing.name`), e a descrição é a da página de textos (`writing.description`), dos arquivos de `src/content/pages/`.
 
@@ -185,7 +187,7 @@ A construção gera as imagens, em PNG de 1200 por 630, sem serviço externo:
 | História do projeto | Uma por idioma: `/share/projects/<projeto>.png` e `/share/pt-br/projetos/<projeto>.png`. | O nome, a marca do projeto e `shaihanbuenos.dev`. |
 | Páginas fixas e "não encontrado" | Uma por idioma: `/share/default.png` e `/share/pt-br/default.png`. | O nome, o rótulo e `shaihanbuenos.dev`. |
 
-`src/lib/share-image.ts` diz quais imagens existem, o endereço e o texto alternativo de cada uma; o texto alternativo é o que está escrito na imagem. `src/lib/share-image-drawing.ts` desenha: monta um SVG com as medidas e as cores do `DESIGN.md` e o transforma em PNG. As letras entram no SVG como contornos tirados dos arquivos de `public/fonts/`, os mesmos que o site serve, então a imagem sai igual em qualquer máquina, sem depender das fontes instaladas. Um título comprido diminui até o menor tamanho do título de um texto e, se ainda não couber, é cortado com reticências.
+`src/lib/share-image.ts` diz quais imagens existem, o endereço e o texto alternativo de cada uma; o texto alternativo é o que está escrito na imagem. `src/lib/share-image-drawing.ts` desenha: monta um SVG com as medidas e as cores do `DESIGN.md` e o transforma em PNG. As letras entram no SVG como contornos tirados dos arquivos de `public/fonts/`, os mesmos que o site serve, então a imagem sai igual em qualquer máquina, sem depender das fontes instaladas. Um título comprido diminui até o menor tamanho do título de um texto e, se ainda não couber, é cortado com reticências. Um caractere que nenhum dos arquivos de fonte tem, como um emoji, fica de fora da imagem.
 
 Duas dependências fazem o desenho, as duas só na construção:
 
@@ -203,7 +205,7 @@ open dist/share/default.png   # ou dist/share/writing/<slug>.png
 npm run dev                   # http://localhost:4321/share/pt-br/default.png
 ```
 
-Para mudar o desenho, edite `share-image-drawing.ts`: as medidas estão em pixels de CSS, numa página de 600 por 315, e o PNG tem dois pixels para cada um. A marca de um projeto pode usar `currentColor` e as cores do site (`var(--copper)`, `var(--sapphire)`).
+Para mudar o desenho, edite `share-image-drawing.ts`: as medidas estão em pixels de CSS, numa página de 600 por 315, e o PNG tem dois pixels para cada um. A marca de um projeto pode usar `currentColor` e as cores do site (`var(--copper)`, `var(--sapphire)`); uma cor que o site não tem para a construção.
 
 ### O mapa do site, os dados estruturados e os robôs
 

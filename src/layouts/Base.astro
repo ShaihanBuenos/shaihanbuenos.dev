@@ -17,7 +17,8 @@ import {
   otherLanguage,
 } from "../lib/languages.ts";
 import { addressOf, requestedPath, samePageIn } from "../lib/pages.ts";
-import { type ShareImage, NAME, SHARE_IMAGE_SIZE, defaultShareImage } from "../lib/share-image.ts";
+import { type ShareImage, SHARE_IMAGE_SIZE, defaultShareImage } from "../lib/share-image.ts";
+import { NAME } from "../lib/site.ts";
 
 interface Props {
   // The name of the page. The tab title is "Page · Shaihan Buenos".
@@ -39,7 +40,7 @@ interface Props {
   // The share image, on a page that has its own: a text and a project story.
   shareImage?: ShareImage | undefined;
   // What the page is to the sites where its address is shared.
-  type?: "website" | "article" | undefined;
+  shareType?: "website" | "article" | undefined;
 }
 
 // The slot "head" holds what a page adds to the <head>: the motion, on the
@@ -52,7 +53,7 @@ const {
   equivalent,
   translation,
   notFound = false,
-  type = "website",
+  shareType = "website",
 } = Astro.props;
 const language = languageOf(Astro.currentLocale);
 const phrases = await phrasesOf(language);
@@ -99,7 +100,7 @@ const shareImageAddress = addressOf(shareImage.path, site);
     <meta property="og:site_name" content={NAME} />
     <meta property="og:title" content={tabTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content={type} />
+    <meta property="og:type" content={shareType} />
     {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:locale" content={SHARE_LOCALE[language]} />
     {addresses && (

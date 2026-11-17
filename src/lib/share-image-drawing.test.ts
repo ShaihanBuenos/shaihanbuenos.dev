@@ -66,3 +66,34 @@ test("the project mark goes into the image with the colors of the site", async (
   assert.match(svg, /<circle cx="60" cy="60" r="30" stroke="#d65c24" \/>/);
   assert.doesNotMatch(svg, /var\(/);
 });
+
+test("a mark that names a color the site does not have stops the build", async () => {
+  await assert.rejects(
+    shareImageSvg({
+      kind: "project",
+      path: "/share/test.png",
+      alt: "Test",
+      name: "A Project",
+      mark: MARK.replace("--copper", "--purple"),
+    }),
+    /the project mark uses var\(--purple\), which is not a color of the site/,
+  );
+});
+
+test("a single word wider than the image is cut too, and a short one gets no ellipsis", async () => {
+  const image = { kind: "project", path: "/share/test.png", alt: "Test", mark: MARK } as const;
+  const long = await shareImageSvg({ ...image, name: "W".repeat(60) });
+  const longer = await shareImageSvg({ ...image, name: "W".repeat(90) });
+  assert.equal(lettersIn(longer), lettersIn(long));
+  assert.ok(lettersIn(long) < 60);
+  // "Word" and the domain, and nothing else.
+  const short = await shareImageSvg({ ...image, name: "Word" });
+  assert.equal(lettersIn(short), "Word".length + "shaihanbuenos.dev".length);
+});
+
+test("a character no font file of the site has is left out, not drawn as an empty box", async () => {
+  const image = { kind: "project", path: "/share/test.png", alt: "Test", mark: MARK } as const;
+  const plain = await shareImageSvg({ ...image, name: "Word" });
+  const withArrow = await shareImageSvg({ ...image, name: "Wo\u{1F600}rd" });
+  assert.equal(lettersIn(withArrow), lettersIn(plain));
+});

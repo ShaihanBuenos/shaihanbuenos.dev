@@ -31,6 +31,11 @@ export function versionIn(
   throw new Error(`texts/${text.id}: the version in the original language is missing`);
 }
 
+// The last day a text changed: the content revision, or the publication.
+export function lastChangeOf({ publishedOn, updatedOn }: Text): Date {
+  return updatedOn ?? publishedOn;
+}
+
 // The project story in one language.
 export type ProjectStory = CollectionEntry<"projectStories">["data"] & {
   // The file of the story, for the page to show the body with `render()`.

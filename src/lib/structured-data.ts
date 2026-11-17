@@ -1,11 +1,11 @@
 // The structured data search engines read (section 9 of the spec): a person
 // on Home and an article on a text, with what the content says.
 import { CONTACT } from "./contact.ts";
-import type { Text, TextVersion } from "./content.ts";
+import { type Text, type TextVersion, lastChangeOf } from "./content.ts";
 import { isoDayOf } from "./dates.ts";
 import { type Language, HTML_LANG } from "./languages.ts";
 import type { Phrases } from "./schemas.ts";
-import { NAME } from "./share-image.ts";
+import { NAME } from "./site.ts";
 
 type Data = Record<string, unknown>;
 
@@ -53,7 +53,7 @@ export function articleData(
     inLanguage: HTML_LANG[language],
     datePublished: isoDayOf(text.publishedOn),
     // A text without a content revision last changed when it was published.
-    dateModified: isoDayOf(text.updatedOn ?? text.publishedOn),
+    dateModified: isoDayOf(lastChangeOf(text)),
     articleSection: phrases.writing.types[text.type],
     keywords: text.topics.map((topic) => phrases.writing.topics[topic]),
     image: shareImage,

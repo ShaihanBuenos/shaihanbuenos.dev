@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { content } from "../lib/content.ts";
+import { content, lastChangeOf } from "../lib/content.ts";
 import { isoDayOf } from "../lib/dates.ts";
 import { LANGUAGES } from "../lib/languages.ts";
 import { FIXED_PAGES, addressOf, pathOf, projectPathOf, textPathOf } from "../lib/pages.ts";
@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ site }) => {
         ? [
             {
               path: textPathOf(version.slug, language),
-              lastChange: text.updatedOn ?? text.publishedOn,
+              lastChange: lastChangeOf(text),
             },
           ]
         : [];

@@ -10,25 +10,41 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { type Font, create } from "fontkit";
 import sharp from "sharp";
-import { type ShareImage, DOMAIN, SHARE_IMAGE_SIZE } from "./share-image.ts";
+import { type ShareImage, SHARE_IMAGE_SIZE } from "./share-image.ts";
+import { DOMAIN } from "./site.ts";
 
 const WIDTH = 600;
 const HEIGHT = 315;
 
 // The palette "Cobre e safira", as in src/styles/base.css.
-const COLORS = {
+const COLORS: Record<string, string> = {
   ground: "#f3f2ef",
   sheet: "#fbfaf8",
   ink: "#14161b",
+  mut: "#4b4f58",
+  line: "rgba(20, 22, 27, 0.16)",
   grid: "rgba(20, 22, 27, 0.06)",
   copper: "#d65c24",
+  "copper-text": "#9c3d12",
   sapphire: "#183ec9",
   "l-copper": "rgba(214, 92, 36, 0.34)",
   "l-copper-2": "rgba(214, 92, 36, 0.22)",
   "l-sapphire": "rgba(24, 62, 201, 0.26)",
   "l-grey": "rgba(20, 22, 27, 0.1)",
+  "f-copper": "#eec4b0",
   "f-sapphire": "#c0c9ec",
-} as const;
+  "f-grey": "#e4e3e1",
+  "h-copper": "rgba(214, 92, 36, 0.62)",
+  "h-sapphire": "rgba(24, 62, 201, 0.48)",
+  "h-grey": "rgba(20, 22, 27, 0.26)",
+};
+
+// A color of the palette, by the name it has in the CSS.
+function colorOf(name: string): string {
+  const value = Object.hasOwn(COLORS, name) ? COLORS[name] : undefined;
+  if (value === undefined) throw new Error(`"${name}" is not a color of the site.`);
+  return value;
+}
 
 // The wire of the frame, of the core and of the panel of the mark.
 const WIRE = 1.5;
@@ -91,13 +107,14 @@ function at(font: Font, { size, weight }: Style): Font {
 }
 
 // The text cut where the font file changes: each letter is drawn with the
-// first file of the family that has it.
+// first file of the family that has it. A character none of them has, as an
+// emoji, is left out: the fonts would draw an empty box in its place.
 function runsOf(text: string, files: Font[]): { font: Font; text: string }[] {
   const runs: { font: Font; text: string }[] = [];
   for (const character of text) {
     const codePoint = character.codePointAt(0) ?? 0;
-    const font = files.find((file) => file.hasGlyphForCodePoint(codePoint)) ?? files.at(0);
-    if (!font) throw new Error("A font family has no files.");
+    const font = files.find((file) => file.hasGlyphForCodePoint(codePoint));
+    if (!font) continue;
     const last = runs.at(-1);
     if (last?.font === font) last.text += character;
     else runs.push({ font, text: character });
@@ -176,14 +193,26 @@ function fit(
   const smallest = sizes.at(-1);
   if (!smallest) throw new Error("A title needs at least one size.");
   const sized = { ...style, size: smallest.size };
-  const kept = wrap(text, sized, files, width).slice(0, smallest.maxLines);
-  const lines = kept.slice(0, -1).map((words) => lineOf(words.join(" "), sized, files));
-  const last = kept.at(-1) ?? [];
+  const wrapped = wrap(text, sized, files, width);
+  const kept = wrapped.slice(0, smallest.maxLines).map((words) => words.join(" "));
+  const lines = kept.slice(0, -1).map((line) => cut(line, sized, files, width));
+  // The last line ends in an ellipsis when lines were left out of the image.
+  const last = kept.at(-1) ?? "";
+  const leftOut = wrapped.length > smallest.maxLines;
+  lines.push(cut(leftOut ? `${last}…` : last, sized, files, width));
+  return { size: smallest.size, lines };
+}
+
+// A line no wider than `width`: when it is wider, as a single word may be,
+// it loses letters from the end and closes with an ellipsis.
+function cut(text: string, style: Style, files: Font[], width: number): Line {
+  const whole = lineOf(text, style, files);
+  if (whole.width <= width) return whole;
+  const letters = Array.from(text.replace(/…$/, ""));
   for (;;) {
-    const line = lineOf(`${last.join(" ")}…`, sized, files);
-    if (line.width <= width || last.length <= 1)
-      return { size: smallest.size, lines: [...lines, line] };
-    last.pop();
+    letters.pop();
+    const line = lineOf(`${letters.join("").trimEnd()}…`, style, files);
+    if (line.width <= width || letters.length === 0) return line;
   }
 }
 
@@ -198,16 +227,19 @@ function place(lines: Line[], x: number, y: number, lineHeight: number, color: s
     .join("");
 }
 
-function rectangle(
-  { x, y, width, height }: { x: number; y: number; width: number; height: number },
-  fill: string,
-  extra = "",
-): string {
+interface Box {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+function rectangle({ x, y, width, height }: Box, fill: string, extra = ""): string {
   return `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${fill}"${extra}/>`;
 }
 
 // A rectangle with the wire inside its edge, as a CSS border.
-function wired(box: { x: number; y: number; width: number; height: number }, fill: string): string {
+function wired(box: Box, fill: string): string {
   const inset = WIRE / 2;
   return rectangle(
     {
@@ -217,7 +249,7 @@ function wired(box: { x: number; y: number; width: number; height: number }, fil
       height: box.height - WIRE,
     },
     fill,
-    ` stroke="${COLORS.ink}" stroke-width="${WIRE}"`,
+    ` stroke="${colorOf("ink")}" stroke-width="${WIRE}"`,
   );
 }
 
@@ -228,7 +260,7 @@ function teeth(): string {
   for (let module = 0; module < 26; module += 1) {
     drawn += rectangle(
       { x: FRAME.x + module * U, y, width: U * TEETH.tooth, height: TEETH.height },
-      COLORS.ink,
+      colorOf("ink"),
     );
   }
   return drawn;
@@ -242,7 +274,7 @@ function caption(text: string, files: Font[]): Line {
 }
 
 // A position on the grid of the frame, in modules.
-function onGrid(column: number, row: number, columns: number, rows: number) {
+function onGrid(column: number, row: number, columns: number, rows: number): Box {
   return { x: FRAME.x + column * U, y: FRAME.y + row * U, width: columns * U, height: rows * U };
 }
 
@@ -256,23 +288,23 @@ function drawDefault(
   for (let column = 1; column < 26; column += 1) {
     grid += rectangle(
       { x: FRAME.x + column * U, y: FRAME.y, width: 1, height: FRAME.height },
-      COLORS.grid,
+      colorOf("grid"),
     );
   }
   for (let row = 1; row < 12; row += 1) {
     grid += rectangle(
       { x: FRAME.x, y: FRAME.y + row * U, width: FRAME.width, height: 1 },
-      COLORS.grid,
+      colorOf("grid"),
     );
   }
 
   const core = onGrid(1, 2, 14, 8);
   // The layers cross each other and the core, and darken where they cross.
   const layers = [
-    rectangle(onGrid(14, 1, 11, 3), COLORS["l-copper"]),
-    rectangle(onGrid(13, 3, 6, 8), COLORS["l-sapphire"]),
-    rectangle(onGrid(1, 9, 10, 2), COLORS["l-grey"]),
-    rectangle(onGrid(20, 5, 5, 6), COLORS["l-copper-2"]),
+    rectangle(onGrid(14, 1, 11, 3), colorOf("l-copper")),
+    rectangle(onGrid(13, 3, 6, 8), colorOf("l-sapphire")),
+    rectangle(onGrid(1, 9, 10, 2), colorOf("l-grey")),
+    rectangle(onGrid(20, 5, 5, 6), colorOf("l-copper-2")),
   ].join("");
 
   const padding = 14;
@@ -292,11 +324,11 @@ function drawDefault(
 
   return [
     grid,
-    wired(core, COLORS.ground),
+    wired(core, colorOf("ground")),
     `<g style="mix-blend-mode: multiply">${layers}</g>`,
-    place(nameLines, core.x + padding, firstBaseline, nameHeight, COLORS.ink),
-    place(labelLines, core.x + padding, labelBaseline, label.size * 1.2, COLORS.ink),
-    place([caption(DOMAIN, families.mono)], FRAME.x + U, FRAME.y + 11 * U + 13, 0, COLORS.ink),
+    place(nameLines, core.x + padding, firstBaseline, nameHeight, colorOf("ink")),
+    place(labelLines, core.x + padding, labelBaseline, label.size * 1.2, colorOf("ink")),
+    place([caption(DOMAIN, families.mono)], FRAME.x + U, FRAME.y + 11 * U + 13, 0, colorOf("ink")),
   ].join("");
 }
 
@@ -328,19 +360,19 @@ function drawText(
   // The little square of the text type: copper for an article, sapphire for
   // a study note.
   const square = 0.8 * CAPTION.size;
-  const color = image.type === "article" ? COLORS.copper : COLORS.sapphire;
+  const color = image.type === "article" ? colorOf("copper") : colorOf("sapphire");
 
   return [
-    place(title.lines, left, firstBaseline, lineHeight, COLORS.ink),
+    place(title.lines, left, firstBaseline, lineHeight, colorOf("ink")),
     rectangle({ x: left, y: captionBaseline - square, width: square, height: square }, color),
     place(
       [caption(image.typeName, families.mono)],
       left + square + 0.55 * CAPTION.size,
       captionBaseline,
       0,
-      COLORS.ink,
+      colorOf("ink"),
     ),
-    place([caption(DOMAIN, families.mono)], left, FRAME.y + 11 * U + 4, 0, COLORS.ink),
+    place([caption(DOMAIN, families.mono)], left, FRAME.y + 11 * U + 4, 0, colorOf("ink")),
   ].join("");
 }
 
@@ -349,14 +381,17 @@ function drawText(
 function markAt(mark: string, x: number, y: number, size: number): string {
   const placed = mark
     .replace(/<\?xml[^>]*\?>/, "")
-    .replace(/var\(--([\w-]+)\)/g, (whole, name: string) =>
-      name in COLORS ? COLORS[name as keyof typeof COLORS] : whole,
-    )
+    .replace(/var\(--([\w-]+)\)/g, (whole, name: string) => {
+      if (!Object.hasOwn(COLORS, name)) {
+        throw new Error(`the project mark uses ${whole}, which is not a color of the site`);
+      }
+      return colorOf(name);
+    })
     .replace(/<svg\b([^>]*)>/, (_, attributes: string) => {
       const kept = attributes.replace(/\s(?:x|y|width|height)="[^"]*"/g, "");
       return `<svg${kept} x="${x}" y="${y}" width="${size}" height="${size}">`;
     });
-  return `<g color="${COLORS.ink}">${placed}</g>`;
+  return `<g color="${colorOf("ink")}">${placed}</g>`;
 }
 
 // The image of a project story: the name and, in its panel, the project mark.
@@ -377,16 +412,16 @@ function drawProject(
   const markSize = 5 * U;
 
   return [
-    rectangle(panel, COLORS["f-sapphire"]),
-    rectangle({ x: panel.x, y: panel.y, width: WIRE, height: panel.height }, COLORS.ink),
+    rectangle(panel, colorOf("f-sapphire")),
+    rectangle({ x: panel.x, y: panel.y, width: WIRE, height: panel.height }, colorOf("ink")),
     markAt(
       image.mark,
       panel.x + (panel.width - markSize) / 2,
       panel.y + (panel.height - markSize) / 2,
       markSize,
     ),
-    place(name.lines, left, FRAME.y + 1.5 * U + name.size * 0.78, name.size * 0.86, COLORS.ink),
-    place([caption(DOMAIN, families.mono)], left, FRAME.y + 11 * U + 4, 0, COLORS.ink),
+    place(name.lines, left, FRAME.y + 1.5 * U + name.size * 0.78, name.size * 0.86, colorOf("ink")),
+    place([caption(DOMAIN, families.mono)], left, FRAME.y + 11 * U + 4, 0, colorOf("ink")),
   ].join("");
 }
 
@@ -403,8 +438,8 @@ export async function shareImageSvg(image: ShareImage): Promise<string> {
 
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${SHARE_IMAGE_SIZE.width}" height="${SHARE_IMAGE_SIZE.height}" viewBox="0 0 ${WIDTH} ${HEIGHT}">`,
-    rectangle({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, COLORS.ground),
-    rectangle(FRAME, COLORS.sheet),
+    rectangle({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, colorOf("ground")),
+    rectangle(FRAME, colorOf("sheet")),
     inside,
     wired(FRAME, "none"),
     teeth(),
