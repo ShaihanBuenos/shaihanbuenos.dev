@@ -1,0 +1,12 @@
+# Made-up example. Delete before launch. Two roles with the same company are
+# shown together on the timeline.
+company: Empresa de Exemplo
+title: Software Engineer I
+start: 2022-01
+end: 2024-03
+context:
+  en: "[Example] One line of context about an earlier role at the same company."
+  pt-br: "[Exemplo] Uma linha de contexto sobre um cargo anterior na mesma empresa."
+achievements:
+  - en: "[Example] A made-up achievement from the earlier role."
+    pt-br: "[Exemplo] Uma conquista inventada do cargo anterior."

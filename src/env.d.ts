@@ -1,4 +1,4 @@
 interface ImportMetaEnv {
-  // Se os rascunhos aparecem: só no site rodando localmente. Vem de astro.config.ts.
-  readonly MOSTRAR_RASCUNHOS: boolean;
+  // Whether drafts are shown: only in the dev server. Set in astro.config.ts.
+  readonly SHOW_DRAFTS: boolean;
 }

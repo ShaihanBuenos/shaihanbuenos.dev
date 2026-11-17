@@ -1,268 +1,268 @@
-// Testes do site construído: sobem o resultado de `astro build` (pasta dist/)
-// e pedem cada endereço por HTTP, como um visitante faria.
+// Tests of the built site: they serve the result of `astro build` (the dist/
+// folder) and request each address over HTTP, as a visitor would.
 import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import { after, before, test } from "node:test";
 import { preview } from "astro";
 
-const raiz = new URL("..", import.meta.url).pathname;
+const root = new URL("..", import.meta.url).pathname;
 
-let origem: string;
-let parar: () => Promise<void>;
+let origin: string;
+let stop: () => Promise<void>;
 
 before(async () => {
-  const servidor = await preview({
-    root: raiz,
+  const server = await preview({
+    root,
     logLevel: "silent",
     server: { port: 4391 },
   });
-  origem = `http://localhost:${servidor.port}`;
-  parar = () => servidor.stop();
+  origin = `http://localhost:${server.port}`;
+  stop = () => server.stop();
 });
 
-after(() => parar());
+after(() => stop());
 
-function langDe(html: string): string | undefined {
+function langOf(html: string): string | undefined {
   return html.match(/<html[^>]*\blang="([^"]*)"/)?.[1];
 }
 
-// Pede o endereço exato, sem seguir redirecionamento: o endereço da spec
-// tem de responder ele mesmo.
-function pedir(endereco: string): Promise<Response> {
-  return fetch(`${origem}${endereco}`, { redirect: "manual" });
+// Requests the exact address, without following redirects: the address in
+// the spec has to answer by itself.
+function request(path: string): Promise<Response> {
+  return fetch(`${origin}${path}`, { redirect: "manual" });
 }
 
-// Seção 4 da spec: os endereços das páginas fixas, nos dois idiomas.
-const PAGINAS = [
-  { pagina: "Início", en: "/", pt: "/pt-br" },
-  { pagina: "Projetos", en: "/projects", pt: "/pt-br/projetos" },
-  { pagina: "Textos", en: "/writing", pt: "/pt-br/textos" },
-  { pagina: "Estudos", en: "/studies", pt: "/pt-br/estudos" },
-  { pagina: "Pesquisa", en: "/research", pt: "/pt-br/pesquisa" },
-  { pagina: "Sobre", en: "/about", pt: "/pt-br/sobre" },
+// Section 4 of the spec: the addresses of the fixed pages, in both languages.
+const PAGES = [
+  { page: "Home", en: "/", pt: "/pt-br" },
+  { page: "Projects", en: "/projects", pt: "/pt-br/projetos" },
+  { page: "Writing", en: "/writing", pt: "/pt-br/textos" },
+  { page: "Studies", en: "/studies", pt: "/pt-br/estudos" },
+  { page: "Research", en: "/research", pt: "/pt-br/pesquisa" },
+  { page: "About", en: "/about", pt: "/pt-br/sobre" },
 ];
 
-for (const { pagina, en, pt } of PAGINAS) {
-  test(`${pagina} responde em inglês em ${en}`, async () => {
-    const resposta = await pedir(en);
-    assert.equal(resposta.status, 200);
-    assert.equal(langDe(await resposta.text()), "en");
+for (const { page, en, pt } of PAGES) {
+  test(`${page} answers in English at ${en}`, async () => {
+    const response = await request(en);
+    assert.equal(response.status, 200);
+    assert.equal(langOf(await response.text()), "en");
   });
 
-  test(`${pagina} responde em português em ${pt}`, async () => {
-    const resposta = await pedir(pt);
-    assert.equal(resposta.status, 200);
-    assert.equal(langDe(await resposta.text()), "pt-BR");
+  test(`${page} answers in Portuguese at ${pt}`, async () => {
+    const response = await request(pt);
+    assert.equal(response.status, 200);
+    assert.equal(langOf(await response.text()), "pt-BR");
   });
 }
 
-// Os links de um trecho de HTML, na ordem em que aparecem: os atributos e o
-// texto de cada um.
+// The links of a piece of HTML, in the order they appear: the attributes and
+// the text of each one.
 interface Link {
-  atributos: Record<string, string>;
-  texto: string;
+  attributes: Record<string, string>;
+  text: string;
 }
 
-function linksDe(html: string): Link[] {
-  return [...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)].map(
-    ([, abertura = "", miolo = ""]) => ({
-      atributos: Object.fromEntries(
-        [...abertura.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, nome, valor]) => [nome, valor]),
-      ),
-      texto: miolo.replace(/<[^>]*>/g, "").trim(),
-    }),
-  );
+function linksOf(html: string): Link[] {
+  return [...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)].map(([, opening = "", inner = ""]) => ({
+    attributes: Object.fromEntries(
+      [...opening.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, name, value]) => [name, value]),
+    ),
+    text: inner.replace(/<[^>]*>/g, "").trim(),
+  }));
 }
 
-// O primeiro elemento com esse nome, com tudo o que tem dentro.
-function elemento(html: string, nome: string): string {
-  const achado = html.match(new RegExp(`<${nome}\\b[\\s\\S]*?</${nome}>`))?.[0];
-  assert.ok(achado, `a página não tem <${nome}>`);
-  return achado;
+// The first element with this name, with everything inside it.
+function element(html: string, name: string): string {
+  const found = html.match(new RegExp(`<${name}\\b[\\s\\S]*?</${name}>`))?.[0];
+  assert.ok(found, `the page has no <${name}>`);
+  return found;
 }
 
-// Seção 4 da spec: o menu, na ordem, com o nome de cada página no idioma.
+// Section 4 of the spec: the menu, in order, with the name of each page in
+// the language.
 const MENU = {
   en: [
-    { href: "/projects", texto: "Projects" },
-    { href: "/writing", texto: "Writing" },
-    { href: "/studies", texto: "Studies" },
-    { href: "/research", texto: "Research" },
-    { href: "/about", texto: "About" },
+    { href: "/projects", text: "Projects" },
+    { href: "/writing", text: "Writing" },
+    { href: "/studies", text: "Studies" },
+    { href: "/research", text: "Research" },
+    { href: "/about", text: "About" },
   ],
   pt: [
-    { href: "/pt-br/projetos", texto: "Projetos" },
-    { href: "/pt-br/textos", texto: "Textos" },
-    { href: "/pt-br/estudos", texto: "Estudos" },
-    { href: "/pt-br/pesquisa", texto: "Pesquisa" },
-    { href: "/pt-br/sobre", texto: "Sobre" },
+    { href: "/pt-br/projetos", text: "Projetos" },
+    { href: "/pt-br/textos", text: "Textos" },
+    { href: "/pt-br/estudos", text: "Estudos" },
+    { href: "/pt-br/pesquisa", text: "Pesquisa" },
+    { href: "/pt-br/sobre", text: "Sobre" },
   ],
 };
 
-// Todas as páginas que existem hoje, com o "não encontrado" de cada idioma.
-// `equivalente` é para onde o botão de idioma leva.
-const TODAS_AS_PAGINAS = [
-  ...PAGINAS.flatMap(({ pagina, en, pt }) => [
-    { nome: `${pagina} em inglês`, endereco: en, idioma: "en" as const, equivalente: pt },
-    { nome: `${pagina} em português`, endereco: pt, idioma: "pt" as const, equivalente: en },
+// Every page that exists today, with the "not found" of each language.
+// `equivalent` is where the language button leads.
+const ALL_PAGES = [
+  ...PAGES.flatMap(({ page, en, pt }) => [
+    { name: `${page} in English`, path: en, language: "en" as const, equivalent: pt },
+    { name: `${page} in Portuguese`, path: pt, language: "pt" as const, equivalent: en },
   ]),
   {
-    nome: '"Não encontrado" em inglês',
-    endereco: "/does-not-exist",
-    idioma: "en" as const,
-    equivalente: "/pt-br",
+    name: '"Not found" in English',
+    path: "/does-not-exist",
+    language: "en" as const,
+    equivalent: "/pt-br",
   },
   {
-    nome: '"Não encontrado" em português',
-    endereco: "/pt-br/404",
-    idioma: "pt" as const,
-    equivalente: "/",
+    name: '"Not found" in Portuguese',
+    path: "/pt-br/404",
+    language: "pt" as const,
+    equivalent: "/",
   },
 ];
 
-const INICIO = { en: "/", pt: "/pt-br" };
+const HOME = { en: "/", pt: "/pt-br" };
 
-for (const { nome, endereco, idioma } of TODAS_AS_PAGINAS) {
-  test(`${nome} tem o botão de início e o menu do seu idioma`, async () => {
-    const menu = linksDe(elemento(await (await pedir(endereco)).text(), "nav"));
-    assert.equal(menu[0]?.atributos.href, INICIO[idioma]);
+for (const { name, path, language } of ALL_PAGES) {
+  test(`${name} has the home button and the menu of its language`, async () => {
+    const menu = linksOf(element(await (await request(path)).text(), "nav"));
+    assert.equal(menu[0]?.attributes.href, HOME[language]);
     assert.deepEqual(
-      menu.slice(1, 6).map(({ atributos, texto }) => ({ href: atributos.href, texto })),
-      MENU[idioma],
+      menu.slice(1, 6).map(({ attributes, text }) => ({ href: attributes.href, text })),
+      MENU[language],
     );
   });
 }
 
-// O menu marca a página em que o visitante está; no "não encontrado", nenhuma.
-for (const { nome, endereco } of TODAS_AS_PAGINAS) {
-  const ehPaginaFixa = PAGINAS.some(({ en, pt }) => endereco === en || endereco === pt);
-  const esperado = ehPaginaFixa ? [endereco] : [];
+// The menu marks the page the visitor is on; on "not found", none.
+for (const { name, path } of ALL_PAGES) {
+  const isFixedPage = PAGES.some(({ en, pt }) => path === en || path === pt);
+  const expected = isFixedPage ? [path] : [];
 
-  test(`${nome}: o menu marca ${esperado[0] ?? "nenhuma página"} como a atual`, async () => {
-    const menu = linksDe(elemento(await (await pedir(endereco)).text(), "nav"));
+  test(`${name}: the menu marks ${expected[0] ?? "no page"} as the current one`, async () => {
+    const menu = linksOf(element(await (await request(path)).text(), "nav"));
     assert.deepEqual(
       menu
-        .filter(({ atributos }) => atributos["aria-current"] === "page")
-        .map(({ atributos }) => atributos.href),
-      esperado,
+        .filter(({ attributes }) => attributes["aria-current"] === "page")
+        .map(({ attributes }) => attributes.href),
+      expected,
     );
   });
 }
 
-// O botão de idioma: "EN" e "PT", com o idioma atual marcado e o outro como
-// link para o equivalente da página.
-const SIGLA = { en: "EN", pt: "PT" };
-const OUTRO_IDIOMA = { en: "pt", pt: "en" } as const;
+// The language button: "EN" and "PT", with the current language marked and
+// the other one as a link to the equivalent of the page.
+const SHORT_NAME = { en: "EN", pt: "PT" };
+const OTHER_LANGUAGE = { en: "pt", pt: "en" } as const;
 
-for (const { nome, endereco, idioma, equivalente } of TODAS_AS_PAGINAS) {
-  test(`${nome}: o botão de idioma leva a ${equivalente}`, async () => {
-    const menu = elemento(await (await pedir(endereco)).text(), "nav");
-    const outro = OUTRO_IDIOMA[idioma];
+for (const { name, path, language, equivalent } of ALL_PAGES) {
+  test(`${name}: the language button leads to ${equivalent}`, async () => {
+    const menu = element(await (await request(path)).text(), "nav");
+    const other = OTHER_LANGUAGE[language];
 
-    const paraOOutro = linksDe(menu).filter(({ texto }) => texto === SIGLA[outro]);
+    const toTheOther = linksOf(menu).filter(({ text }) => text === SHORT_NAME[other]);
     assert.deepEqual(
-      paraOOutro.map(({ atributos }) => atributos.href),
-      [equivalente],
+      toTheOther.map(({ attributes }) => attributes.href),
+      [equivalent],
     );
-    assert.equal(paraOOutro[0]?.atributos.hreflang, { en: "en", pt: "pt-BR" }[outro]);
+    assert.equal(toTheOther[0]?.attributes.hreflang, { en: "en", pt: "pt-BR" }[other]);
 
-    const marcado = menu.match(/<(\w+)\b[^>]*\baria-current="true"[^>]*>([^<]*)</);
-    assert.equal(marcado?.[1], "span", "o idioma atual não é link");
-    assert.equal(marcado[2].trim(), SIGLA[idioma]);
+    const marked = menu.match(/<(\w+)\b[^>]*\baria-current="true"[^>]*>([^<]*)</);
+    assert.equal(marked?.[1], "span", "the current language is a link");
+    assert.equal(marked[2].trim(), SHORT_NAME[language]);
   });
 }
 
-// O rodapé: o contato (seção 7.6 da spec) e o link do feed do idioma.
-const CONTATO = [
+// The footer: the contact (section 7.6 of the spec) and the link to the feed
+// of the language.
+const CONTACT = [
   "https://www.linkedin.com/in/shaihanbuenos/",
   "https://github.com/ShaihanBuenos",
   "mailto:hi@shaihanbuenos.dev",
 ];
 const FEED = { en: "/rss.xml", pt: "/pt-br/rss.xml" };
 
-for (const { nome, endereco, idioma } of TODAS_AS_PAGINAS) {
-  test(`${nome} tem o rodapé com o contato e o feed do seu idioma`, async () => {
-    const rodape = linksDe(elemento(await (await pedir(endereco)).text(), "footer"));
+for (const { name, path, language } of ALL_PAGES) {
+  test(`${name} has the footer with the contact and the feed of its language`, async () => {
+    const footer = linksOf(element(await (await request(path)).text(), "footer"));
     assert.deepEqual(
-      rodape.map(({ atributos }) => atributos.href),
-      [...CONTATO, FEED[idioma]],
+      footer.map(({ attributes }) => attributes.href),
+      [...CONTACT, FEED[language]],
     );
   });
 }
 
-// DESIGN.md: as três fontes são servidas pelo próprio site, cada uma em dois
-// arquivos. O teste segue o CSS de uma página até os arquivos de fonte.
-test("as fontes do sistema visual são servidas pelo próprio site", async () => {
-  const html = await (await pedir("/")).text();
+// DESIGN.md: the three fonts are served by the site itself, each one in two
+// files. The test follows the CSS of a page down to the font files.
+test("the fonts of the visual system are served by the site itself", async () => {
+  const html = await (await request("/")).text();
   let css = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map(([, c]) => c).join("\n");
-  for (const [, atributos = ""] of html.matchAll(/<link\b([^>]*)>/g)) {
-    const href = atributos.match(/\bhref="([^"]*)"/)?.[1];
-    if (href && /\brel="stylesheet"/.test(atributos)) css += await (await pedir(href)).text();
+  for (const [, attributes = ""] of html.matchAll(/<link\b([^>]*)>/g)) {
+    const href = attributes.match(/\bhref="([^"]*)"/)?.[1];
+    if (href && /\brel="stylesheet"/.test(attributes)) css += await (await request(href)).text();
   }
 
-  const fontes = [...new Set([...css.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map(([, u]) => u))];
-  assert.equal(fontes.length, 6, `esperava seis arquivos de fonte, achei ${fontes.length}`);
-  for (const fonte of fontes) {
-    assert.match(fonte, /^\/fonts\/[\w-]+\.woff2$/);
-    assert.equal((await pedir(fonte)).status, 200, `${fonte} não responde`);
+  const fonts = [...new Set([...css.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map(([, u]) => u))];
+  assert.equal(fonts.length, 6, `expected six font files, found ${fonts.length}`);
+  for (const font of fonts) {
+    assert.match(font, /^\/fonts\/[\w-]+\.woff2$/);
+    assert.equal((await request(font)).status, 200, `${font} does not answer`);
   }
 });
 
-function tituloDe(html: string): string | undefined {
+function titleOf(html: string): string | undefined {
   return html.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1];
 }
 
-test('endereço que não existe mostra o "não encontrado" em inglês', async () => {
-  const resposta = await pedir("/does-not-exist");
-  const html = await resposta.text();
-  assert.equal(resposta.status, 404);
-  assert.equal(langDe(html), "en");
-  assert.equal(tituloDe(html), "Page not found");
+test('an address that does not exist shows "not found" in English', async () => {
+  const response = await request("/does-not-exist");
+  const html = await response.text();
+  assert.equal(response.status, 404);
+  assert.equal(langOf(html), "en");
+  assert.equal(titleOf(html), "Page not found");
 });
 
-// Mostrar esta página para um endereço que não existe sob /pt-br é trabalho
-// da hospedagem, que procura o 404.html mais próximo. Aqui se confere que a
-// página existe no lugar onde a hospedagem procura.
-test('o "não encontrado" em português fica em /pt-br/404', async () => {
-  const resposta = await pedir("/pt-br/404");
-  const html = await resposta.text();
-  assert.equal(langDe(html), "pt-BR");
-  assert.equal(tituloDe(html), "Página não encontrada");
+// Showing this page for an address that does not exist under /pt-br is the
+// host's job, which looks for the nearest 404.html. Here we check that the
+// page exists where the host looks.
+test('"not found" in Portuguese lives at /pt-br/404', async () => {
+  const response = await request("/pt-br/404");
+  const html = await response.text();
+  assert.equal(langOf(html), "pt-BR");
+  assert.equal(titleOf(html), "Página não encontrada");
 });
 
-// Até o lançamento, nada do que é construído pode ser indexado. O teste olha
-// todo HTML da pasta dist/, para valer também para as páginas que vierem.
-test("nenhuma página construída pode ser indexada", async () => {
-  const dist = `${raiz}dist`;
-  const arquivos = (await readdir(dist, { recursive: true })).filter((a) => a.endsWith(".html"));
-  assert.ok(arquivos.length >= 14, `esperava as páginas da seção 4, achei ${arquivos.length}`);
+// Until launch, nothing that is built may be indexed. The test looks at every
+// HTML file in dist/, so it also holds for the pages still to come.
+test("no built page can be indexed", async () => {
+  const dist = `${root}dist`;
+  const files = (await readdir(dist, { recursive: true })).filter((f) => f.endsWith(".html"));
+  assert.ok(files.length >= 14, `expected the pages of section 4, found ${files.length}`);
 
-  const indexaveis = [];
-  for (const arquivo of arquivos) {
-    const html = await readFile(`${dist}/${arquivo}`, "utf8");
+  const indexable = [];
+  for (const file of files) {
+    const html = await readFile(`${dist}/${file}`, "utf8");
     const robots = html.match(/<meta[^>]*\bname="robots"[^>]*\bcontent="([^"]*)"/)?.[1] ?? "";
-    if (!robots.split(/\s*,\s*/).includes("noindex")) indexaveis.push(arquivo);
+    if (!robots.split(/\s*,\s*/).includes("noindex")) indexable.push(file);
   }
-  assert.deepEqual(indexaveis, []);
+  assert.deepEqual(indexable, []);
 });
 
-// Os feeds ainda não têm textos; por enquanto só respondem, cada um no seu idioma.
-for (const { endereco, idioma } of [
-  { endereco: "/rss.xml", idioma: "en" },
-  { endereco: "/pt-br/rss.xml", idioma: "pt-br" },
+// The feeds have no texts yet; for now they only answer, each in its language.
+for (const { path, language } of [
+  { path: "/rss.xml", language: "en" },
+  { path: "/pt-br/rss.xml", language: "pt-br" },
 ]) {
-  test(`Feed responde em ${endereco} com o idioma ${idioma}`, async () => {
-    const resposta = await pedir(endereco);
-    const xml = await resposta.text();
-    assert.equal(resposta.status, 200);
+  test(`The feed answers at ${path} in the language ${language}`, async () => {
+    const response = await request(path);
+    const xml = await response.text();
+    assert.equal(response.status, 200);
     assert.match(xml, /^<\?xml[^>]*\?>\s*<rss\b/);
-    assert.equal(xml.match(/<language>([^<]*)<\/language>/)?.[1]?.toLowerCase(), idioma);
+    assert.equal(xml.match(/<language>([^<]*)<\/language>/)?.[1]?.toLowerCase(), language);
   });
 }
 
-// Feeds e outros arquivos que não são HTML não levam <meta>. Para eles a
-// hospedagem (Cloudflare) lê o arquivo _headers e manda o cabeçalho em tudo.
-test("o que não é página também sai marcado para não ser indexado", async () => {
-  const headers = await readFile(`${raiz}dist/_headers`, "utf8");
+// Feeds and other files that are not HTML carry no <meta>. For them the host
+// (Cloudflare) reads the _headers file and sends the header on everything.
+test("what is not a page is also marked not to be indexed", async () => {
+  const headers = await readFile(`${root}dist/_headers`, "utf8");
   assert.match(headers, /^\/\*\n[ \t]+X-Robots-Tag: noindex$/m);
 });

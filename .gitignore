@@ -1,13 +1,13 @@
-# configuração local e binários das skills
+# local configuration and skill binaries
 .claude/
-# notas, dossiês e protótipos locais: nunca entram no git
+# local notes, dossiers and prototypes: they never enter git
 .scratch/
-# rascunhos e capturas do processo de design
+# drafts and screenshots of the design process
 .impeccable/review/
 .impeccable/mocks/
 .impeccable/questions/
 .impeccable/hook.cache.json
-# dependências e saídas do projeto Astro
+# dependencies and outputs of the Astro project
 node_modules/
 dist/
 .astro/

@@ -1,8 +1,8 @@
 ---
-import Leitura from "../../layouts/Leitura.astro";
-import { frasesDe } from "../../lib/conteudo.ts";
+import Reading from "../../layouts/Reading.astro";
+import { phrasesOf } from "../../lib/content.ts";
 
-const frases = await frasesDe("pt-br");
+const phrases = await phrasesOf("pt-br");
 ---
 
-<Leitura titulo={frases.naoEncontrado.nome} />
+<Reading title={phrases.notFound.name} />

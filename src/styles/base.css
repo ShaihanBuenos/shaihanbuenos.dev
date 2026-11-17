@@ -1,4 +1,4 @@
-/* Planta de Silício, paleta "Cobre e safira". Os nomes e os valores vêm de DESIGN.md. */
+/* Planta de Silício, the "Cobre e safira" palette. The names and the values come from DESIGN.md. */
 :root {
   --ground: #f3f2ef;
   --sheet: #fbfaf8;
@@ -6,24 +6,24 @@
   --mut: #4b4f58;
   --line: rgba(20, 22, 27, 0.16);
   --grid: rgba(20, 22, 27, 0.06);
-  --cobre: #d65c24;
-  --cobre-texto: #9c3d12;
-  --safira: #183ec9;
-  --l-cobre: rgba(214, 92, 36, 0.34);
-  --l-cobre-2: rgba(214, 92, 36, 0.22);
-  --l-safira: rgba(24, 62, 201, 0.26);
-  --l-cinza: rgba(20, 22, 27, 0.1);
-  --f-cobre: #eec4b0;
-  --f-safira: #c0c9ec;
-  --f-cinza: #e4e3e1;
-  --h-cobre: rgba(214, 92, 36, 0.62);
-  --h-safira: rgba(24, 62, 201, 0.48);
-  --h-cinza: rgba(20, 22, 27, 0.26);
+  --copper: #d65c24;
+  --copper-text: #9c3d12;
+  --sapphire: #183ec9;
+  --l-copper: rgba(214, 92, 36, 0.34);
+  --l-copper-2: rgba(214, 92, 36, 0.22);
+  --l-sapphire: rgba(24, 62, 201, 0.26);
+  --l-grey: rgba(20, 22, 27, 0.1);
+  --f-copper: #eec4b0;
+  --f-sapphire: #c0c9ec;
+  --f-grey: #e4e3e1;
+  --h-copper: rgba(214, 92, 36, 0.62);
+  --h-sapphire: rgba(24, 62, 201, 0.48);
+  --h-grey: rgba(20, 22, 27, 0.26);
   --display: "Bricolage Grotesque", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --text: "Hanken Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --gutter: clamp(16px, 3.2vw, 46px);
-  /* O módulo da grade: 1/26 da largura da moldura. Só vale dentro dela. */
+  /* The grid module: 1/26 of the width of the frame. It only holds inside it. */
   --u: calc(100cqw / 26);
   color-scheme: light;
 }
@@ -49,12 +49,12 @@ body {
 }
 
 ::selection {
-  background: var(--cobre);
+  background: var(--copper);
   color: var(--sheet);
 }
 
 a {
-  color: var(--safira);
+  color: var(--sapphire);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }
@@ -64,7 +64,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 2px solid var(--safira);
+  outline: 2px solid var(--sapphire);
   outline-offset: 3px;
 }
 
@@ -94,8 +94,8 @@ h3 {
   text-wrap: balance;
 }
 
-/* A legenda: um dado (estado, data, tipo) em monoespaçado miúdo. */
-.legenda {
+/* The caption: a piece of data (state, date, type) in small monospace. */
+.caption {
   font-family: var(--mono);
   font-size: 0.72rem;
   letter-spacing: 0.02em;
@@ -104,13 +104,13 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
-/* O link "pular para o conteúdo": só aparece quando recebe foco. */
-.pular {
+/* The "skip to content" link: it only shows when it receives focus. */
+.skip {
   position: absolute;
   left: -999px;
 }
 
-.pular:focus {
+.skip:focus {
   left: var(--gutter);
   top: 8px;
   z-index: 5;

@@ -1,87 +1,61 @@
-// As coleções de conteúdo (seção 6 da spec): onde ficam os arquivos de cada
-// uma e que campos eles têm. Os campos estão em src/lib/esquemas.ts.
+// The content collections (section 6 of the spec): where the files of each
+// one live and which fields they have. The fields are in src/lib/schemas.ts.
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import {
-  esquemaDaListaDeEstudos,
-  esquemaDasPaginas,
-  esquemaDaHistoriaDoProjeto,
-  esquemaDaVersaoDoTexto,
-  esquemaDoCargo,
-  esquemaDoEstudo,
-  esquemaDoItemDePesquisa,
-  esquemaDoProjeto,
-  esquemaDoTexto,
-} from "./lib/esquemas.ts";
+  pagesSchema,
+  projectSchema,
+  projectStorySchema,
+  researchItemSchema,
+  roleSchema,
+  studyListSchema,
+  studySchema,
+  textSchema,
+  textVersionSchema,
+} from "./lib/schemas.ts";
 
-// O identificador de um item curto é o nome do arquivo, sem a extensão.
-function arquivosDe(pasta: string) {
-  return glob({ base: `./src/content/${pasta}`, pattern: "*.yaml" });
+// The id of a short item is the name of its file, without the extension.
+function filesOf(folder: string) {
+  return glob({ base: `./src/content/${folder}`, pattern: "*.yaml" });
 }
 
-const paginas = defineCollection({
-  loader: arquivosDe("paginas"),
-  schema: esquemaDasPaginas,
-});
+// A text or a project is a folder: one file with what holds for both
+// languages, and one file per language. The id of the shared file is the
+// name of the folder, and the id of each language file is
+// "<folder>/<language>".
+function sharedFilesOf(folder: string, fileName: string) {
+  return glob({
+    base: `./src/content/${folder}`,
+    pattern: `*/${fileName}`,
+    generateId: ({ entry }) => entry.slice(0, entry.lastIndexOf("/")),
+  });
+}
 
-// Um texto é uma pasta. O identificador do texto é o nome da pasta, e o de
-// cada versão é "<pasta>/<idioma>".
-const textos = defineCollection({
-  loader: glob({
-    base: "./src/content/textos",
-    pattern: "*/texto.yaml",
-    generateId: ({ entry }) => entry.replace(/\/texto\.yaml$/, ""),
-  }),
-  schema: esquemaDoTexto,
-});
-
-const versoesDosTextos = defineCollection({
-  loader: glob({
-    base: "./src/content/textos",
+function languageFilesOf(folder: string) {
+  return glob({
+    base: `./src/content/${folder}`,
     pattern: "*/{en,pt-br}.md",
     generateId: ({ entry }) => entry.replace(/\.md$/, ""),
-  }),
-  schema: esquemaDaVersaoDoTexto,
-});
-
-// Um projeto também é uma pasta, com a história do projeto em cada idioma.
-const projetos = defineCollection({
-  loader: glob({
-    base: "./src/content/projetos",
-    pattern: "*/projeto.yaml",
-    generateId: ({ entry }) => entry.replace(/\/projeto\.yaml$/, ""),
-  }),
-  schema: esquemaDoProjeto,
-});
-
-const historiasDosProjetos = defineCollection({
-  loader: glob({
-    base: "./src/content/projetos",
-    pattern: "*/{en,pt-br}.md",
-    generateId: ({ entry }) => entry.replace(/\.md$/, ""),
-  }),
-  schema: esquemaDaHistoriaDoProjeto,
-});
-
-const estudos = defineCollection({ loader: arquivosDe("estudos"), schema: esquemaDoEstudo });
-const listas = defineCollection({
-  loader: glob({ base: "./src/content/listas", pattern: "estudos.yaml" }),
-  schema: esquemaDaListaDeEstudos,
-});
-const cargos = defineCollection({ loader: arquivosDe("cargos"), schema: esquemaDoCargo });
-const pesquisa = defineCollection({
-  loader: arquivosDe("pesquisa"),
-  schema: esquemaDoItemDePesquisa,
-});
+  });
+}
 
 export const collections = {
-  paginas,
-  textos,
-  versoesDosTextos,
-  projetos,
-  historiasDosProjetos,
-  estudos,
-  listas,
-  cargos,
-  pesquisa,
+  pages: defineCollection({ loader: filesOf("pages"), schema: pagesSchema }),
+  texts: defineCollection({ loader: sharedFilesOf("texts", "text.yaml"), schema: textSchema }),
+  textVersions: defineCollection({ loader: languageFilesOf("texts"), schema: textVersionSchema }),
+  projects: defineCollection({
+    loader: sharedFilesOf("projects", "project.yaml"),
+    schema: projectSchema,
+  }),
+  projectStories: defineCollection({
+    loader: languageFilesOf("projects"),
+    schema: projectStorySchema,
+  }),
+  studies: defineCollection({ loader: filesOf("studies"), schema: studySchema }),
+  lists: defineCollection({
+    loader: glob({ base: "./src/content/lists", pattern: "studies.yaml" }),
+    schema: studyListSchema,
+  }),
+  roles: defineCollection({ loader: filesOf("roles"), schema: roleSchema }),
+  research: defineCollection({ loader: filesOf("research"), schema: researchItemSchema }),
 };

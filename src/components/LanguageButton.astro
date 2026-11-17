@@ -1,0 +1,23 @@
+---
+import { phrasesOf } from "../lib/content.ts";
+import { languageOf, LANGUAGES, HTML_LANG, SHORT_NAME } from "../lib/languages.ts";
+import { equivalentOf } from "../lib/pages.ts";
+
+const currentLanguage = languageOf(Astro.currentLocale);
+const phrases = await phrasesOf(currentLanguage);
+const equivalent = equivalentOf(Astro.url.pathname, currentLanguage);
+---
+
+<div class="language" role="group" aria-label={phrases.common.language}>
+  {LANGUAGES.map((language) =>
+    language === currentLanguage ? (
+      <span aria-current="true" lang={HTML_LANG[language]}>
+        {SHORT_NAME[language]}
+      </span>
+    ) : (
+      <a href={equivalent} hreflang={HTML_LANG[language]} lang={HTML_LANG[language]}>
+        {SHORT_NAME[language]}
+      </a>
+    ),
+  )}
+</div>

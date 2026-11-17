@@ -1,0 +1,135 @@
+/* The reading column: the frame and the palette of the site, without the
+   floor plan. The text leads. Temporary rules, as DESIGN.md says. */
+.reading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding: clamp(40px, 7cqw, 96px) 16px clamp(48px, 8cqw, 112px);
+}
+
+.reading > * {
+  width: 100%;
+  max-width: 41rem;
+}
+
+.reading-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 2rem;
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.reading-header h1 {
+  font-size: clamp(2.2rem, 5cqw, 3.4rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.reading-header .summary {
+  font-size: 1.2rem;
+  line-height: 1.45;
+  color: var(--mut);
+}
+
+/* The body of a text. */
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 2rem;
+  font-size: 1.125rem;
+  line-height: 1.68;
+}
+
+.prose h2 {
+  margin-top: 1.6rem;
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.prose h3 {
+  margin-top: 0.6rem;
+  font-family: var(--text);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.prose ul,
+.prose ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.prose ul {
+  list-style: square;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li::marker {
+  color: var(--copper-text);
+}
+
+.prose blockquote {
+  margin: 0;
+  padding: 1rem 1.2rem;
+  background: var(--f-sapphire);
+  font-family: var(--display);
+  font-size: 1.3rem;
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.prose code {
+  padding: 0.1em 0.35em;
+  background: var(--f-grey);
+  font-family: var(--mono);
+  font-size: 0.84em;
+}
+
+.prose pre {
+  margin: 0;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  background: var(--f-grey);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.prose figure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.prose hr {
+  width: 100%;
+  margin: 0.8rem 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 801px) {
+  .reading {
+    padding-inline: var(--u);
+  }
+}

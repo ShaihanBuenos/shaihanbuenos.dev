@@ -1,0 +1,44 @@
+# The phrases of the fixed pages, in Portuguese. The file en.yaml has the same
+# keys, in English. Phrases marked with [Exemplo] are still to be written.
+
+# Phrases of the layout shared by every page.
+common:
+  # The names of the menu and of the language button, for screen readers.
+  menu: Principal
+  language: Idioma
+  # The link that skips the menu, for keyboard users.
+  skip: Pular para o conteúdo
+  # The feed link, in the footer.
+  feed: Feed
+
+home:
+  name: Início
+  description: "[Exemplo] Descrição da página Início."
+  label: Engenheiro de software com foco em backend e IA
+  intro: Construo serviços de backend e sistemas que usam LLMs, e programo com agentes de IA guiados por especificação.
+
+projects:
+  name: Projetos
+  description: "[Exemplo] Descrição da página Projetos."
+
+writing:
+  name: Textos
+  description: "[Exemplo] Descrição da página Textos."
+
+studies:
+  name: Estudos
+  description: "[Exemplo] Descrição da página Estudos."
+
+research:
+  name: Pesquisa
+  description: "[Exemplo] Descrição da página Pesquisa."
+
+about:
+  name: Sobre
+  description: "[Exemplo] Descrição da página Sobre."
+  bio: "[Exemplo] Este parágrafo ocupa o lugar da bio, que ainda vai ser escrita."
+  education: Bacharelado em Sistemas de Informação, UNISINOS, concluído em 2025
+
+# The page shown when the address does not exist.
+notFound:
+  name: Página não encontrada

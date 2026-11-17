@@ -8,19 +8,19 @@ colors:
   mut: "#4b4f58"
   line: "rgba(20, 22, 27, .16)"
   grid: "rgba(20, 22, 27, .06)"
-  cobre: "#d65c24"
-  cobre-texto: "#9c3d12"
-  safira: "#183ec9"
-  l-cobre: "rgba(214, 92, 36, .34)"
-  l-cobre-2: "rgba(214, 92, 36, .22)"
-  l-safira: "rgba(24, 62, 201, .26)"
-  l-cinza: "rgba(20, 22, 27, .10)"
-  f-cobre: "#eec4b0"
-  f-safira: "#c0c9ec"
-  f-cinza: "#e4e3e1"
-  h-cobre: "rgba(214, 92, 36, .62)"
-  h-safira: "rgba(24, 62, 201, .48)"
-  h-cinza: "rgba(20, 22, 27, .26)"
+  copper: "#d65c24"
+  copper-text: "#9c3d12"
+  sapphire: "#183ec9"
+  l-copper: "rgba(214, 92, 36, .34)"
+  l-copper-2: "rgba(214, 92, 36, .22)"
+  l-sapphire: "rgba(24, 62, 201, .26)"
+  l-grey: "rgba(20, 22, 27, .10)"
+  f-copper: "#eec4b0"
+  f-sapphire: "#c0c9ec"
+  f-grey: "#e4e3e1"
+  h-copper: "rgba(214, 92, 36, .62)"
+  h-sapphire: "rgba(24, 62, 201, .48)"
+  h-grey: "rgba(20, 22, 27, .26)"
 typography:
   display:
     fontFamily: "Bricolage Grotesque, Helvetica Neue, Helvetica, Arial, sans-serif"
@@ -91,44 +91,44 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.none}"
   bloco-cobre:
-    backgroundColor: "{colors.l-cobre}"
+    backgroundColor: "{colors.l-copper}"
     textColor: "{colors.ink}"
     rounded: "{rounded.none}"
     padding: "clamp(10px, 1.15cqw, 18px)"
   bloco-cobre-foco:
-    backgroundColor: "{colors.h-cobre}"
+    backgroundColor: "{colors.h-copper}"
   bloco-safira:
-    backgroundColor: "{colors.l-safira}"
+    backgroundColor: "{colors.l-sapphire}"
     textColor: "{colors.ink}"
     rounded: "{rounded.none}"
     padding: "clamp(10px, 1.15cqw, 18px)"
   bloco-safira-foco:
-    backgroundColor: "{colors.h-safira}"
+    backgroundColor: "{colors.h-sapphire}"
   bloco-cinza:
-    backgroundColor: "{colors.l-cinza}"
+    backgroundColor: "{colors.l-grey}"
     textColor: "{colors.ink}"
     rounded: "{rounded.none}"
     padding: "clamp(10px, 1.15cqw, 18px)"
   bloco-cinza-foco:
-    backgroundColor: "{colors.h-cinza}"
+    backgroundColor: "{colors.h-grey}"
   bloco-projeto:
-    backgroundColor: "{colors.l-cobre-2}"
+    backgroundColor: "{colors.l-copper-2}"
     textColor: "{colors.ink}"
     rounded: "{rounded.none}"
   secao-cobre:
-    backgroundColor: "{colors.f-cobre}"
+    backgroundColor: "{colors.f-copper}"
     textColor: "{colors.ink}"
   secao-safira:
-    backgroundColor: "{colors.f-safira}"
+    backgroundColor: "{colors.f-sapphire}"
     textColor: "{colors.ink}"
   secao-cinza:
-    backgroundColor: "{colors.f-cinza}"
+    backgroundColor: "{colors.f-grey}"
     textColor: "{colors.ink}"
   linha-projeto:
     textColor: "{colors.ink}"
     padding: "clamp(14px, 2cqw, 26px) clamp(10px, 1.4cqw, 18px)"
   linha-projeto-hover:
-    backgroundColor: "{colors.f-cobre}"
+    backgroundColor: "{colors.f-copper}"
 ---
 
 # Design System: Planta de Silício
@@ -157,17 +157,17 @@ O tema é só claro. Uma variante escura, "Noturno", foi mostrada e não foi dec
 A paleta "Cobre e safira": uma folha de branco levemente quente, tinta quase preta e dois acentos, um laranja de cobre e um azul de safira. Cada acento existe em três estados: camada translúcida, cor cheia de foco e fundo de seção.
 
 ### Primary
-- **Cobre** (`cobre`): o acento quente. Aparece em área, nunca em letra: na seleção de texto, nos quadradinhos de estado e de tipo de texto, e como base das camadas e dos fundos de cobre.
-- **Cobre de texto** (`cobre-texto`): a versão escura do cobre para marcas pequenas sobre a folha, como os marcadores de lista nas páginas de leitura.
-- **Camada de cobre** (`l-cobre`, `l-cobre-2`): os blocos da planta ligados à pesquisa (mais forte) e aos projetos (mais fraca).
-- **Cobre cheio** (`h-cobre`): o bloco de cobre em foco ou sob o ponteiro.
-- **Fundo de cobre** (`f-cobre`): seção inteira em cobre claro, e o fundo de uma linha de projeto sob o ponteiro.
+- **Cobre** (`copper`): o acento quente. Aparece em área, nunca em letra: na seleção de texto, nos quadradinhos de estado e de tipo de texto, e como base das camadas e dos fundos de cobre.
+- **Cobre de texto** (`copper-text`): a versão escura do cobre para marcas pequenas sobre a folha, como os marcadores de lista nas páginas de leitura.
+- **Camada de cobre** (`l-copper`, `l-copper-2`): os blocos da planta ligados à pesquisa (mais forte) e aos projetos (mais fraca).
+- **Cobre cheio** (`h-copper`): o bloco de cobre em foco ou sob o ponteiro.
+- **Fundo de cobre** (`f-copper`): seção inteira em cobre claro, e o fundo de uma linha de projeto sob o ponteiro.
 
 ### Secondary
-- **Safira** (`safira`): o acento frio. É a cor dos links no texto e do contorno de foco do teclado. Também marca o tipo "nota de estudo".
-- **Camada de safira** (`l-safira`): o bloco da planta ligado ao método.
-- **Safira cheia** (`h-safira`): o bloco de safira em foco ou sob o ponteiro.
-- **Fundo de safira** (`f-safira`): seção inteira em azul claro, o painel da marca na história de projeto e a frase em destaque nas páginas de leitura.
+- **Safira** (`sapphire`): o acento frio. É a cor dos links no texto e do contorno de foco do teclado. Também marca o tipo "nota de estudo".
+- **Camada de safira** (`l-sapphire`): o bloco da planta ligado ao método.
+- **Safira cheia** (`h-sapphire`): o bloco de safira em foco ou sob o ponteiro.
+- **Fundo de safira** (`f-sapphire`): seção inteira em azul claro, o painel da marca na história de projeto e a frase em destaque nas páginas de leitura.
 
 ### Neutral
 - **Chão** (`ground`): o fundo da página, por fora da moldura. Também preenche o núcleo e os contatos do menu.
@@ -176,7 +176,7 @@ A paleta "Cobre e safira": uma folha de branco levemente quente, tinta quase pre
 - **Tinta suave** (`mut`): texto de apoio, como a frase do núcleo, as descrições e as legendas de figura.
 - **Fio fino** (`line`): divisórias de 1px entre itens de lista.
 - **Grade** (`grid`): as linhas de 1px da grade da planta.
-- **Camada cinza** (`l-cinza`), **cinza cheio** (`h-cinza`), **fundo cinza** (`f-cinza`): a experiência. O cinza também é o fundo do código nas páginas de leitura.
+- **Camada cinza** (`l-grey`), **cinza cheio** (`h-grey`), **fundo cinza** (`f-grey`): a experiência. O cinza também é o fundo do código nas páginas de leitura.
 
 ### Named Rules
 **A Regra do Cobre Mudo.** O cobre não escreve. Texto é tinta, tinta suave ou, em link, safira. O cobre entra como área, quadradinho ou marcador.
@@ -301,13 +301,13 @@ O retângulo opaco do nome: fundo de chão, fio de 1.5px, o nome em Display, o r
 
 ### Seções
 - **Estrutura:** fio de 1.5px em cima, título em Headline à esquerda, corpo à direita com espaço de 1.1rem entre os elementos.
-- **Fundo:** folha, ou um dos três fundos (`f-cobre`, `f-safira`, `f-cinza`).
+- **Fundo:** folha, ou um dos três fundos (`f-copper`, `f-sapphire`, `f-grey`).
 - **Abertura:** uma frase em Lead pode abrir o corpo.
 - **Link de ação:** texto em peso 500 ou 600 com sublinhado de 1px, que engrossa para 2px sob o ponteiro.
 
 ### Linhas de projeto
 - **Estrutura:** uma coluna estreita para a marca do projeto (`clamp(56px, 7cqw, 88px)`) e uma coluna com título, descrição e, por último, a legenda de estado. Fio de 1.5px entre as linhas.
-- **Hover e foco:** quando a linha é link, o fundo passa a `f-cobre` e a descrição passa de tinta suave para tinta.
+- **Hover e foco:** quando a linha é link, o fundo passa a `f-copper` e a descrição passa de tinta suave para tinta.
 - **Variante simples:** só título e legenda, lado a lado, sem marca.
 
 ### Listas e linha do tempo
@@ -327,7 +327,7 @@ O retângulo opaco do nome: fundo de chão, fio de 1.5px, o nome em Display, o r
 ### Página de leitura (provisório, ainda sem revisão)
 - **Cabeçalho:** título, resumo em tinta suave a 1.2rem e uma linha de legendas com o tipo, a data e os temas. Fecha com um fio de 1.5px.
 - **Tipo de texto:** um quadradinho antes da legenda, em cobre para artigo e em safira para nota de estudo.
-- **Corpo:** coluna com espaço de 1.25rem entre blocos. Listas com marcador quadrado em cobre de texto. Frase em destaque sobre `f-safira`, em fonte de display peso 300 a 1.3rem. Código curto e blocos de código sobre `f-cinza`, em monoespaçado, com rolagem lateral própria.
+- **Corpo:** coluna com espaço de 1.25rem entre blocos. Listas com marcador quadrado em cobre de texto. Frase em destaque sobre `f-sapphire`, em fonte de display peso 300 a 1.3rem. Código curto e blocos de código sobre `f-grey`, em monoespaçado, com rolagem lateral própria.
 - **Lista de textos:** data em legenda à esquerda, título em fonte de texto peso 600 a 1.25rem, resumo em tinta suave. O título sob o ponteiro ganha um sublinhado de 2px em cobre.
 
 ### Foco e seleção

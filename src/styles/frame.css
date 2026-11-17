@@ -1,0 +1,215 @@
+/* The one-line frame around every page, with the contacts of the menu over
+   the top border, the footer inside and the teeth below. Phone first. */
+.page {
+  padding: 0 var(--gutter) 40px;
+}
+
+.frame {
+  position: relative;
+  margin-top: 46px;
+  border: 1.5px solid var(--ink);
+  background-color: var(--sheet);
+  container-type: inline-size;
+}
+
+.teeth {
+  height: 10px;
+  margin-top: 2px;
+  background-image: linear-gradient(90deg, var(--ink) 0 34%, transparent 34%);
+  /* One tooth per module. The tiny excess keeps rounding from leaving the
+     sliver of a 27th tooth at the end. */
+  background-size: calc(100% / 26 + 0.05px) 10px;
+}
+
+/* ---------- the menu: its contacts ---------- */
+
+/* On a phone: the home button on the left, the language button always
+   visible on the right and, between the two, the pages. At 390px everything
+   fits on one line; on a narrower screen, the pages scroll sideways. */
+.menu {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  transform: translateY(-50%);
+}
+
+.menu ul {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 2px;
+  min-width: 0;
+  /* The breathing room lets the focus outline show inside the scrolling strip. */
+  margin-block: -5px;
+  padding: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.menu li {
+  flex: none;
+}
+
+.menu a,
+.menu .language span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 44px tall. The width follows the text, so the menu fits on one line. */
+  min-height: 44px;
+  padding: 6px 4px;
+  font-size: 0.74rem;
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.menu .home,
+.menu li a,
+.menu .language {
+  border: 1.5px solid var(--ink);
+  background: var(--ground);
+}
+
+.menu .home,
+.menu .language {
+  flex: none;
+}
+
+.menu .language {
+  display: flex;
+}
+
+/* The line is on the pair, not on each short name: subtract the line so the
+   button is as tall as the other contacts. */
+.menu .language a,
+.menu .language span {
+  min-height: calc(44px - 3px);
+}
+
+.menu a[aria-current],
+.menu .language span[aria-current] {
+  background: var(--ink);
+  color: var(--sheet);
+}
+
+@media (hover: hover) {
+  .menu a:hover {
+    background: var(--ink);
+    color: var(--sheet);
+  }
+}
+
+/* The home button: the initials on a phone, the full name on a computer. */
+.menu .full-name {
+  display: none;
+}
+
+/* ---------- the footer: the way-out contacts ---------- */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 16px 30px;
+  border-top: 1.5px solid var(--ink);
+}
+
+.footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.footer a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--ink);
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .footer a:hover {
+    background: var(--ink);
+    color: var(--sheet);
+  }
+}
+
+@media (min-width: 801px) {
+  .footer {
+    padding-inline: var(--u);
+  }
+}
+
+/* On a computer, each contact aligns to columns of the 26-module grid, and
+   the language button closes the row, in the top right corner. */
+@media (min-width: 1001px) {
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(26, var(--u));
+    gap: 0;
+    justify-items: start;
+    padding: 0;
+  }
+
+  .menu .home {
+    grid-column: 2 / span 4;
+  }
+
+  .menu ul {
+    display: grid;
+    grid-column: 6 / span 15;
+    grid-template-columns: repeat(5, calc(3 * var(--u)));
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .menu li {
+    display: flex;
+  }
+
+  .menu .language {
+    grid-column: 22 / span 4;
+    justify-self: end;
+  }
+
+  .menu a,
+  .menu .language span {
+    padding: 6px 12px;
+    font-size: 0.84rem;
+  }
+
+  .menu .full-name {
+    display: inline;
+  }
+
+  .menu .initials {
+    display: none;
+  }
+}
+
+/* Only with a fine pointer do the contacts shrink to the size of the
+   prototype. On a wide touch screen, each target stays at 44px. */
+@media (min-width: 1001px) and (hover: hover) and (pointer: fine) {
+  .menu a,
+  .menu .language a,
+  .menu .language span {
+    min-height: 0;
+  }
+
+  .footer a {
+    min-height: 0;
+  }
+}

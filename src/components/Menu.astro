@@ -1,43 +1,40 @@
 ---
-import BotaoIdioma from "./BotaoIdioma.astro";
-import { frasesDe } from "../lib/conteudo.ts";
-import { idiomaDe } from "../lib/idiomas.ts";
-import { enderecoDe, paginaDe, PAGINAS_DO_MENU } from "../lib/paginas.ts";
+import LanguageButton from "./LanguageButton.astro";
+import { phrasesOf } from "../lib/content.ts";
+import { languageOf } from "../lib/languages.ts";
+import { pathOf, pageAt, MENU_PAGES } from "../lib/pages.ts";
 
-const idioma = idiomaDe(Astro.currentLocale);
-const frases = await frasesDe(idioma);
-const paginaAtual = paginaDe(Astro.url.pathname);
+const language = languageOf(Astro.currentLocale);
+const phrases = await phrasesOf(language);
+const currentPage = pageAt(Astro.url.pathname);
 ---
 
-<nav class="contatos" aria-label={frases.comum.menu}>
+<nav class="menu" aria-label={phrases.common.menu}>
   <a
-    class="inicio"
-    href={enderecoDe("inicio", idioma)}
-    aria-label={`${frases.inicio.nome}, Shaihan Buenos`}
-    aria-current={paginaAtual === "inicio" ? "page" : undefined}
+    class="home"
+    href={pathOf("home", language)}
+    aria-label={`${phrases.home.name}, Shaihan Buenos`}
+    aria-current={currentPage === "home" ? "page" : undefined}
   >
-    <span class="inteiro">Shaihan Buenos</span>
-    <span class="iniciais">SB</span>
+    <span class="full-name">Shaihan Buenos</span>
+    <span class="initials">SB</span>
   </a>
   <ul>
-    {PAGINAS_DO_MENU.map((pagina) => (
+    {MENU_PAGES.map((page) => (
       <li>
-        <a
-          href={enderecoDe(pagina, idioma)}
-          aria-current={pagina === paginaAtual ? "page" : undefined}
-        >
-          {frases[pagina].nome}
+        <a href={pathOf(page, language)} aria-current={page === currentPage ? "page" : undefined}>
+          {phrases[page].name}
         </a>
       </li>
     ))}
   </ul>
-  <BotaoIdioma />
+  <LanguageButton />
 </nav>
 
 <script>
-  // No celular, as páginas ficam numa faixa que rola na horizontal: traz a
-  // página atual para dentro da faixa quando ela começa fora da tela.
+  // On a phone, the pages sit in a strip that scrolls sideways: bring the
+  // current page into the strip when it starts off screen.
   document
-    .querySelector('.contatos li [aria-current="page"]')
+    .querySelector('.menu li [aria-current="page"]')
     ?.scrollIntoView({ inline: "center", block: "nearest" });
 </script>
