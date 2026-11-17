@@ -283,7 +283,7 @@ Os degradês lineares que existem no código só desenham a grade e os dentes, c
 ### Contatos (menu e rodapé)
 Pequenos retângulos com fio de 1.5px, como os contatos na borda de um chip.
 - **Forma:** canto vivo, `padding: 6px 12px`, texto em fonte de texto a .84rem (menu) ou .9rem (rodapé e lista de contato), sem sublinhado.
-- **Menu:** os contatos ficam centrados sobre a borda de cima da moldura, com fundo de chão. Acima de 1000px, cada um se alinha a colunas da grade de 26 módulos, e o de idioma fica no fim, no canto superior direito. O contato de idioma mostra "EN" e "PT" lado a lado, com o idioma atual no estado de página atual e o outro como link. No celular ele fica sempre visível no canto superior direito, fora de qualquer menu recolhido ([Descoberta: feed, buscadores e redes sociais](https://github.com/ShaihanBuenos/ShaihanBuenos/issues/15)).
+- **Menu:** os contatos ficam centrados sobre a borda de cima da moldura, com fundo de chão. Acima de 1000px, cada um se alinha a colunas da grade de 26 módulos, e o de idioma fica no fim, no canto superior direito. O contato de idioma mostra "EN" e "PT" lado a lado, com o idioma atual no estado de página atual e o outro como link. No celular ele fica sempre visível no canto superior direito, fora de qualquer menu recolhido, e os contatos do menu cabem numa linha em 390px: mantêm 44px de altura, com texto a .74rem e a largura que o texto pedir ([Descoberta: feed, buscadores e redes sociais](https://github.com/ShaihanBuenos/ShaihanBuenos/issues/15)).
 - **Hover e página atual:** fundo de tinta e texto de folha, com troca instantânea.
 - **Item sem link:** o mesmo retângulo, sem estado de hover.
 
