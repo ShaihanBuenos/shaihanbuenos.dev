@@ -158,8 +158,8 @@ function textsOf(study: string) {
 }
 
 // The project leads to its project story, the certificate to the address in
-// the study's file, the education to About and each research item to
-// Research. The example completed study has every link but the project.
+// the study's file, the education to About and each research item to itself
+// on the Research page. The example completed study has every link but the project.
 test("a study shows the links it has, and each one leads to its page", async () => {
   const inEnglish = await examplePage("en");
   assert.deepEqual(linksOf(studyOf(inEnglish, "example-in-progress"))?.slice(1), [
@@ -179,7 +179,7 @@ test("a study shows the links it has, and each one leads to its page", async () 
     {
       label: "Research",
       text: "[Example] A Made-Up Paper Title, in the Original English [Exemplo] Um título de TCC inventado, em português ([Example] A made-up thesis title, translated)",
-      hrefs: ["/research", "/research"],
+      hrefs: ["/research#example-paper", "/research#example-thesis"],
     },
   ]);
 
@@ -201,7 +201,7 @@ test("a study shows the links it has, and each one leads to its page", async () 
     {
       label: "Pesquisa",
       text: "[Example] A Made-Up Paper Title, in the Original English [Exemplo] Um título de TCC inventado, em português",
-      hrefs: ["/pt-br/pesquisa", "/pt-br/pesquisa"],
+      hrefs: ["/pt-br/pesquisa#example-paper", "/pt-br/pesquisa#example-thesis"],
     },
   ]);
 });

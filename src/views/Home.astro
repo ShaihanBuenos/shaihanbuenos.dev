@@ -7,7 +7,7 @@ import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
 import { foreignLangOf, languageOf } from "../lib/languages.ts";
-import { pathOf, projectPathOf, textPathOf } from "../lib/pages.ts";
+import { pathOf, projectPathOf, researchItemPathOf, textPathOf } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
 const { pages, research, projects, roles, texts, studies } = await content();
@@ -97,7 +97,7 @@ const lastYear = roles.every(({ end }) => end !== undefined)
         <p class="caption">{paper.venue}</p>
         <p>{phrases.home.paper}</p>
         <p class="more">
-          <a href={pathOf("research", language)}>{phrases.home.more.research}</a>
+          <a href={researchItemPathOf(paper.id, language)}>{phrases.home.more.research}</a>
         </p>
       </div>
     </section>

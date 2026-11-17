@@ -104,6 +104,18 @@ studies:
 research:
   name: Pesquisa
   description: "[Exemplo] Descrição da página Pesquisa."
+  # What comes before each field of a research item.
+  fields:
+    whatItIs: O que é
+    summary: Resumo
+    built: O que construí
+    result: Resultado
+  # The link to the paper, by its DOI.
+  readPaper: Ler no IEEE Xplore
+  # What the thesis says in place of a file. It is the link to the contact.
+  onRequest: Disponível a pedido
+  # The caption of the paper's diagram. The diagram itself is still to be drawn.
+  diagramCaption: "[Exemplo] O diagrama da arquitetura, redesenhado no estilo do site, entra aqui."
 
 about:
   name: Sobre

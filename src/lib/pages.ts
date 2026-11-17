@@ -35,6 +35,13 @@ export function studyPathOf(id: string, language: Language): string {
   return `${pathOf("studies", language)}#${id}`;
 }
 
+// The path of a research item: it has no page of its own, so the path leads
+// to the item on the Research page, which carries the name of the item's
+// file as id.
+export function researchItemPathOf(id: string, language: Language): string {
+  return `${pathOf("research", language)}#${id}`;
+}
+
 // Where the language button leads on the page of a text. Each version has
 // its own slug, so the path does not tell: the page gives the slug of the
 // version in the other language, when the text has one. Without it, the

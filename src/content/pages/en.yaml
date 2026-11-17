@@ -104,6 +104,18 @@ studies:
 research:
   name: Research
   description: "[Example] Description of the Research page."
+  # What comes before each field of a research item.
+  fields:
+    whatItIs: What it is
+    summary: Summary
+    built: What I built
+    result: Result
+  # The link to the paper, by its DOI.
+  readPaper: Read on IEEE Xplore
+  # What the thesis says in place of a file. It is the link to the contact.
+  onRequest: Available on request
+  # The caption of the paper's diagram. The diagram itself is still to be drawn.
+  diagramCaption: "[Example] The architecture diagram, redrawn in the style of the site, goes here."
 
 about:
   name: About

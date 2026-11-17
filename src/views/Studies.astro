@@ -1,10 +1,11 @@
 ---
+import ResearchTitle from "../components/ResearchTitle.astro";
 import TextItem from "../components/TextItem.astro";
 import Reading from "../layouts/Reading.astro";
 import { type Study, content } from "../lib/content.ts";
 import { monthIn } from "../lib/dates.ts";
-import { foreignLangOf, languageOf } from "../lib/languages.ts";
-import { pathOf, projectPathOf } from "../lib/pages.ts";
+import { languageOf } from "../lib/languages.ts";
+import { pathOf, projectPathOf, researchItemPathOf } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
 const { pages, projects, research, studies, studyList, texts } = await content();
@@ -130,15 +131,8 @@ const groups = [undefined, ...years].flatMap((year) => {
                   <dt class="caption">{phrases.studies.links.research}</dt>
                   <dd>
                     {links.research.map((item) => (
-                      <a href={pathOf("research", language)}>
-                        {item.type === "paper" ? (
-                          <span lang={foreignLangOf("en", language)}>{item.title}</span>
-                        ) : (
-                          <>
-                            <span lang={foreignLangOf("pt-br", language)}>{item.title}</span>
-                            {language === "en" && ` (${item.translatedTitle})`}
-                          </>
-                        )}
+                      <a href={researchItemPathOf(item.id, language)}>
+                        <ResearchTitle item={item} />
                       </a>
                     ))}
                   </dd>

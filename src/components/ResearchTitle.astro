@@ -1,0 +1,23 @@
+---
+import type { ResearchItem } from "../lib/content.ts";
+import { foreignLangOf, languageOf } from "../lib/languages.ts";
+
+interface Props {
+  item: ResearchItem;
+}
+
+// The title of a research item, as every page writes it: the paper's in the
+// original English, and the thesis's in Portuguese, followed on an English
+// page by its translation in parentheses.
+const { item } = Astro.props;
+const language = languageOf(Astro.currentLocale);
+---
+
+{item.type === "paper" ? (
+  <span lang={foreignLangOf("en", language)}>{item.title}</span>
+) : (
+  <>
+    <span lang={foreignLangOf("pt-br", language)}>{item.title}</span>
+    {language === "en" && ` (${item.translatedTitle})`}
+  </>
+)}

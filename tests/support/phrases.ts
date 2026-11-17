@@ -72,6 +72,14 @@ studies:
 research:
   name: Research
   description: Test description.
+  fields:
+    whatItIs: Test what it is
+    summary: Test summary
+    built: Test built
+    result: Test result
+  readPaper: Test read the paper
+  onRequest: Test on request
+  diagramCaption: Test diagram caption.
 about:
   name: About
   description: Test description.

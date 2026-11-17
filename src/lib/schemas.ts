@@ -97,7 +97,16 @@ export const pagesSchema = z.strictObject({
       research: phrase,
     }),
   }),
-  research: page,
+  research: page.extend({
+    // What comes before each field of a research item.
+    fields: z.strictObject({ whatItIs: phrase, summary: phrase, built: phrase, result: phrase }),
+    // The link to the paper, by its DOI.
+    readPaper: phrase,
+    // What the thesis says in place of a file. It is the link to the contact.
+    onRequest: phrase,
+    // The caption of the paper's diagram.
+    diagramCaption: phrase,
+  }),
   about: page.extend({ bio: phrase, education: phrase }),
   // "Not found" only has a name: it is not on the menu nor in search engines.
   notFound: z.strictObject({ name: phrase }),
