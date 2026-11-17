@@ -56,9 +56,16 @@ A saída é só de arquivos estáticos.
 | `astro.config.ts` | A configuração do Astro: endereço do site, idiomas, formato da saída e o arquivo `_headers`. |
 | `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. |
 | `src/pages/pt-br/` | As páginas em português. |
-| `src/layouts/Base.astro` | O documento comum a todas as páginas. |
+| `src/layouts/Base.astro` | O layout comum a todas as páginas: a moldura, o menu, o botão de idioma e o rodapé. |
+| `src/layouts/Leitura.astro` | A coluna de leitura simples, para as páginas de texto. Por enquanto, todas as páginas vazias usam esta. |
+| `src/components/` | As peças comuns: menu, botão de idioma, rodapé. |
+| `src/styles/` | O CSS do sistema visual, portado do protótipo: fontes, base, moldura e leitura. Parte do celular e cresce com `min-width`. |
+| `public/fonts/` | As três fontes, servidas pelo próprio site. |
 | `src/lib/configuracao.ts` | A chave do lançamento (ver abaixo). |
 | `src/lib/idiomas.ts` | Os dois idiomas e o `lang` de cada um. |
+| `src/lib/paginas.ts` | Os endereços das páginas fixas nos dois idiomas e o equivalente de cada uma, para o botão de idioma. |
+| `src/lib/frases.ts` | As frases do layout comum, nos dois idiomas. Provisório: passam para os arquivos de conteúdo. |
+| `src/lib/contato.ts` | Os canais do contato. |
 | `src/lib/feed.ts` | O feed de cada idioma, ainda sem textos. |
 | `tests/` | Os testes do site construído. |
 | `scripts/check` | A conferência completa. |
@@ -68,17 +75,14 @@ As próximas partes do site entram nestas pastas, quando existirem:
 | Caminho | O que vai guardar |
 |---|---|
 | `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas. |
-| `src/components/` | As peças comuns: menu, botão de idioma, rodapé. |
-| `src/styles/` | O CSS do sistema visual. |
 | `src/content/` | Os arquivos de conteúdo: textos, projetos, estudos. |
 | `src/scripts/` | O JavaScript que roda no navegador. |
-| `public/` | Arquivos servidos como estão, como as fontes. |
 
 ## Idiomas e endereços
 
 O inglês fica na raiz e o português em `/pt-br`. Cada página fixa existe nos dois idiomas, com o endereço escrito no seu idioma: `/projects` e `/pt-br/projetos`. Os endereços não têm barra no fim.
 
-Uma página nova precisa de um arquivo em `src/pages/` e outro em `src/pages/pt-br/`. O `lang` sai sozinho, pelo lugar do arquivo.
+Uma página nova precisa de um arquivo em `src/pages/` e outro em `src/pages/pt-br/`. O `lang` sai sozinho, pelo lugar do arquivo. Uma página fixa nova também entra em `src/lib/paginas.ts`, com o endereço de cada idioma: é dali que o botão de idioma tira o equivalente. Fora das páginas fixas, o botão leva ao Início do outro idioma.
 
 O "não encontrado" tem uma página por idioma: `404.html` na raiz e `pt-br/404.html`. Quem escolhe qual mostrar é a hospedagem. Na Cloudflare, isso pede a opção que procura o `404.html` mais próximo do endereço pedido (`not_found_handling = "404-page"`), que entra com a configuração da prévia. Rodando com `npm run dev`, a página em português já aparece para endereços sob `/pt-br`.
 

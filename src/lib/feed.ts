@@ -1,5 +1,5 @@
 import type { APIContext } from "astro";
-import { type Idioma, inicioDe, LANG_HTML } from "./idiomas.ts";
+import { type Idioma, IDIOMA_PADRAO, inicioDe, LANG_HTML } from "./idiomas.ts";
 
 // Provisório: as frases do feed passam para os arquivos de conteúdo junto
 // com os itens.
@@ -7,6 +7,11 @@ const SOBRE_O_FEED: Record<Idioma, string> = {
   en: "Writing by Shaihan Buenos",
   "pt-br": "Textos de Shaihan Buenos",
 };
+
+// O endereço do feed de cada idioma.
+export function enderecoDoFeed(idioma: Idioma): string {
+  return idioma === IDIOMA_PADRAO ? "/rss.xml" : `/${idioma}/rss.xml`;
+}
 
 // O feed de um idioma, ainda sem textos: só guarda o endereço. Os itens
 // entram com a descoberta (issue #29).

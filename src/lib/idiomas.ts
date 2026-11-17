@@ -12,6 +12,16 @@ export const LANG_HTML: Record<Idioma, string> = {
   "pt-br": "pt-BR",
 };
 
+// Como cada idioma aparece no botão de idioma.
+export const SIGLA: Record<Idioma, string> = {
+  en: "EN",
+  "pt-br": "PT",
+};
+
+export function outroIdioma(idioma: Idioma): Idioma {
+  return idioma === "en" ? "pt-br" : "en";
+}
+
 // O endereço da página Início de cada idioma.
 export function inicioDe(idioma: Idioma): string {
   return idioma === IDIOMA_PADRAO ? "/" : `/${idioma}`;

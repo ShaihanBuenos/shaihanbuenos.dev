@@ -56,6 +56,158 @@ for (const { pagina, en, pt } of PAGINAS) {
   });
 }
 
+// Os links de um trecho de HTML, na ordem em que aparecem: os atributos e o
+// texto de cada um.
+interface Link {
+  atributos: Record<string, string>;
+  texto: string;
+}
+
+function linksDe(html: string): Link[] {
+  return [...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)].map(
+    ([, abertura = "", miolo = ""]) => ({
+      atributos: Object.fromEntries(
+        [...abertura.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, nome, valor]) => [nome, valor]),
+      ),
+      texto: miolo.replace(/<[^>]*>/g, "").trim(),
+    }),
+  );
+}
+
+// O primeiro elemento com esse nome, com tudo o que tem dentro.
+function elemento(html: string, nome: string): string {
+  const achado = html.match(new RegExp(`<${nome}\\b[\\s\\S]*?</${nome}>`))?.[0];
+  assert.ok(achado, `a página não tem <${nome}>`);
+  return achado;
+}
+
+// Seção 4 da spec: o menu, na ordem, com o nome de cada página no idioma.
+const MENU = {
+  en: [
+    { href: "/projects", texto: "Projects" },
+    { href: "/writing", texto: "Writing" },
+    { href: "/studies", texto: "Studies" },
+    { href: "/research", texto: "Research" },
+    { href: "/about", texto: "About" },
+  ],
+  pt: [
+    { href: "/pt-br/projetos", texto: "Projetos" },
+    { href: "/pt-br/textos", texto: "Textos" },
+    { href: "/pt-br/estudos", texto: "Estudos" },
+    { href: "/pt-br/pesquisa", texto: "Pesquisa" },
+    { href: "/pt-br/sobre", texto: "Sobre" },
+  ],
+};
+
+// Todas as páginas que existem hoje, com o "não encontrado" de cada idioma.
+// `equivalente` é para onde o botão de idioma leva.
+const TODAS = [
+  ...PAGINAS.flatMap(({ pagina, en, pt }) => [
+    { nome: `${pagina} em inglês`, endereco: en, idioma: "en" as const, equivalente: pt },
+    { nome: `${pagina} em português`, endereco: pt, idioma: "pt" as const, equivalente: en },
+  ]),
+  {
+    nome: '"Não encontrado" em inglês',
+    endereco: "/does-not-exist",
+    idioma: "en" as const,
+    equivalente: "/pt-br",
+  },
+  {
+    nome: '"Não encontrado" em português',
+    endereco: "/pt-br/404",
+    idioma: "pt" as const,
+    equivalente: "/",
+  },
+];
+
+const INICIO = { en: "/", pt: "/pt-br" };
+
+for (const { nome, endereco, idioma } of TODAS) {
+  test(`${nome} tem o botão de início e o menu do seu idioma`, async () => {
+    const menu = linksDe(elemento(await (await pedir(endereco)).text(), "nav"));
+    assert.equal(menu[0]?.atributos.href, INICIO[idioma]);
+    assert.deepEqual(
+      menu.slice(1, 6).map(({ atributos, texto }) => ({ href: atributos.href, texto })),
+      MENU[idioma],
+    );
+  });
+}
+
+// O menu marca a página em que o visitante está; no "não encontrado", nenhuma.
+for (const { nome, endereco } of TODAS) {
+  const ehPaginaFixa = PAGINAS.some(({ en, pt }) => endereco === en || endereco === pt);
+  const esperado = ehPaginaFixa ? [endereco] : [];
+
+  test(`${nome}: o menu marca ${esperado[0] ?? "nenhuma página"} como a atual`, async () => {
+    const menu = linksDe(elemento(await (await pedir(endereco)).text(), "nav"));
+    assert.deepEqual(
+      menu
+        .filter(({ atributos }) => atributos["aria-current"] === "page")
+        .map(({ atributos }) => atributos.href),
+      esperado,
+    );
+  });
+}
+
+// O botão de idioma: "EN" e "PT", com o idioma atual marcado e o outro como
+// link para o equivalente da página.
+const SIGLA = { en: "EN", pt: "PT" };
+const OUTRO = { en: "pt", pt: "en" } as const;
+
+for (const { nome, endereco, idioma, equivalente } of TODAS) {
+  test(`${nome}: o botão de idioma leva a ${equivalente}`, async () => {
+    const menu = elemento(await (await pedir(endereco)).text(), "nav");
+    const outro = OUTRO[idioma];
+
+    const paraOOutro = linksDe(menu).filter(({ texto }) => texto === SIGLA[outro]);
+    assert.deepEqual(
+      paraOOutro.map(({ atributos }) => atributos.href),
+      [equivalente],
+    );
+    assert.equal(paraOOutro[0]?.atributos.hreflang, { en: "en", pt: "pt-BR" }[outro]);
+
+    const marcado = menu.match(/<(\w+)\b[^>]*\baria-current="true"[^>]*>([^<]*)</);
+    assert.equal(marcado?.[1], "span", "o idioma atual não é link");
+    assert.equal(marcado[2].trim(), SIGLA[idioma]);
+  });
+}
+
+// O rodapé: o contato (seção 7.6 da spec) e o link do feed do idioma.
+const CONTATO = [
+  "https://www.linkedin.com/in/shaihanbuenos/",
+  "https://github.com/ShaihanBuenos",
+  "mailto:hi@shaihanbuenos.dev",
+];
+const FEED = { en: "/rss.xml", pt: "/pt-br/rss.xml" };
+
+for (const { nome, endereco, idioma } of TODAS) {
+  test(`${nome} tem o rodapé com o contato e o feed do seu idioma`, async () => {
+    const rodape = linksDe(elemento(await (await pedir(endereco)).text(), "footer"));
+    assert.deepEqual(
+      rodape.map(({ atributos }) => atributos.href),
+      [...CONTATO, FEED[idioma]],
+    );
+  });
+}
+
+// DESIGN.md: as três fontes são servidas pelo próprio site, cada uma em dois
+// arquivos. O teste segue o CSS de uma página até os arquivos de fonte.
+test("as fontes do sistema visual são servidas pelo próprio site", async () => {
+  const html = await (await pedir("/")).text();
+  let css = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map(([, c]) => c).join("\n");
+  for (const [, atributos = ""] of html.matchAll(/<link\b([^>]*)>/g)) {
+    const href = atributos.match(/\bhref="([^"]*)"/)?.[1];
+    if (href && /\brel="stylesheet"/.test(atributos)) css += await (await pedir(href)).text();
+  }
+
+  const fontes = [...new Set([...css.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map(([, u]) => u))];
+  assert.equal(fontes.length, 6, `esperava seis arquivos de fonte, achei ${fontes.length}`);
+  for (const fonte of fontes) {
+    assert.match(fonte, /^\/fonts\/[\w-]+\.woff2$/);
+    assert.equal((await pedir(fonte)).status, 200, `${fonte} não responde`);
+  }
+});
+
 function tituloDe(html: string): string | undefined {
   return html.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1];
 }

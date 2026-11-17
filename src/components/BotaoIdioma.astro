@@ -1,0 +1,22 @@
+---
+import { FRASES } from "../lib/frases.ts";
+import { idiomaDe, IDIOMAS, LANG_HTML, SIGLA } from "../lib/idiomas.ts";
+import { equivalenteDe } from "../lib/paginas.ts";
+
+const atual = idiomaDe(Astro.currentLocale);
+const equivalente = equivalenteDe(Astro.url.pathname, atual);
+---
+
+<div class="idioma" role="group" aria-label={FRASES[atual].idioma}>
+  {IDIOMAS.map((idioma) =>
+    idioma === atual ? (
+      <span aria-current="true" lang={LANG_HTML[idioma]}>
+        {SIGLA[idioma]}
+      </span>
+    ) : (
+      <a href={equivalente} hreflang={LANG_HTML[idioma]} lang={LANG_HTML[idioma]}>
+        {SIGLA[idioma]}
+      </a>
+    ),
+  )}
+</div>
