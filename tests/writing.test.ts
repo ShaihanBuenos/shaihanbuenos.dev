@@ -186,13 +186,19 @@ test("a text that had no content revision shows only the publication date", asyn
   assert.deepEqual(top.days, ["2026-03-10"]);
 });
 
-// The Studies page is the list of studies of the language (issue #9).
-test("a text that came from a study names it, with a link to the studies", async () => {
+// The link leads to the study on the study list of the language: each study
+// of the list carries the name of its file as its id.
+test("a text that came from a study names it, with a link to the study on the study list", async () => {
   const page = await examplePage(TEXT.en("example-study-note-without-translation"));
   const study = element(page.slice(page.indexOf('<div class="prose">')), "dl");
   assert.equal(textOf(element(study, "dt")), "source study");
   assert.equal(textOf(element(study, "dd")), "[Example] A study in progress");
-  assert.deepEqual(hrefsOf(study), ["/studies"]);
+  assert.deepEqual(hrefsOf(study), ["/studies#example-in-progress"]);
+  const studies = await examplePage("studies.html");
+  assert.equal(
+    textOf(element(element(studies, "article", "example-in-progress"), "h3")),
+    "[Example] A study in progress",
+  );
 });
 
 test("a text that came from no study names none", async () => {

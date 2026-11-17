@@ -6,7 +6,7 @@ import ProjectRows from "../components/ProjectRows.astro";
 import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
-import { languageOf, HTML_LANG } from "../lib/languages.ts";
+import { foreignLangOf, languageOf } from "../lib/languages.ts";
 import { pathOf, projectPathOf, textPathOf } from "../lib/pages.ts";
 
 const language = languageOf(Astro.currentLocale);
@@ -120,9 +120,7 @@ const lastYear = roles.every(({ end }) => end !== undefined)
         {recentTexts.map(({ type, publishedOn, shown }) => (
           <li>
             <a href={textPathOf(shown.version.slug, shown.language)}>
-              <strong lang={shown.language === language ? undefined : HTML_LANG[shown.language]}>
-                {shown.version.title}
-              </strong>
+              <strong lang={foreignLangOf(shown.language, language)}>{shown.version.title}</strong>
               <span class="caption">
                 {phrases.writing.types[type]} ·{" "}
                 <time datetime={isoDayOf(publishedOn)}>{dayIn(publishedOn, language)}</time>
@@ -151,7 +149,7 @@ const lastYear = roles.every(({ end }) => end !== undefined)
           <li>
             <strong>{name[language]}</strong>
             <span class="caption">
-              {phrases.home.since} <time datetime={start}>{monthIn(start, language)}</time>
+              {phrases.studies.since} <time datetime={start}>{monthIn(start, language)}</time>
             </span>
           </li>
         ))}

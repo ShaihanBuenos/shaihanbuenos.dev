@@ -46,6 +46,8 @@ Os testes de Projetos, em `tests/projects.test.ts`, olham a lista e as história
 
 Os testes de Textos, em `tests/writing.test.ts`, olham a lista de textos e a página de um texto: com o conteúdo de exemplo e numa cópia com textos criados, um deles com tradução.
 
+Os testes de Estudos, em `tests/studies.test.ts`, olham a lista de estudos: com o conteúdo de exemplo e numa cópia com estudos criados, um apagado e outro mês de conferência.
+
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
 ## Construir
@@ -65,14 +67,14 @@ A saída é só de arquivos estáticos.
 | `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. `projects/[project].astro` gera uma página por pasta de projeto, e `writing/[text].astro`, uma página por texto que tem versão em inglês. |
 | `src/pages/pt-br/` | As páginas em português. `textos/[text].astro` gera uma página por texto que tem versão em português. |
 | `src/layouts/Base.astro` | O layout comum a todas as páginas: a moldura, o menu, o botão de idioma e o rodapé. |
-| `src/layouts/Reading.astro` | A coluna de leitura simples: o título e, abaixo dele, o que a página puser. É a da lista de textos e da página de um texto. Por enquanto, todas as páginas ainda vazias também usam esta. |
-| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos), `ProjectStory.astro` (a história do projeto), `Writing.astro` (a lista de textos) e `Text.astro` (a página de um texto). |
-| `src/components/` | As peças comuns: menu, botão de idioma, rodapé e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos, e a marca de idioma (`LanguageMark.astro`), usada no Início e na lista de textos. |
-| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura: a coluna, o corpo de um texto e a lista de textos), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. |
+| `src/layouts/Reading.astro` | A coluna de leitura simples: o título e, abaixo dele, o que a página puser. É a da lista de textos, da página de um texto e da lista de estudos. Por enquanto, todas as páginas ainda vazias também usam esta. |
+| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos), `ProjectStory.astro` (a história do projeto), `Writing.astro` (a lista de textos), `Text.astro` (a página de um texto) e `Studies.astro` (a lista de estudos). |
+| `src/components/` | As peças comuns: menu, botão de idioma, rodapé e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos, a marca de idioma (`LanguageMark.astro`), usada no Início e nos itens de texto, e o item de texto (`TextItem.astro`), usado na lista de textos e nos textos ligados a um estudo. |
+| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura: a coluna, o corpo de um texto, a lista de textos e a lista de estudos), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. |
 | `public/fonts/` | As três fontes, servidas pelo próprio site. |
 | `src/lib/config.ts` | A chave do lançamento (ver abaixo). |
 | `src/lib/languages.ts` | Os dois idiomas e o `lang` de cada um. |
-| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada página, para o botão de idioma, os endereços de uma história do projeto e de um texto, e o equivalente de um texto. |
+| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada página, para o botão de idioma, os endereços de uma história do projeto, de um texto e de um estudo, e o equivalente de um texto. |
 | `src/lib/project-story.ts` | A estrutura do corpo de uma história do projeto: transforma o Markdown nas seções da página e barra o corpo fora do formato. |
 | `src/lib/dates.ts` | Como as datas do conteúdo são escritas em cada idioma. |
 | `src/content/` | Os arquivos de conteúdo (ver "Conteúdo", abaixo). |
@@ -127,7 +129,7 @@ Tudo o que o site diz fica em `src/content/`. Trocar uma frase, um estado ou uma
 
 | Pasta | O que guarda | Formato |
 |---|---|---|
-| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, as frases do Início (blocos da planta, chamada do paper, links das seções), os nomes dos estados do projeto, dos tipos de texto e dos temas, as frases da página de um texto (a nota de tradução, "atualizado em", "estudo de origem"), bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
+| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, as frases do Início (blocos da planta, chamada do paper, links das seções), os nomes dos estados do projeto, dos tipos de texto e dos temas, as frases da página de um texto (a nota de tradução, "atualizado em", "estudo de origem"), as frases da lista de estudos ("conferida em", os títulos dos grupos, os nomes dos status do estudo, "desde" e os rótulos das ligações), bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
 | `texts/` | Os textos. | Uma pasta por texto: `text.yaml` e um `.md` por idioma. |
 | `projects/` | Os projetos e as histórias do projeto. | Uma pasta por projeto: `project.yaml`, `mark.svg` e a história do projeto em `en.md` e `pt-br.md`. |
 | `studies/` | Os estudos. | Um `.yaml` por estudo, com os dois idiomas dentro. |
@@ -168,7 +170,7 @@ O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligaç
 
    `slug` é a última parte do endereço da página, em palavras do idioma do arquivo: este texto fica em `/pt-br/textos/o-titulo-do-texto`. As imagens do texto ficam na mesma pasta. O arquivo é sempre `.md`: o MDX ainda não está ligado, e um `.mdx` seria ignorado.
 
-A página do texto mostra o título, o resumo de uma linha, o tipo de texto, a data, a data de atualização quando houver, os temas, o corpo e, no fim, o estudo de origem, com link para a lista de estudos. O corpo é o Markdown do arquivo, sem mudança. Um bloco de código aparece sobre o cinza do site, sem cores por linguagem.
+A página do texto mostra o título, o resumo de uma linha, o tipo de texto, a data, a data de atualização quando houver, os temas, o corpo e, no fim, o estudo de origem, com link para ele na lista de estudos. O corpo é o Markdown do arquivo, sem mudança. Um bloco de código aparece sobre o cinza do site, sem cores por linguagem.
 
 **Tradução.** Crie o arquivo do outro idioma na mesma pasta, com `title`, `summary` e `slug` no idioma dele, e mais o campo `translatedWithAI: true` (ou `false`), que toda tradução tem. Nada muda em `text.yaml`. Um texto sem tradução é só um texto sem esse segundo arquivo. A página da tradução mostra a nota de tradução: o idioma original, o link para o original e, com `translatedWithAI: true`, o aviso de que foi feita com IA.
 
@@ -259,6 +261,18 @@ links: # tudo opcional
 
 Um texto que tem o estudo no campo `study` (o estudo de origem) já aparece ligado a ele: `links.texts` é só para os outros textos que o estudo quiser mostrar.
 
+A lista de estudos (`/studies` e `/pt-br/estudos`) mostra primeiro os estudos em andamento e depois os concluídos, agrupados pelo ano de `end`, do mais recente ao mais antigo. Um grupo sem estudos não aparece. Cada estudo mostra o nome, o objetivo, o status do estudo com os meses e as ligações que tiver:
+
+| Ligação | O que aparece | Para onde leva |
+|---|---|---|
+| `texts` e os textos que têm o estudo em `study` | O item da lista de textos, na versão do idioma da página ou no original, com a marca de idioma. Rascunhos ficam de fora. | O endereço dessa versão. |
+| `project` | O nome do projeto. | A história do projeto. |
+| `certificate` | O site do endereço, como `exemplo.com`. | O endereço do campo. É o único link que sai do site. |
+| `education` | A linha da formação, de `about.education`. | A página Sobre. |
+| `research` | O título de cada item de pesquisa. | A página Pesquisa. |
+
+Um estudo sem ligações mostra só o nome, o objetivo e o status. A página não tem porcentagem nem contagens. O nome do arquivo é o `id` do estudo na página: a página de um texto leva ao estudo de origem por `/studies#<nome-do-estudo>`.
+
 Um estudo que parou sai da lista: apague o arquivo. Ao terminar uma conferência, mude `checkedOn` em `src/content/lists/studies.yaml`.
 
 ### Criar um cargo
@@ -293,7 +307,7 @@ A ordem de toda lista sai dos arquivos de conteúdo:
 | Temas de um texto | A ordem em `topics`. |
 | Textos | A data `publishedOn`: o mais recente vem primeiro. |
 | Cargos | O mês `start`: o mais recente vem primeiro. |
-| Estudos | O mês `start`: o mais recente vem primeiro. A página separa os estudos em andamento dos concluídos. |
+| Estudos | O mês `start`: o mais recente vem primeiro. A lista de estudos separa os em andamento dos concluídos e agrupa os concluídos pelo ano de `end`, do mais recente ao mais antigo. |
 
 ### O que barra a construção
 

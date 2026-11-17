@@ -328,9 +328,12 @@ O retângulo opaco do nome: fundo de chão, fio de 1.5px, o nome em Display, o r
 - **Cabeçalho:** título, resumo em tinta suave a 1.2rem e uma linha de legendas com o tipo, a data, a data de atualização quando houver e os temas. Fecha com um fio de 1.5px.
 - **Nota de tradução:** só numa tradução, uma frase em tinta a 1rem no fim do cabeçalho, com o link para o original em safira.
 - **Tipo de texto:** um quadradinho antes da legenda, em cobre para artigo e em safira para nota de estudo.
+- **Status do estudo:** o mesmo quadradinho antes da legenda, em cobre para em andamento e em safira para concluído.
 - **Corpo:** coluna com espaço de 1.25rem entre blocos. Listas com marcador quadrado em cobre de texto. Frase em destaque sobre `f-sapphire`, em fonte de display peso 300 a 1.3rem. Código curto e blocos de código sobre `f-grey`, em monoespaçado, com rolagem lateral própria.
 - **Fim do texto:** um fio de 1.5px, o estudo de origem (o rótulo em legenda e o nome como link) e o link de ação que volta à lista, em peso 500.
 - **Lista de textos:** data em legenda à esquerda, título em fonte de texto peso 600 a 1.25rem, resumo em tinta suave e, por último, a linha de legendas com o tipo, os temas e a marca de idioma. O título sob o ponteiro ganha um sublinhado de 2px em cobre. No celular, a data fica na linha de legendas, depois do tipo; a coluna da data entra a partir de 561px.
+- **Lista de estudos:** no cabeçalho, abaixo do título, a legenda "conferida em" com o mês. Depois vêm os grupos, cada um com um título de seção (peso 400 em 1.7rem): primeiro os estudos em andamento, depois cada ano de estudos concluídos. Cada estudo é uma entrada de linha do tempo, com um fio de 1px em tinta em cima: o nome em fonte de display peso 400 a 1.35rem, o objetivo em tinta suave e a linha de legendas com o status e os meses. No celular a linha de legendas vem depois do objetivo; a partir de 561px ela fica à direita do nome.
+- **Ligações de um estudo:** uma lista de definição abaixo do estudo, com o termo em legenda (textos, projeto, certificado, formação, pesquisa) e os links em safira a 1rem, cada um com 44px de altura. No celular o termo fica sobre os links; a partir de 561px ele ocupa uma coluna de 8.5rem. Os textos ligados são itens da lista de textos, com o título a 1.06rem e a data sempre na linha de legendas. O certificado mostra o site para onde leva: é o único link que sai do site.
 
 ### Foco e seleção
 - **Foco do teclado:** contorno de 2px em safira, afastado 3px.

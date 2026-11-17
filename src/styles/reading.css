@@ -42,22 +42,25 @@
   align-items: center;
 }
 
-/* The text type: a small square before the caption, in copper for an
-   article and in sapphire for a study note. */
-.text-type {
+/* The text type and the study status: a small square before the caption.
+   In copper for an article and for a study in progress, and in sapphire for
+   a study note and for a completed study. */
+.text-type,
+.study-status {
   display: inline-flex;
   gap: 0.55em;
   align-items: center;
 }
 
-.text-type::before {
+:is(.text-type, .study-status)::before {
   content: "";
   width: 0.8em;
   aspect-ratio: 1;
   background: var(--copper);
 }
 
-.text-type.study-note::before {
+.text-type.study-note::before,
+.study-status.completed::before {
   background: var(--sapphire);
 }
 
@@ -210,7 +213,7 @@
   border-top: 0;
 }
 
-.text-list h2 {
+.text-list :is(h2, h4) {
   font-family: var(--text);
   font-size: 1.25rem;
   font-weight: 600;
@@ -218,20 +221,20 @@
   letter-spacing: 0;
 }
 
-.text-list h2 a {
+.text-list :is(h2, h4) a {
   color: var(--ink);
   text-decoration: none;
 }
 
 /* The whole item is the touch target of its title. */
-.text-list h2 a::after {
+.text-list :is(h2, h4) a::after {
   content: "";
   position: absolute;
   inset: 0;
 }
 
 @media (hover: hover) {
-  .text-list h2 a:hover {
+  .text-list :is(h2, h4) a:hover {
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-decoration-color: var(--copper);
@@ -246,16 +249,124 @@
   margin-top: 0.3rem;
 }
 
+/* ---------- the study list ---------- */
+
+/* The groups: the studies in progress and each year of completed ones. */
+.study-group {
+  margin-top: 2.6rem;
+}
+
+.study-group h2 {
+  padding-bottom: 0.9rem;
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* A study is an entry of a timeline. Phone first: the name, the goal, the
+   captions and then the links. On a wider screen the captions move to the
+   right of the name. */
+.study {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.3rem 1.2rem;
+  padding: 1.3rem 0;
+  border-top: 1px solid var(--ink);
+  /* Where the page stops when a text leads to its study. */
+  scroll-margin-top: 1rem;
+}
+
+.study h3 {
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.study .goal {
+  color: var(--mut);
+}
+
+.study > .captions {
+  margin-top: 0.3rem;
+}
+
+/* The links of a study: on a phone, what comes before each kind over the
+   links of that kind. */
+.study-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.study-links dt {
+  padding-top: 0.7rem;
+}
+
+.study-links dd {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* The padding gives each link the height of a touch target, also when its
+   words take more than one line. */
+.study-links dd > a {
+  padding-block: 0.6rem;
+}
+
+/* The texts of a study: the items of the list of texts, a step smaller,
+   with the date always among the captions. */
+.study-links .text-list {
+  width: 100%;
+  margin-top: 0;
+}
+
+.study-links .text-list li {
+  padding: 0.7rem 0;
+}
+
+.study-links .text-list h4 {
+  font-size: 1.06rem;
+}
+
 @media (min-width: 561px) {
-  .text-list li {
+  /* On the list of texts, the date has a narrow column of its own. */
+  .reading > .text-list li {
     padding-left: 8rem;
   }
 
-  .text-list time {
+  .reading > .text-list time {
     position: absolute;
     top: 1.75rem;
     left: 0;
     width: 6.5rem;
+  }
+
+  .study {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+  }
+
+  .study > .captions {
+    grid-area: 1 / 2;
+    margin-top: 0;
+  }
+
+  .study > :is(.goal, .study-links) {
+    grid-column: 1 / -1;
+  }
+
+  .study-links {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    column-gap: 1.2rem;
+  }
+
+  /* The term sits on the first line of its links. */
+  .study-links dt {
+    padding-top: 0.85rem;
   }
 }
 

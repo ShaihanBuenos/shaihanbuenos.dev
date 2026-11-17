@@ -18,7 +18,6 @@ home:
     experience: Test experience block
   today: test today
   paper: Test paper sentence.
-  since: test since
   more:
     research: Test research link
     projects: Test projects link
@@ -57,6 +56,19 @@ writing:
 studies:
   name: Studies
   description: Test description.
+  checkedOn: test checked in
+  inProgress: Test in progress
+  completedIn: Test completed in
+  statuses:
+    in-progress: test in progress
+    completed: test completed
+  since: test since
+  links:
+    texts: Test texts
+    project: Test project
+    certificate: Test certificate
+    education: Test education link
+    research: Test research
 research:
   name: Research
   description: Test description.

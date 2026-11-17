@@ -9,6 +9,8 @@ export const TEXT_TYPES = ["article", "study-note"] as const;
 
 export const PROJECT_STATES = ["works-locally", "in-development", "in-planning"] as const;
 
+export const STUDY_STATUSES = ["in-progress", "completed"] as const;
+
 // What every fixed page has: its name on the menu and the page description.
 const page = z.strictObject({ name: phrase, description: phrase });
 
@@ -37,8 +39,6 @@ export const pagesSchema = z.strictObject({
     today: phrase,
     // The paper callout: one plain sentence, without numbers.
     paper: phrase,
-    // Comes before the start month of a study in progress: "since".
-    since: phrase,
     // The link that closes each section.
     more: z.strictObject({
       research: phrase,
@@ -77,7 +77,26 @@ export const pagesSchema = z.strictObject({
       withAI: phrase,
     }),
   }),
-  studies: page,
+  studies: page.extend({
+    // Comes before the month of the last check of the study list.
+    checkedOn: phrase,
+    // The title of the group of the studies in progress.
+    inProgress: phrase,
+    // Comes before the year in the title of a group of completed studies.
+    completedIn: phrase,
+    // The name of each study status.
+    statuses: z.record(z.enum(STUDY_STATUSES), phrase),
+    // Comes before the start month of a study in progress: "since".
+    since: phrase,
+    // What comes before each kind of link of a study.
+    links: z.strictObject({
+      texts: phrase,
+      project: phrase,
+      certificate: phrase,
+      education: phrase,
+      research: phrase,
+    }),
+  }),
   research: page,
   about: page.extend({ bio: phrase, education: phrase }),
   // "Not found" only has a name: it is not on the menu nor in search engines.
@@ -146,8 +165,6 @@ export const projectStorySchema = z.strictObject({
   // The page description.
   description: phrase,
 });
-
-export const STUDY_STATUSES = ["in-progress", "completed"] as const;
 
 // A study: studies/<study>.yaml, with both languages inside.
 export const studySchema = z
