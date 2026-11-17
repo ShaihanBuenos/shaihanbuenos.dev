@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   aboutSectionPathOf,
   equivalentOf,
+  pageChangeNameOf,
   projectPathOf,
   researchItemPathOf,
   sectionAt,
@@ -95,4 +96,9 @@ test("the equivalent of a translated text is its version in the other language",
 test("the equivalent of a text without a translation is the other language's list of texts", () => {
   assert.equal(textEquivalentOf(undefined, "en"), "/pt-br/textos");
   assert.equal(textEquivalentOf(undefined, "pt-br"), "/writing");
+});
+
+test("the name of a project in the page change is a name CSS accepts", () => {
+  assert.equal(pageChangeNameOf("example-project"), "project-example-project");
+  assert.equal(pageChangeNameOf("2nd project.v2"), "project-2nd_project_v2");
 });

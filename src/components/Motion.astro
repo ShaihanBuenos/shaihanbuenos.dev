@@ -1,0 +1,21 @@
+---
+// The motion "Traçado" on a page that has the plan or sections: the reveal
+// of the sections and the progress bar and, on the Home page, the opening.
+// It goes in the <head> of the page, through the slot "head" of the layout.
+// A reading page does not use it: it gets the page change only, which is
+// CSS of the layout.
+import "../styles/motion-scroll.css";
+---
+
+<!--
+  The switch of the motion: the class "motion", which every rule of the motion
+  hangs on. It is put here, before the page shows, so that nothing shows whole
+  and then starts over. With reduced motion asked of the system, or with
+  JavaScript off, the class is never there and the page is still.
+-->
+<script is:inline>
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("motion");
+  }
+</script>
+<script src="../scripts/motion.ts"></script>

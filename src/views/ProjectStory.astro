@@ -2,11 +2,12 @@
 import { render } from "astro:content";
 import "../styles/sections.css";
 import "../styles/story.css";
+import Motion from "../components/Motion.astro";
 import Base from "../layouts/Base.astro";
 import { type Project, content } from "../lib/content.ts";
 import { dayIn, isoDayOf } from "../lib/dates.ts";
 import { languageOf } from "../lib/languages.ts";
-import { projectPathOf } from "../lib/pages.ts";
+import { pageChangeNameOf, projectPathOf } from "../lib/pages.ts";
 
 interface Props {
   project: Project;
@@ -25,8 +26,14 @@ const otherProjects = projects.filter(({ id }) => id !== project.id);
 ---
 
 <Base title={project.name}>
+  <Motion slot="head" />
   <header class="story-top">
-    <div class="story-mark" aria-hidden="true" set:html={project.mark} />
+    <div
+      class="story-mark"
+      aria-hidden="true"
+      style={{ viewTransitionName: pageChangeNameOf(project.id) }}
+      set:html={project.mark}
+    />
     <div class="story-id">
       <h1>{project.name}</h1>
       <p class="caption story-state">

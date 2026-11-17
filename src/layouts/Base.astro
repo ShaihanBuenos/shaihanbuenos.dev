@@ -2,6 +2,7 @@
 import "../styles/fonts.css";
 import "../styles/base.css";
 import "../styles/frame.css";
+import "../styles/page-change.css";
 import Footer from "../components/Footer.astro";
 import Menu from "../components/Menu.astro";
 import { INDEXABLE } from "../lib/config.ts";
@@ -15,6 +16,9 @@ interface Props {
   equivalent?: string | undefined;
 }
 
+// The slot "head" holds what a page adds to the <head>: the motion, on the
+// pages that have it.
+
 const { title, equivalent } = Astro.props;
 const language = languageOf(Astro.currentLocale);
 const phrases = await phrasesOf(language);
@@ -27,6 +31,7 @@ const phrases = await phrasesOf(language);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {!INDEXABLE && <meta name="robots" content="noindex" />}
     <title>{title}</title>
+    <slot name="head" />
   </head>
   <body>
     <a class="skip" href="#content">

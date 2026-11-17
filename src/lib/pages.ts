@@ -24,6 +24,14 @@ export function projectPathOf(id: string, language: Language): string {
   return `${pathOf("projects", language)}/${id}`;
 }
 
+// The name a project takes in the page change: the project block of the Home
+// page and the panel of the project mark on the project story carry it, so
+// the browser moves one into the other. The name of the folder may have
+// characters that a CSS name cannot.
+export function pageChangeNameOf(id: string): string {
+  return `project-${id.replace(/[^\w-]/g, "_")}`;
+}
+
 // The path of one version of a text, under the prefix of its own language.
 export function textPathOf(slug: string, language: Language): string {
   return `${pathOf("writing", language)}/${slug}`;
