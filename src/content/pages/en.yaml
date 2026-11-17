@@ -121,7 +121,13 @@ about:
   name: About
   description: "[Example] Description of the About page."
   bio: "[Example] This paragraph stands in for the bio, which is still to be written."
+  # The alternative text of the avatar.
+  avatarAlt: Pixel art avatar of Shaihan Buenos
+  # The end of a period while the role is the current one.
+  present: Present
   education: Bachelor's degree in Information Systems, UNISINOS, completed in 2025
+  # The title of the section of the contact.
+  contact: Contact
 
 # The page shown when the address does not exist.
 notFound:

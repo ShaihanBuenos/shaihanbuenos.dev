@@ -1,0 +1,377 @@
+// Tests of the About page (section 7.6 of the spec). They look at the built
+// page: the one in dist/, with the example content, and the one of a copy of
+// the site with some content files changed.
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { describe, test } from "node:test";
+import { build } from "./support/copy.ts";
+import { element, elements, hrefsOf, textOf } from "./support/html.ts";
+import { PAGES } from "./support/phrases.ts";
+
+const root = new URL("..", import.meta.url).pathname;
+
+// The file of the About page of each language in a build.
+const ABOUT = { en: "about.html", pt: "pt-br/sobre.html" };
+
+// The <main> of the About page with the example content, as `npm test` has
+// just built it.
+async function examplePage(language: keyof typeof ABOUT): Promise<string> {
+  return element(await readFile(`${root}dist/${ABOUT[language]}`, "utf8"), "main");
+}
+
+// The parts of the page, in the order they appear: the bio, which has no
+// title, and then the title of each section.
+function partsOf(page: string) {
+  const [beforeSections = ""] = page.split(/<section\b/);
+  return {
+    title: textOf(element(page, "h1")),
+    bio: elements(beforeSections, "p").map(textOf),
+    sections: elements(page, "section").map((section) => textOf(element(section, "h2"))),
+  };
+}
+
+// Section 7.6 of the spec: the bio, the experience, the education and the
+// contact, in this order. The example bio is in src/content/pages.
+test("About shows, in both languages, the bio, the experience, the education and the contact, in this order", async () => {
+  assert.deepEqual(partsOf(await examplePage("en")), {
+    title: "About",
+    bio: ["[Example] This paragraph stands in for the bio, which is still to be written."],
+    sections: ["Experience", "Education", "Contact"],
+  });
+  assert.deepEqual(partsOf(await examplePage("pt")), {
+    title: "Sobre",
+    bio: ["[Exemplo] Este parágrafo ocupa o lugar da bio, que ainda vai ser escrita."],
+    sections: ["Experiência", "Formação", "Contato"],
+  });
+});
+
+// The avatar: what the <img> of the bio says in the HTML.
+function avatarOf(page: string) {
+  const [beforeSections = ""] = page.split(/<section\b/);
+  const [image = ""] = beforeSections.match(/<img\b[^>]*>/) ?? [];
+  const attribute = (name: string) => image.match(new RegExp(`\\b${name}="([^"]*)"`))?.[1];
+  return {
+    alt: attribute("alt"),
+    width: attribute("width"),
+    height: attribute("height"),
+    src: attribute("src") ?? "",
+  };
+}
+
+// Section 7.6 of the spec: the bio sits next to the pixel art avatar. The
+// avatar is the file src/assets/avatar.png, of 288 by 288 pixels, served by
+// the site itself.
+test("the bio has the avatar next to it, with alternative text, width and height, served from a file of the repo", async () => {
+  const alts = {
+    en: "Pixel art avatar of Shaihan Buenos",
+    pt: "Avatar de Shaihan Buenos em pixel art",
+  };
+  const file = await readFile(`${root}src/assets/avatar.png`);
+  for (const language of ["en", "pt"] as const) {
+    const { src, ...avatar } = avatarOf(await examplePage(language));
+    assert.deepEqual(avatar, { alt: alts[language], width: "288", height: "288" }, language);
+    assert.match(src, /^\/(?!\/)/, language);
+    assert.deepEqual(await readFile(`${root}dist${src}`), file, language);
+  }
+});
+
+// A period, as a visitor reads it, and the months it marks.
+function periodOf(caption: string) {
+  return {
+    period: textOf(caption),
+    months: [...caption.matchAll(/<time datetime="([^"]*)"/g)].map(([, month]) => month),
+  };
+}
+
+// The timeline of the experience: the companies, in the order they appear,
+// each with its name, its whole period and its roles. A role shows the
+// title, with the `lang` it is marked with, the period, the line of context
+// and the achievements.
+function timelineOf(page: string) {
+  return elements(element(page, "section", "experience"), "article").map((company) => {
+    const [header = "", ...roles] = company.split(/(?=<h4\b)/);
+    return {
+      name: textOf(element(header, "h3")),
+      ...periodOf(element(header, "p")),
+      roles: roles.map((role) => {
+        const title = element(role, "h4");
+        const [period = "", context = ""] = elements(role, "p");
+        return {
+          title: textOf(title),
+          lang: title.match(/^<h4\b[^>]*\blang="([^"]*)"/)?.[1] ?? null,
+          ...periodOf(period),
+          context: textOf(context),
+          achievements: elements(element(role, "ul"), "li").map(textOf),
+        };
+      }),
+    };
+  });
+}
+
+// Section 7.6 of the spec: a timeline by company. The company shows the name
+// and the whole period; each role shows the title, the period, a line of
+// context and the achievements. The example roles are in src/content/roles:
+// two roles at the same company, the newest one without an end.
+test("the experience is a timeline by company, each role with its title in English, period, context and achievements", async () => {
+  assert.deepEqual(timelineOf(await examplePage("en")), [
+    {
+      name: "Example Company",
+      period: "Jan 2022 – Present",
+      months: ["2022-01"],
+      roles: [
+        {
+          title: "Software Engineer II",
+          lang: null,
+          period: "Mar 2024 – Present",
+          months: ["2024-03"],
+          context: "[Example] One line of context about the team and the kind of work.",
+          achievements: [
+            "[Example] A made-up achievement, in the first person and in the past tense, saying what changed and how it was done.",
+            "[Example] A second made-up achievement, to show that the order of the lines is the order on the page.",
+          ],
+        },
+        {
+          title: "Software Engineer I",
+          lang: null,
+          period: "Jan 2022 – Mar 2024",
+          months: ["2022-01", "2024-03"],
+          context: "[Example] One line of context about an earlier role at the same company.",
+          achievements: ["[Example] A made-up achievement from the earlier role."],
+        },
+      ],
+    },
+  ]);
+
+  assert.deepEqual(timelineOf(await examplePage("pt")), [
+    {
+      name: "Example Company",
+      period: "jan. de 2022 – hoje",
+      months: ["2022-01"],
+      roles: [
+        {
+          title: "Software Engineer II",
+          lang: "en",
+          period: "mar. de 2024 – hoje",
+          months: ["2024-03"],
+          context: "[Exemplo] Uma linha de contexto sobre o time e o tipo de trabalho.",
+          achievements: [
+            "[Exemplo] Uma conquista inventada, em primeira pessoa e no passado, dizendo o que mudou e como foi feito.",
+            "[Exemplo] Uma segunda conquista inventada, para mostrar que a ordem das linhas é a ordem na página.",
+          ],
+        },
+        {
+          title: "Software Engineer I",
+          lang: "en",
+          period: "jan. de 2022 – mar. de 2024",
+          months: ["2022-01", "2024-03"],
+          context: "[Exemplo] Uma linha de contexto sobre um cargo anterior na mesma empresa.",
+          achievements: ["[Exemplo] Uma conquista inventada do cargo anterior."],
+        },
+      ],
+    },
+  ]);
+});
+
+// Section 7.6 of the spec gives the line of the education.
+test("the education is one line", async () => {
+  const lines = {
+    en: "Bachelor's degree in Information Systems, UNISINOS, completed in 2025",
+    pt: "Bacharelado em Sistemas de Informação, UNISINOS, concluído em 2025",
+  };
+  for (const language of ["en", "pt"] as const) {
+    const education = element(await examplePage(language), "section", "education");
+    assert.deepEqual(elements(education, "p").map(textOf), [lines[language]], language);
+  }
+});
+
+// The contact channels, from section 7.6 of the spec, with the addresses of
+// section 13.
+const CHANNELS = [
+  { text: "LinkedIn", href: "https://www.linkedin.com/in/shaihanbuenos/" },
+  { text: "GitHub", href: "https://github.com/ShaihanBuenos" },
+  { text: "hi@shaihanbuenos.dev", href: "mailto:hi@shaihanbuenos.dev" },
+];
+
+test("the contact shows LinkedIn, GitHub and the e-mail of the site, and no other link leaves the site", async () => {
+  for (const language of ["en", "pt"] as const) {
+    const page = await examplePage(language);
+    const contact = element(page, "section", "contact");
+    assert.deepEqual(
+      elements(contact, "a").map((link) => ({ text: textOf(link), href: hrefsOf(link).join(" ") })),
+      CHANNELS,
+      language,
+    );
+    assert.deepEqual(
+      hrefsOf(page).filter((href) => !href.startsWith("/")),
+      CHANNELS.map(({ href }) => href),
+      language,
+    );
+  }
+});
+
+// Section 7.6 of the spec: no logo, no table of skills, no résumé in PDF, no
+// phone and no personal e-mail. The avatar is the only image of the page.
+test("About has no logo, no table, no phone, no personal e-mail and no link to a PDF", async () => {
+  for (const language of ["en", "pt"] as const) {
+    const page = await examplePage(language);
+    assert.equal(page.match(/<(img|svg|picture|object)\b/g)?.length, 1, language);
+    assert.doesNotMatch(element(page, "section", "experience"), /<(img|svg|picture|object)\b/);
+    assert.doesNotMatch(page, /<table\b|skills/i, language);
+    assert.doesNotMatch(page, /pdf/i, language);
+    assert.doesNotMatch(page, /tel:|\+?\d[\d\s().-]{7,}\d/, language);
+    assert.deepEqual(
+      [...new Set(page.match(/[\w.+-]+@[\w.-]+/g))],
+      ["hi@shaihanbuenos.dev"],
+      language,
+    );
+  }
+});
+
+// A role file: the title, the months and the achievements are given by each
+// test, and the line of context is made from the title.
+function roleFile(company: string, title: string, months: string, achievements: string[]): string {
+  return [
+    `company: ${company}`,
+    `title: ${title}`,
+    months,
+    `context:\n  en: Context of ${title}.\n  pt-br: Contexto de ${title}.`,
+    "achievements:",
+    ...achievements.map((name) => `  - en: ${name}.\n    pt-br: ${name} em português.`),
+    "",
+  ].join("\n");
+}
+
+describe("the experience comes from the content", { concurrency: true }, () => {
+  // A copy of the site with test phrases in English, the example current
+  // role with every field changed, the example previous role deleted and two
+  // more roles, both ended, at another company. The names of the files are
+  // not in the order of the months.
+  const changed = build({
+    remove: ["roles/example-previous-role.yaml"],
+    write: {
+      "pages/en.yaml": PAGES,
+      "roles/example-current-role.yaml": roleFile(
+        "Newest Test Company",
+        "Staff Test Engineer",
+        "start: 2025-05",
+        ["Third written first", "First written second", "Second written third"],
+      ),
+      "roles/a-earlier-role.yaml": roleFile(
+        "Older Test Company",
+        "Test Engineer I",
+        "start: 2021-08\nend: 2023-02",
+        ["Earlier achievement"],
+      ),
+      "roles/z-later-role.yaml": roleFile(
+        "Older Test Company",
+        "Test Engineer II",
+        "start: 2023-02\nend: 2025-04",
+        ["Later achievement"],
+      ),
+    },
+  });
+
+  async function changedPage(language: keyof typeof ABOUT): Promise<string> {
+    return element(await (await changed).read(ABOUT[language]), "main");
+  }
+
+  test("changing the fields of a role file changes its role on the page", async () => {
+    const [company] = timelineOf(await changedPage("pt"));
+    assert.deepEqual(company, {
+      name: "Newest Test Company",
+      period: "mai. de 2025 – hoje",
+      months: ["2025-05"],
+      roles: [
+        {
+          title: "Staff Test Engineer",
+          lang: "en",
+          period: "mai. de 2025 – hoje",
+          months: ["2025-05"],
+          context: "Contexto de Staff Test Engineer.",
+          achievements: [
+            "Third written first em português.",
+            "First written second em português.",
+            "Second written third em português.",
+          ],
+        },
+      ],
+    });
+  });
+
+  // Section 7.6 of the spec: from the most recent company to the oldest. The
+  // company shows its whole period: from the start of its oldest role to the
+  // end of its newest one.
+  test("two roles at the same company sit under one name, from the most recent to the oldest, with the whole period of the company", async () => {
+    const timeline = timelineOf(await changedPage("pt"));
+    assert.deepEqual(
+      timeline.map(({ name }) => name),
+      ["Newest Test Company", "Older Test Company"],
+    );
+    const older = timeline.at(1);
+    assert.deepEqual(
+      { period: older?.period, months: older?.months },
+      { period: "ago. de 2021 – abr. de 2025", months: ["2021-08", "2025-04"] },
+    );
+    assert.deepEqual(
+      older?.roles.map(({ title, period, months }) => ({ title, period, months })),
+      [
+        {
+          title: "Test Engineer II",
+          period: "fev. de 2023 – abr. de 2025",
+          months: ["2023-02", "2025-04"],
+        },
+        {
+          title: "Test Engineer I",
+          period: "ago. de 2021 – fev. de 2023",
+          months: ["2021-08", "2023-02"],
+        },
+      ],
+    );
+  });
+
+  test("the months are written in the language of the page", async () => {
+    const periods = (await changedPage("en")).match(/<time\b[^>]*>[^<]*<\/time>/g)?.map(textOf);
+    assert.deepEqual(periods, [
+      "May 2025",
+      "May 2025",
+      "Aug 2021",
+      "Apr 2025",
+      "Feb 2023",
+      "Apr 2025",
+      "Aug 2021",
+      "Feb 2023",
+    ]);
+  });
+
+  test("deleting a role file takes its role away", async () => {
+    for (const language of ["en", "pt"] as const) {
+      const page = await changedPage(language);
+      assert.deepEqual(
+        timelineOf(page).flatMap(({ roles }) => roles.map(({ title }) => title)),
+        ["Staff Test Engineer", "Test Engineer II", "Test Engineer I"],
+        language,
+      );
+      assert.doesNotMatch(page, /Example Company|Software Engineer/, language);
+    }
+  });
+
+  test("the bio, the titles of the sections, “Present”, the education and the alternative text of the avatar come from the phrases file", async () => {
+    const page = await changedPage("en");
+    assert.deepEqual(partsOf(page), {
+      title: "About",
+      bio: ["Test bio."],
+      sections: ["Test experience caption", "Test education link", "Test contact"],
+    });
+    assert.equal(avatarOf(page).alt, "Test avatar");
+    assert.deepEqual(
+      timelineOf(page)
+        .at(0)
+        ?.roles.map(({ period }) => period),
+      ["May 2025 – test present"],
+    );
+    assert.equal(timelineOf(page).at(0)?.period, "May 2025 – test present");
+    assert.deepEqual(elements(element(page, "section", "education"), "p").map(textOf), [
+      "Test education.",
+    ]);
+  });
+});

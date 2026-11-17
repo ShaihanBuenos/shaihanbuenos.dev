@@ -1,0 +1,17 @@
+---
+import { phrasesOf } from "../lib/content.ts";
+import { monthIn } from "../lib/dates.ts";
+import type { Period } from "../lib/experience.ts";
+import { languageOf } from "../lib/languages.ts";
+
+// A period of the experience, from one month to another, in the language of
+// the page. Without an end, it goes up to "Present".
+type Props = Period;
+
+const { start, end } = Astro.props;
+const language = languageOf(Astro.currentLocale);
+const phrases = await phrasesOf(language);
+---
+
+<time datetime={start}>{monthIn(start, language)}</time> –{" "}
+{end === undefined ? phrases.about.present : <time datetime={end}>{monthIn(end, language)}</time>}

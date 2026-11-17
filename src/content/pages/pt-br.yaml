@@ -121,7 +121,13 @@ about:
   name: Sobre
   description: "[Exemplo] Descrição da página Sobre."
   bio: "[Exemplo] Este parágrafo ocupa o lugar da bio, que ainda vai ser escrita."
+  # The alternative text of the avatar.
+  avatarAlt: Avatar de Shaihan Buenos em pixel art
+  # The end of a period while the role is the current one.
+  present: hoje
   education: Bacharelado em Sistemas de Informação, UNISINOS, concluído em 2025
+  # The title of the section of the contact.
+  contact: Contato
 
 # The page shown when the address does not exist.
 notFound:

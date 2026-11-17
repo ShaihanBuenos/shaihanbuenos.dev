@@ -84,7 +84,10 @@ about:
   name: About
   description: Test description.
   bio: Test bio.
+  avatarAlt: Test avatar
+  present: test present
   education: Test education.
+  contact: Test contact
 notFound:
   name: Gone missing
 `;

@@ -50,6 +50,8 @@ Os testes de Estudos, em `tests/studies.test.ts`, olham a lista de estudos: com 
 
 Os testes de Pesquisa, em `tests/research.test.ts`, olham a página Pesquisa: com o conteúdo de exemplo e em cópias com um paper e um TCC de teste, com o TCC apagado e com a ordem trocada.
 
+Os testes de Sobre, em `tests/about.test.ts`, olham a página Sobre: com o conteúdo de exemplo e numa cópia com cargos criados, um trocado e um apagado.
+
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
 ## Construir
@@ -69,21 +71,24 @@ A saída é só de arquivos estáticos.
 | `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. `projects/[project].astro` gera uma página por pasta de projeto, e `writing/[text].astro`, uma página por texto que tem versão em inglês. |
 | `src/pages/pt-br/` | As páginas em português. `textos/[text].astro` gera uma página por texto que tem versão em português. |
 | `src/layouts/Base.astro` | O layout comum a todas as páginas: a moldura, o menu, o botão de idioma e o rodapé. |
-| `src/layouts/Reading.astro` | A coluna de leitura simples: o título e, abaixo dele, o que a página puser. É a da lista de textos, da página de um texto, da lista de estudos e da página Pesquisa. Por enquanto, todas as páginas ainda vazias também usam esta. |
-| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos), `ProjectStory.astro` (a história do projeto), `Writing.astro` (a lista de textos), `Text.astro` (a página de um texto), `Studies.astro` (a lista de estudos) e `Research.astro` (a página Pesquisa). |
-| `src/components/` | As peças comuns: menu, botão de idioma, rodapé e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos, a marca de idioma (`LanguageMark.astro`), usada no Início e nos itens de texto, o item de texto (`TextItem.astro`), usado na lista de textos e nos textos ligados a um estudo, e o título de um item de pesquisa (`ResearchTitle.astro`), usado na página Pesquisa e na lista de estudos. |
-| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura: a coluna, o corpo de um texto, a lista de textos, a lista de estudos e os itens de pesquisa), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. |
+| `src/layouts/Reading.astro` | A coluna de leitura simples: o título e, abaixo dele, o que a página puser. É a da lista de textos, da página de um texto, da lista de estudos, da página Pesquisa, da página Sobre e do "não encontrado". |
+| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos), `ProjectStory.astro` (a história do projeto), `Writing.astro` (a lista de textos), `Text.astro` (a página de um texto), `Studies.astro` (a lista de estudos), `Research.astro` (a página Pesquisa) e `About.astro` (a página Sobre). |
+| `src/components/` | As peças comuns: menu, botão de idioma, rodapé e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos, a marca de idioma (`LanguageMark.astro`), usada no Início e nos itens de texto, o item de texto (`TextItem.astro`), usado na lista de textos e nos textos ligados a um estudo, o título de um item de pesquisa (`ResearchTitle.astro`), usado na página Pesquisa e na lista de estudos, e o período de uma empresa ou de um cargo (`Period.astro`), usado na página Sobre. |
+| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura: a coluna, o corpo de um texto, a lista de textos, a lista de estudos, os itens de pesquisa e a página Sobre), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. |
 | `public/fonts/` | As três fontes, servidas pelo próprio site. |
+| `src/assets/` | As imagens que as páginas importam: hoje, o avatar (ver "O avatar", abaixo). |
+| `tools/avatar.py` | O script que desenha o avatar. |
 | `src/lib/config.ts` | A chave do lançamento (ver abaixo). |
 | `src/lib/languages.ts` | Os dois idiomas e o `lang` de cada um. |
-| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada página, para o botão de idioma, os endereços de uma história do projeto, de um texto, de um estudo e de um item de pesquisa, e o equivalente de um texto. |
+| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada página, para o botão de idioma, os endereços de uma história do projeto, de um texto, de um estudo, de um item de pesquisa e de uma seção da página Sobre, e o equivalente de um texto. |
 | `src/lib/project-story.ts` | A estrutura do corpo de uma história do projeto: transforma o Markdown nas seções da página e barra o corpo fora do formato. |
 | `src/lib/dates.ts` | Como as datas do conteúdo são escritas em cada idioma. |
+| `src/lib/experience.ts` | A linha do tempo da experiência: os cargos reunidos por empresa, e o período de um conjunto de cargos, usado na página Sobre e no Início. |
 | `src/content/` | Os arquivos de conteúdo (ver "Conteúdo", abaixo). |
 | `src/content.config.ts` | As coleções: em que pasta ficam os arquivos de cada uma. |
 | `src/lib/schemas.ts` | Os campos de cada coleção e as listas fixas: temas, tipos de texto, estados e status. |
 | `src/lib/content.ts` | O conteúdo já reunido e conferido. As páginas leem o conteúdo por aqui. |
-| `src/lib/contact.ts` | Os canais do contato, e o e-mail, para onde leva "disponível a pedido". |
+| `src/lib/contact.ts` | Os canais do contato, mostrados no rodapé e na página Sobre. |
 | `src/lib/feed.ts` | O feed de cada idioma, ainda sem textos. |
 | `tests/` | Os testes do site construído. |
 | `scripts/check` | A conferência completa. |
@@ -131,7 +136,7 @@ Tudo o que o site diz fica em `src/content/`. Trocar uma frase, um estado ou uma
 
 | Pasta | O que guarda | Formato |
 |---|---|---|
-| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, as frases do Início (blocos da planta, chamada do paper, links das seções), os nomes dos estados do projeto, dos tipos de texto e dos temas, as frases da página de um texto (a nota de tradução, "atualizado em", "estudo de origem"), as frases da lista de estudos ("conferida em", os títulos dos grupos, os nomes dos status do estudo, "desde" e os rótulos das ligações), as frases da página Pesquisa (os rótulos dos campos, o link do DOI, "disponível a pedido" e a legenda do diagrama), bio, formação e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
+| `pages/` | As frases das páginas fixas: nomes do menu, descrições das páginas, rótulo, frase de apresentação, as frases do Início (blocos da planta, chamada do paper, links das seções), os nomes dos estados do projeto, dos tipos de texto e dos temas, as frases da página de um texto (a nota de tradução, "atualizado em", "estudo de origem"), as frases da lista de estudos ("conferida em", os títulos dos grupos, os nomes dos status do estudo, "desde" e os rótulos das ligações), as frases da página Pesquisa (os rótulos dos campos, o link do DOI, "disponível a pedido" e a legenda do diagrama), as frases da página Sobre (bio, texto alternativo do avatar, "hoje", formação e o título do contato) e as frases do layout comum. | `en.yaml` e `pt-br.yaml`, com as mesmas chaves. |
 | `texts/` | Os textos. | Uma pasta por texto: `text.yaml` e um `.md` por idioma. |
 | `projects/` | Os projetos e as histórias do projeto. | Uma pasta por projeto: `project.yaml`, `mark.svg` e a história do projeto em `en.md` e `pt-br.md`. |
 | `studies/` | Os estudos. | Um `.yaml` por estudo, com os dois idiomas dentro. |
@@ -270,7 +275,7 @@ A lista de estudos (`/studies` e `/pt-br/estudos`) mostra primeiro os estudos em
 | `texts` e os textos que têm o estudo em `study` | O item da lista de textos, na versão do idioma da página ou no original, com a marca de idioma. Rascunhos ficam de fora. | O endereço dessa versão. |
 | `project` | O nome do projeto. | A história do projeto. |
 | `certificate` | O site do endereço, como `exemplo.com`. | O endereço do campo. É o único link que sai do site. |
-| `education` | A linha da formação, de `about.education`. | A página Sobre. |
+| `education` | A linha da formação, de `about.education`. | A formação, na página Sobre (`/about#education`). |
 | `research` | O título de cada item de pesquisa. | O item, na página Pesquisa. |
 
 Um estudo sem ligações mostra só o nome, o objetivo e o status. A página não tem porcentagem nem contagens. O nome do arquivo é o `id` do estudo na página: a página de um texto leva ao estudo de origem por `/studies#<nome-do-estudo>`.
@@ -314,8 +319,8 @@ whatItIs:
 
 A página Pesquisa (`/research` e `/pt-br/pesquisa`) mostra os itens na ordem de `order`. Cada item mostra o título e os campos; os rótulos dos campos vêm de `research`, nos arquivos de `src/content/pages/`.
 
-- **Paper:** o título fica em inglês nos dois idiomas. Depois vêm o lugar da publicação, os autores, o resumo, o que foi construído, o resultado, o link "Ler no IEEE Xplore", que leva a `https://doi.org/<doi>`, e o lugar do diagrama. O link é o único link da página que sai do site, fora o do contato.
-- **TCC:** o título fica em português, com a tradução entre parênteses na página em inglês. Depois vêm o que é, o resumo, o que foi construído, o resultado e "disponível a pedido", que abre um e-mail para o contato. Não tem imagem.
+- **Paper:** o título fica em inglês nos dois idiomas. Depois vêm o lugar da publicação, os autores, o resumo, o que foi construído, o resultado, o link "Ler no IEEE Xplore", que leva a `https://doi.org/<doi>`, e o lugar do diagrama. O link é o único link da página que sai do site.
+- **TCC:** o título fica em português, com a tradução entre parênteses na página em inglês. Depois vêm o que é, o resumo, o que foi construído, o resultado e "disponível a pedido", que leva ao contato, na página Sobre (`/about#contact`). Não tem imagem.
 
 O diagrama do paper ainda não foi desenhado: a página guarda o lugar dele, com a legenda de `research.diagramCaption`. A página não tem PDF nem figura copiada dos trabalhos. Os números de cada trabalho ficam só no arquivo dele, e a regra de saúde da seção 11 da spec vale para cada frase: pacientes sempre "simulados", e número só junto da ressalva.
 
@@ -338,7 +343,36 @@ achievements: # as conquistas
     pt-br: A primeira conquista.
 ```
 
-Cargos com o mesmo valor em `company` ficam juntos na linha do tempo.
+A página Sobre (`/about` e `/pt-br/sobre`) mostra a experiência numa linha do tempo, por empresa:
+
+- Cargos com o mesmo valor em `company` ficam juntos, sob um nome só. O nome tem de ser escrito igual nos arquivos.
+- As empresas vão da mais recente à mais antiga, pelo cargo mais recente de cada uma, e os cargos de uma empresa também, pelo mês `start`.
+- A empresa mostra o nome e o período total: do `start` do cargo mais antigo ao `end` do mais novo. Não tem logotipo.
+- Cada cargo mostra o título, o período, a linha de contexto e as conquistas, na ordem do arquivo. O título fica em inglês nos dois idiomas.
+- Um cargo sem `end` é o atual: o período dele, e o da empresa, terminam em "hoje" ("Present" em inglês), de `about.present`. O bloco de experiência do Início também passa a terminar em "hoje".
+- Os meses saem no formato de cada idioma: "Mar 2024" e "mar. de 2024".
+
+Para tirar um cargo, apague o arquivo. O conteúdo de verdade segue a regra de confidencialidade da seção 11 da spec: o que Shaihan fez como engenheiro, sem nome de produto, cliente ou sistema interno, e número só em percentual.
+
+### A página Sobre
+
+A página mostra, nesta ordem: a bio ao lado do avatar, a experiência, a formação e o contato. A bio e a linha da formação vêm de `about.bio` e `about.education`, nos dois arquivos de `src/content/pages/`. Os títulos das seções também vêm dali: o da experiência é `home.blocks.experienceCaption`, o mesmo do bloco do Início; o da formação é `studies.links.education`, o mesmo da ligação da lista de estudos; o do contato é `about.contact`.
+
+O contato mostra os canais de `src/lib/contact.ts`, os mesmos do rodapé: são os únicos links da página que saem do site. A página não tem tabela de skills, telefone, e-mail pessoal nem PDF.
+
+As seções da formação e do contato têm `id`: a lista de estudos leva a `/about#education`, e "disponível a pedido", na página Pesquisa, leva a `/about#contact`. Quem monta esses endereços é `aboutSectionPathOf`, em `src/lib/pages.ts`.
+
+### O avatar
+
+O avatar é pixel art de 48 por 48 pixels, guardado ampliado seis vezes em `src/assets/avatar.png` (288 por 288). O atual é provisório: o desenho final é da issue de conteúdo final. A página o importa (`import avatar from "../assets/avatar.png"`), e a construção copia o arquivo, sem mexer nele, para um endereço com o resumo do conteúdo no nome; a largura e a altura do HTML saem do próprio arquivo. O CSS o mostra em múltiplos inteiros de 48 (96 px no celular, 144 px a partir de 561 px), com `image-rendering: pixelated`.
+
+Quem desenha o arquivo é `tools/avatar.py`, que precisa do [Pillow](https://python-pillow.org):
+
+```sh
+python tools/avatar.py src/assets/avatar.png
+```
+
+Para mudar o desenho, edite as formas do script e rode de novo. O texto alternativo é `about.avatarAlt`.
 
 ### Mudar a ordem de uma lista
 

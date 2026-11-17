@@ -158,7 +158,7 @@ function textsOf(study: string) {
 }
 
 // The project leads to its project story, the certificate to the address in
-// the study's file, the education to About and each research item to itself
+// the study's file, the education to itself on About and each research item to itself
 // on the Research page. The example completed study has every link but the project.
 test("a study shows the links it has, and each one leads to its page", async () => {
   const inEnglish = await examplePage("en");
@@ -174,7 +174,7 @@ test("a study shows the links it has, and each one leads to its page", async () 
     {
       label: "Education",
       text: "Bachelor's degree in Information Systems, UNISINOS, completed in 2025",
-      hrefs: ["/about"],
+      hrefs: ["/about#education"],
     },
     {
       label: "Research",
@@ -196,7 +196,7 @@ test("a study shows the links it has, and each one leads to its page", async () 
     {
       label: "Formação",
       text: "Bacharelado em Sistemas de Informação, UNISINOS, concluído em 2025",
-      hrefs: ["/pt-br/sobre"],
+      hrefs: ["/pt-br/sobre#education"],
     },
     {
       label: "Pesquisa",

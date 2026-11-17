@@ -1,0 +1,69 @@
+---
+import avatar from "../assets/avatar.png";
+import Period from "../components/Period.astro";
+import Reading from "../layouts/Reading.astro";
+import { CONTACT } from "../lib/contact.ts";
+import { content } from "../lib/content.ts";
+import { timelineOf } from "../lib/experience.ts";
+import { foreignLangOf, languageOf } from "../lib/languages.ts";
+
+const language = languageOf(Astro.currentLocale);
+const { pages, roles } = await content();
+const phrases = pages[language];
+---
+
+<Reading title={phrases.about.name}>
+  <div class="about-bio">
+    <img
+      src={avatar.src}
+      alt={phrases.about.avatarAlt}
+      width={avatar.width}
+      height={avatar.height}
+    />
+    <p>{phrases.about.bio}</p>
+  </div>
+
+  <section class="about-section" id="experience">
+    <h2>{phrases.home.blocks.experienceCaption}</h2>
+    {timelineOf(roles).map((company) => (
+      <article class="company">
+        <h3>{company.name}</h3>
+        <p class="caption">
+          <Period {...company.period} />
+        </p>
+        <ol class="roles">
+          {company.roles.map((role) => (
+            <li>
+              <h4 lang={foreignLangOf("en", language)}>{role.title}</h4>
+              <p class="caption">
+                <Period start={role.start} end={role.end} />
+              </p>
+              <p class="context">{role.context[language]}</p>
+              <ul class="achievements">
+                {role.achievements.map((achievement) => (
+                  <li>{achievement[language]}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </article>
+    ))}
+  </section>
+
+  <section class="about-section" id="education">
+    <h2>{phrases.studies.links.education}</h2>
+    <p>{phrases.about.education}</p>
+  </section>
+
+  <section class="about-section" id="contact">
+    <h2>{phrases.about.contact}</h2>
+    <ul class="contact-list">
+      {CONTACT.map(({ name, href }) => (
+        <li>
+          <a href={href}>{name}</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Reading>

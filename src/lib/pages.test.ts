@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  aboutSectionPathOf,
   equivalentOf,
   projectPathOf,
   researchItemPathOf,
@@ -47,6 +48,11 @@ test("a study lives on the Studies page of its language, under the name of its f
 test("a research item lives on the Research page of its language, under the name of its file", () => {
   assert.equal(researchItemPathOf("example-paper", "en"), "/research#example-paper");
   assert.equal(researchItemPathOf("example-paper", "pt-br"), "/pt-br/pesquisa#example-paper");
+});
+
+test("a section of About lives on the About page of its language, under its name", () => {
+  assert.equal(aboutSectionPathOf("education", "en"), "/about#education");
+  assert.equal(aboutSectionPathOf("contact", "pt-br"), "/pt-br/sobre#contact");
 });
 
 test("a version of a text lives under the Writing page of its language", () => {

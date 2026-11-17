@@ -126,7 +126,9 @@
   gap: 8px 12px;
 }
 
-.footer a {
+/* The contacts of the footer, and the ones of the contact list of About. */
+.footer a,
+.contact-list a {
   display: flex;
   align-items: center;
   min-height: 44px;
@@ -139,7 +141,7 @@
 }
 
 @media (hover: hover) {
-  .footer a:hover {
+  :is(.footer, .contact-list) a:hover {
     background: var(--ink);
     color: var(--sheet);
   }
@@ -209,7 +211,8 @@
     min-height: 0;
   }
 
-  .footer a {
+  .footer a,
+  .contact-list a {
     min-height: 0;
   }
 }

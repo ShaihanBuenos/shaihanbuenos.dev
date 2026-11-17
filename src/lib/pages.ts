@@ -42,6 +42,12 @@ export function researchItemPathOf(id: string, language: Language): string {
   return `${pathOf("research", language)}#${id}`;
 }
 
+// The path of a section of the About page that other pages lead to: the
+// section carries its name as id.
+export function aboutSectionPathOf(section: "education" | "contact", language: Language): string {
+  return `${pathOf("about", language)}#${section}`;
+}
+
 // Where the language button leads on the page of a text. Each version has
 // its own slug, so the path does not tell: the page gives the slug of the
 // version in the other language, when the text has one. Without it, the
