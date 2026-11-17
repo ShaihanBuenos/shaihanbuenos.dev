@@ -3,7 +3,9 @@ import { type Language, LANGUAGES, homeOf, otherLanguage } from "./languages.ts"
 // The pages of the menu, in the order they appear (section 4 of the spec).
 export const MENU_PAGES = ["projects", "writing", "studies", "research", "about"] as const;
 
-export type FixedPage = "home" | (typeof MENU_PAGES)[number];
+export const FIXED_PAGES = ["home", ...MENU_PAGES] as const;
+
+export type FixedPage = (typeof FIXED_PAGES)[number];
 
 // The path of each fixed page in each language, written in that language.
 const PATHS: Record<FixedPage, Record<Language, string>> = {
@@ -17,6 +19,14 @@ const PATHS: Record<FixedPage, Record<Language, string>> = {
 
 export function pathOf(page: FixedPage, language: Language): string {
   return PATHS[page][language];
+}
+
+// The address of a path of the site: absolute, on the domain of the site and
+// without a slash at the end. It is the address search engines, feed readers
+// and the sites where a page is shared get.
+export function addressOf(path: string, site: URL | undefined): string {
+  if (!site) throw new Error("Missing `site` in astro.config.ts.");
+  return new URL(path, site).href.replace(/\/$/, "");
 }
 
 // The path of a project story: the name of the project's folder closes it.
@@ -73,7 +83,7 @@ export function textEquivalentOf(
 // A path as the visitor requests it. During the build, Astro gives the path
 // of the generated file, with `.html`; in the dev server, it gives the path
 // as requested.
-function requestedPath(path: string): string {
+export function requestedPath(path: string): string {
   return path.replace(/\.html$/, "").replace(/\/(index)?$/, "") || "/";
 }
 
@@ -96,14 +106,24 @@ export function sectionAt(path: string): FixedPage | undefined {
   );
 }
 
-// Where the language button leads: the same page in the other language. A
-// project story leads to the same story. Outside these, as on "not found",
-// it leads to the other language's Home. The page of a text does not use
-// this: it gives its own equivalent, from `textEquivalentOf`.
-export function equivalentOf(path: string, language: Language): string {
+// The same page in the other language, when the path tells it: a fixed page
+// has its equivalent, and a project story has the same story. Outside these,
+// as on "not found", there is none. The page of a text does not use this:
+// each version has its own slug, so the page tells whether it has a
+// translation.
+export function samePageIn(path: string, language: Language): string | undefined {
   const other = otherLanguage(language);
   const stories = `${pathOf("projects", language)}/`;
   const requested = requestedPath(path);
   if (requested.startsWith(stories)) return projectPathOf(requested.slice(stories.length), other);
-  return pathOf(pageAt(path) ?? "home", other);
+  const page = pageAt(path);
+  return page && pathOf(page, other);
+}
+
+// Where the language button leads: the same page in the other language.
+// Where there is none, as on "not found", it leads to the other language's
+// Home. The page of a text does not use this: it gives its own equivalent,
+// from `textEquivalentOf`.
+export function equivalentOf(path: string, language: Language): string {
+  return samePageIn(path, language) ?? homeOf(otherLanguage(language));
 }

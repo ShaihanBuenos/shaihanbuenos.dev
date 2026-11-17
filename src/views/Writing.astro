@@ -9,7 +9,7 @@ const { pages, texts } = await content();
 const phrases = pages[language];
 ---
 
-<Reading title={phrases.writing.name}>
+<Reading title={phrases.writing.name} description={phrases.writing.description}>
   <ul class="text-list">
     {texts.map((text) => (
       <TextItem text={text} level={2} />

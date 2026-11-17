@@ -8,6 +8,7 @@ import { type Project, content } from "../lib/content.ts";
 import { dayIn, isoDayOf } from "../lib/dates.ts";
 import { languageOf } from "../lib/languages.ts";
 import { pageChangeNameOf, projectPathOf } from "../lib/pages.ts";
+import { projectShareImage } from "../lib/share-image.ts";
 
 interface Props {
   project: Project;
@@ -25,7 +26,11 @@ const { Content } = await render(story.file);
 const otherProjects = projects.filter(({ id }) => id !== project.id);
 ---
 
-<Base title={project.name}>
+<Base
+  title={project.name}
+  description={story.description}
+  shareImage={projectShareImage(project, language)}
+>
   <Motion slot="head" />
   <header class="story-top">
     <div

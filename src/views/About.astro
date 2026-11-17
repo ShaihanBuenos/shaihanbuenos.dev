@@ -12,7 +12,7 @@ const { pages, roles } = await content();
 const phrases = pages[language];
 ---
 
-<Reading title={phrases.about.name}>
+<Reading title={phrases.about.name} description={phrases.about.description}>
   <div class="about-bio">
     <img
       src={avatar.src}

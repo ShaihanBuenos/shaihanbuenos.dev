@@ -12,6 +12,12 @@ export const HTML_LANG: Record<Language, string> = {
   "pt-br": "pt-BR",
 };
 
+// The language of a page as the sites where an address is shared name it.
+export const SHARE_LOCALE: Record<Language, string> = {
+  en: "en_US",
+  "pt-br": "pt_BR",
+};
+
 // How each language is shown on the language button.
 export const SHORT_NAME: Record<Language, string> = {
   en: "EN",

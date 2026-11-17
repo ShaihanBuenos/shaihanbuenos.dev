@@ -1,0 +1,18 @@
+---
+// The structured data of a page, for search engines: a JSON-LD block, to go
+// into the slot "head" of the layout. It is data, not JavaScript: the
+// browser does not run it.
+interface Props {
+  data: Record<string, unknown>;
+}
+
+// The block is a list of one item, which JSON-LD reads the same way as the
+// item alone. "<" is written as an escape so that nothing in the content
+// can close the element.
+const json = JSON.stringify([{ "@context": "https://schema.org", ...Astro.props.data }]).replace(
+  /</g,
+  "\\u003c",
+);
+---
+
+<script is:inline type="application/ld+json" set:html={json} />

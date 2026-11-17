@@ -90,4 +90,5 @@ about:
   contact: Test contact
 notFound:
   name: Gone missing
+  description: Test description.
 `;

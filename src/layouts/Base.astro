@@ -7,21 +7,70 @@ import Footer from "../components/Footer.astro";
 import Menu from "../components/Menu.astro";
 import { INDEXABLE } from "../lib/config.ts";
 import { phrasesOf } from "../lib/content.ts";
-import { languageOf, HTML_LANG } from "../lib/languages.ts";
+import { feedNameOf, feedPathOf } from "../lib/feed.ts";
+import {
+  DEFAULT_LANGUAGE,
+  HTML_LANG,
+  LANGUAGES,
+  SHARE_LOCALE,
+  languageOf,
+  otherLanguage,
+} from "../lib/languages.ts";
+import { addressOf, requestedPath, samePageIn } from "../lib/pages.ts";
+import { type ShareImage, NAME, SHARE_IMAGE_SIZE, defaultShareImage } from "../lib/share-image.ts";
 
 interface Props {
+  // The name of the page. The tab title is "Page · Shaihan Buenos".
   title: string;
+  // The tab title, on the page where it is another one: Home.
+  tabTitle?: string | undefined;
+  // The page description or, on a text, the one-line summary.
+  description: string;
   // Where the language button leads, when the path of the page does not
   // tell it: the page of a text gives it.
   equivalent?: string | undefined;
+  // The same page in the other language, when the path of the page does not
+  // tell it: the page of a text gives the path of its other version, or
+  // `null` when it has none.
+  translation?: string | null | undefined;
+  // "Not found" answers at every address that does not exist: it has no
+  // address of its own, and search engines never index it.
+  notFound?: boolean | undefined;
+  // The share image, on a page that has its own: a text and a project story.
+  shareImage?: ShareImage | undefined;
+  // What the page is to the sites where its address is shared.
+  type?: "website" | "article" | undefined;
 }
 
 // The slot "head" holds what a page adds to the <head>: the motion, on the
-// pages that have it.
+// pages that have it, and the structured data.
 
-const { title, equivalent } = Astro.props;
+const {
+  title,
+  tabTitle = `${title} · ${NAME}`,
+  description,
+  equivalent,
+  translation,
+  notFound = false,
+  type = "website",
+} = Astro.props;
 const language = languageOf(Astro.currentLocale);
 const phrases = await phrasesOf(language);
+
+const { site } = Astro;
+const path = requestedPath(Astro.url.pathname);
+const canonical = notFound ? undefined : addressOf(path, site);
+
+// hreflang only exists between pages that have an equivalent: each one names
+// itself and the other, and x-default is the English one.
+const samePage = translation === undefined ? samePageIn(path, language) : translation;
+const addresses =
+  canonical !== undefined && samePage != null
+    ? { [language]: canonical, [otherLanguage(language)]: addressOf(samePage, site) }
+    : undefined;
+
+const shareImage = Astro.props.shareImage ?? defaultShareImage(language, phrases);
+const shareImageAddress = addressOf(shareImage.path, site);
 ---
 
 <!doctype html>
@@ -29,8 +78,41 @@ const phrases = await phrasesOf(language);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {!INDEXABLE && <meta name="robots" content="noindex" />}
-    <title>{title}</title>
+    {(!INDEXABLE || notFound) && <meta name="robots" content="noindex" />}
+    <title>{tabTitle}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {addresses && (
+      <>
+        {LANGUAGES.map((each) => (
+          <link rel="alternate" hreflang={HTML_LANG[each]} href={addresses[each]} />
+        ))}
+        <link rel="alternate" hreflang="x-default" href={addresses[DEFAULT_LANGUAGE]} />
+      </>
+    )}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={feedNameOf(phrases.writing.name)}
+      href={feedPathOf(language)}
+    />
+    <meta property="og:site_name" content={NAME} />
+    <meta property="og:title" content={tabTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content={SHARE_LOCALE[language]} />
+    {addresses && (
+      <meta property="og:locale:alternate" content={SHARE_LOCALE[otherLanguage(language)]} />
+    )}
+    <meta property="og:image" content={shareImageAddress} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(SHARE_IMAGE_SIZE.width)} />
+    <meta property="og:image:height" content={String(SHARE_IMAGE_SIZE.height)} />
+    <meta property="og:image:alt" content={shareImage.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={shareImageAddress} />
+    <meta name="twitter:image:alt" content={shareImage.alt} />
     <slot name="head" />
   </head>
   <body>

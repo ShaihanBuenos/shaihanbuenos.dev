@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   aboutSectionPathOf,
+  addressOf,
   equivalentOf,
   pageChangeNameOf,
   projectPathOf,
   researchItemPathOf,
+  samePageIn,
   sectionAt,
   studyPathOf,
   textEquivalentOf,
@@ -34,6 +36,26 @@ test("the path works with or without the generated file name", () => {
 test("outside the fixed pages, the equivalent is the other language's Home", () => {
   assert.equal(equivalentOf("/404.html", "en"), "/pt-br");
   assert.equal(equivalentOf("/pt-br/nao-existe", "pt-br"), "/");
+});
+
+test("the address of a path is absolute, on the domain of the site, without a slash at the end", () => {
+  const site = new URL("https://shaihanbuenos.dev");
+  assert.equal(addressOf("/", site), "https://shaihanbuenos.dev");
+  assert.equal(addressOf("/pt-br", site), "https://shaihanbuenos.dev/pt-br");
+  assert.equal(addressOf("/writing/a-text", site), "https://shaihanbuenos.dev/writing/a-text");
+  assert.throws(() => addressOf("/", undefined), /Missing `site`/);
+});
+
+// hreflang only exists between pages that have an equivalent.
+test("a fixed page and a project story have the same page in the other language", () => {
+  assert.equal(samePageIn("/research.html", "en"), "/pt-br/pesquisa");
+  assert.equal(samePageIn("/pt-br.html", "pt-br"), "/");
+  assert.equal(samePageIn("/pt-br/projetos/example-project", "pt-br"), "/projects/example-project");
+});
+
+test('outside the fixed pages and the project stories, as on "not found", there is no same page', () => {
+  assert.equal(samePageIn("/404.html", "en"), undefined);
+  assert.equal(samePageIn("/pt-br/404.html", "pt-br"), undefined);
 });
 
 test("a project story lives under the Projects page of its language", () => {

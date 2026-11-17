@@ -5,12 +5,16 @@ import "../styles/sections.css";
 import LanguageMark from "../components/LanguageMark.astro";
 import Motion from "../components/Motion.astro";
 import ProjectRows from "../components/ProjectRows.astro";
+import StructuredData from "../components/StructuredData.astro";
 import Base from "../layouts/Base.astro";
 import { content, versionIn } from "../lib/content.ts";
 import { dayIn, isoDayOf, monthIn } from "../lib/dates.ts";
 import { periodOf } from "../lib/experience.ts";
-import { foreignLangOf, languageOf } from "../lib/languages.ts";
+import { DEFAULT_LANGUAGE, foreignLangOf, homeOf, languageOf } from "../lib/languages.ts";
+import { NAME } from "../lib/share-image.ts";
+import { personData } from "../lib/structured-data.ts";
 import {
+  addressOf,
   pageChangeNameOf,
   pathOf,
   projectPathOf,
@@ -38,8 +42,23 @@ const firstYear = experience?.start.slice(0, 4);
 const lastYear = experience?.end?.slice(0, 4);
 ---
 
-<Base title="Shaihan Buenos">
+<Base
+  title={NAME}
+  tabTitle={`${NAME} · ${phrases.home.label}`}
+  description={phrases.home.description}
+>
   <Motion slot="head" />
+  <StructuredData
+    slot="head"
+    data={personData(
+      {
+        site: addressOf(homeOf(DEFAULT_LANGUAGE), Astro.site),
+        page: addressOf(homeOf(language), Astro.site),
+        language,
+      },
+      phrases,
+    )}
+  />
   <div class="plan">
     <header class="block core">
       <h1>

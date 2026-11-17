@@ -120,8 +120,9 @@ export const pagesSchema = z.strictObject({
     // The title of the section of the contact.
     contact: phrase,
   }),
-  // "Not found" only has a name: it is not on the menu nor in search engines.
-  notFound: z.strictObject({ name: phrase }),
+  // "Not found" is not on the menu nor in search engines, so it has no
+  // phrases of its own beyond what every page has.
+  notFound: page,
 });
 
 export type Phrases = z.infer<typeof pagesSchema>;
