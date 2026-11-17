@@ -6,7 +6,7 @@ import { enderecoDe, paginaDe, PAGINAS_DO_MENU } from "../lib/paginas.ts";
 
 const idioma = idiomaDe(Astro.currentLocale);
 const frases = FRASES[idioma];
-const atual = paginaDe(Astro.url.pathname);
+const paginaAtual = paginaDe(Astro.url.pathname);
 ---
 
 <nav class="contatos" aria-label={frases.menu}>
@@ -14,7 +14,7 @@ const atual = paginaDe(Astro.url.pathname);
     class="inicio"
     href={enderecoDe("inicio", idioma)}
     aria-label={`${frases.paginas.inicio}, Shaihan Buenos`}
-    aria-current={atual === "inicio" ? "page" : undefined}
+    aria-current={paginaAtual === "inicio" ? "page" : undefined}
   >
     <span class="inteiro">Shaihan Buenos</span>
     <span class="iniciais">SB</span>
@@ -22,7 +22,10 @@ const atual = paginaDe(Astro.url.pathname);
   <ul>
     {PAGINAS_DO_MENU.map((pagina) => (
       <li>
-        <a href={enderecoDe(pagina, idioma)} aria-current={pagina === atual ? "page" : undefined}>
+        <a
+          href={enderecoDe(pagina, idioma)}
+          aria-current={pagina === paginaAtual ? "page" : undefined}
+        >
           {frases.paginas[pagina]}
         </a>
       </li>

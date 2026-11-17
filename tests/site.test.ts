@@ -101,7 +101,7 @@ const MENU = {
 
 // Todas as páginas que existem hoje, com o "não encontrado" de cada idioma.
 // `equivalente` é para onde o botão de idioma leva.
-const TODAS = [
+const TODAS_AS_PAGINAS = [
   ...PAGINAS.flatMap(({ pagina, en, pt }) => [
     { nome: `${pagina} em inglês`, endereco: en, idioma: "en" as const, equivalente: pt },
     { nome: `${pagina} em português`, endereco: pt, idioma: "pt" as const, equivalente: en },
@@ -122,7 +122,7 @@ const TODAS = [
 
 const INICIO = { en: "/", pt: "/pt-br" };
 
-for (const { nome, endereco, idioma } of TODAS) {
+for (const { nome, endereco, idioma } of TODAS_AS_PAGINAS) {
   test(`${nome} tem o botão de início e o menu do seu idioma`, async () => {
     const menu = linksDe(elemento(await (await pedir(endereco)).text(), "nav"));
     assert.equal(menu[0]?.atributos.href, INICIO[idioma]);
@@ -134,7 +134,7 @@ for (const { nome, endereco, idioma } of TODAS) {
 }
 
 // O menu marca a página em que o visitante está; no "não encontrado", nenhuma.
-for (const { nome, endereco } of TODAS) {
+for (const { nome, endereco } of TODAS_AS_PAGINAS) {
   const ehPaginaFixa = PAGINAS.some(({ en, pt }) => endereco === en || endereco === pt);
   const esperado = ehPaginaFixa ? [endereco] : [];
 
@@ -152,12 +152,12 @@ for (const { nome, endereco } of TODAS) {
 // O botão de idioma: "EN" e "PT", com o idioma atual marcado e o outro como
 // link para o equivalente da página.
 const SIGLA = { en: "EN", pt: "PT" };
-const OUTRO = { en: "pt", pt: "en" } as const;
+const OUTRO_IDIOMA = { en: "pt", pt: "en" } as const;
 
-for (const { nome, endereco, idioma, equivalente } of TODAS) {
+for (const { nome, endereco, idioma, equivalente } of TODAS_AS_PAGINAS) {
   test(`${nome}: o botão de idioma leva a ${equivalente}`, async () => {
     const menu = elemento(await (await pedir(endereco)).text(), "nav");
-    const outro = OUTRO[idioma];
+    const outro = OUTRO_IDIOMA[idioma];
 
     const paraOOutro = linksDe(menu).filter(({ texto }) => texto === SIGLA[outro]);
     assert.deepEqual(
@@ -180,7 +180,7 @@ const CONTATO = [
 ];
 const FEED = { en: "/rss.xml", pt: "/pt-br/rss.xml" };
 
-for (const { nome, endereco, idioma } of TODAS) {
+for (const { nome, endereco, idioma } of TODAS_AS_PAGINAS) {
   test(`${nome} tem o rodapé com o contato e o feed do seu idioma`, async () => {
     const rodape = linksDe(elemento(await (await pedir(endereco)).text(), "footer"));
     assert.deepEqual(
