@@ -5,4 +5,4 @@ import { phrasesOf } from "../../lib/content.ts";
 const phrases = await phrasesOf("pt-br");
 ---
 
-<Reading title={phrases.notFound.name} />
+<Reading title={phrases.notFound.name} description={phrases.notFound.description} notFound />

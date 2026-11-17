@@ -132,3 +132,4 @@ about:
 # The page shown when the address does not exist.
 notFound:
   name: Page not found
+  description: This address does not exist on shaihanbuenos.dev.

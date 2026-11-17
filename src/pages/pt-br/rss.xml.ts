@@ -1,4 +1,4 @@
 import type { APIRoute } from "astro";
-import { emptyFeed } from "../../lib/feed.ts";
+import { feed } from "../../lib/feed.ts";
 
-export const GET: APIRoute = (context) => emptyFeed("pt-br", context);
+export const GET: APIRoute = (context) => feed("pt-br", context);

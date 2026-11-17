@@ -351,6 +351,14 @@ O retângulo opaco do nome: fundo de chão, fio de 1.5px, o nome em Display, o r
 - **Lista de contato:** os mesmos contatos do rodapé, com as mesmas regras, numa fileira que quebra de linha.
 - **Lugar do diagrama:** enquanto um diagrama não foi desenhado, o lugar dele é a moldura dos diagramas vazia, na proporção 16:9, com o fio de 1.5px tracejado, e a legenda da figura abaixo, em tinta suave a .9rem. Quando o diagrama entra, o fio volta a ser contínuo.
 
+### Imagem de compartilhamento
+A imagem do cartão quando um endereço do site é colado numa rede social ou numa conversa. É uma página pequena do site, de 1200 por 630, gerada na construção: as medidas são as do CSS numa página de 600 por 315, em dobro.
+- **Base, nas três:** o chão por fora, a folha por dentro da moldura de um fio (1.5px), a fileira de dentes embaixo, e `shaihanbuenos.dev` em legenda (Martian Mono, caixa alta) no canto inferior esquerdo. O recuo lateral é de um módulo.
+- **Texto:** o título como na página de leitura, em Bricolage Grotesque peso 300, de 3.4rem a 2.2rem conforme o comprimento, e, depois dele, o tipo de texto em legenda, com o quadradinho em cobre para artigo e em safira para nota de estudo. Sem planta e sem grade, como a página de leitura.
+- **Projeto:** o nome em Display (peso 200, 3.4rem) à esquerda e, à direita, o painel da marca em `f-sapphire`, com um fio de 1.5px e a marca do projeto no centro, como no topo da história do projeto.
+- **Padrão, uma por idioma:** uma planta pequena, com a grade de um módulo ao fundo, o núcleo (fundo de chão, fio de 1.5px) com o nome em Display e o rótulo em peso 500, e as camadas de cobre, de safira e de cinza cruzadas sobre ele, por multiplicação. As camadas não levam texto.
+- **Limites:** só as cores da paleta, as três fontes do site e as formas do sistema. Sem degradê, sem sombra, sem foto e sem número. Um título que não cabe no menor tamanho é cortado com reticências.
+
 ### Foco e seleção
 - **Foco do teclado:** contorno de 2px em safira, afastado 3px.
 - **Seleção de texto:** fundo de cobre, texto de folha.

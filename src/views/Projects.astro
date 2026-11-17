@@ -11,7 +11,7 @@ const { pages, projects } = await content();
 const phrases = pages[language];
 ---
 
-<Base title={phrases.projects.name}>
+<Base title={phrases.projects.name} description={phrases.projects.description}>
   <Motion slot="head" />
   <section class="section">
     <h1>{phrases.projects.name}</h1>

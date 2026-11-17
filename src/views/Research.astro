@@ -22,7 +22,7 @@ function fieldsOf(item: ResearchItem): { label: string; text: string }[] {
 }
 ---
 
-<Reading title={phrases.research.name}>
+<Reading title={phrases.research.name} description={phrases.research.description}>
   {research.map((item) => (
     <article class:list={["research-item", item.type]} id={item.id}>
       <h2>

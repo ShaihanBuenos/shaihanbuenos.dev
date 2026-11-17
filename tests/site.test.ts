@@ -303,7 +303,8 @@ test("no built page can be indexed", async () => {
   assert.deepEqual(indexable, []);
 });
 
-// The feeds have no texts yet; for now they only answer, each in its language.
+// Each feed answers in its language. What a feed has inside is checked in
+// tests/discovery.test.ts.
 for (const { path, language } of [
   { path: "/rss.xml", language: "en" },
   { path: "/pt-br/rss.xml", language: "pt-br" },

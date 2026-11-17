@@ -1,10 +1,19 @@
 ---
 import { render } from "astro:content";
+import StructuredData from "../components/StructuredData.astro";
 import Reading from "../layouts/Reading.astro";
 import { type Text, content } from "../lib/content.ts";
 import { dayIn, isoDayOf } from "../lib/dates.ts";
-import { languageOf, otherLanguage, HTML_LANG } from "../lib/languages.ts";
-import { pathOf, studyPathOf, textEquivalentOf, textPathOf } from "../lib/pages.ts";
+import {
+  DEFAULT_LANGUAGE,
+  HTML_LANG,
+  homeOf,
+  languageOf,
+  otherLanguage,
+} from "../lib/languages.ts";
+import { addressOf, pathOf, studyPathOf, textEquivalentOf, textPathOf } from "../lib/pages.ts";
+import { textShareImage } from "../lib/share-image.ts";
+import { articleData } from "../lib/structured-data.ts";
 
 interface Props {
   text: Text;
@@ -26,13 +35,44 @@ const original =
   language === text.originalLanguage ? undefined : text.versions[text.originalLanguage];
 
 // The language button leads to the other version, when the text has one.
-const equivalent = textEquivalentOf(text.versions[otherLanguage(language)]?.slug, language);
+// Only then the page has the same page in the other language.
+const other = otherLanguage(language);
+const otherVersion = text.versions[other];
+const equivalent = textEquivalentOf(otherVersion?.slug, language);
+const translation = otherVersion ? textPathOf(otherVersion.slug, other) : null;
+
+const shareImage = textShareImage(text, language, phrases);
+if (!shareImage) throw new Error(`texts/${text.id}: there is no share image in ${language}`);
 
 // The study the text came from.
 const study = studies.find(({ id }) => id === text.study);
 ---
 
-<Reading title={version.title} equivalent={equivalent}>
+<Reading
+  title={version.title}
+  description={version.summary}
+  equivalent={equivalent}
+  translation={translation}
+  shareImage={shareImage}
+  shareType="article"
+>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={isoDayOf(text.publishedOn)} />
+    {text.updatedOn && <meta property="article:modified_time" content={isoDayOf(text.updatedOn)} />}
+    <StructuredData
+      data={articleData(
+        {
+          site: addressOf(homeOf(DEFAULT_LANGUAGE), Astro.site),
+          page: addressOf(textPathOf(version.slug, language), Astro.site),
+          language,
+          shareImage: addressOf(shareImage.path, Astro.site),
+        },
+        text,
+        version,
+        phrases,
+      )}
+    />
+  </Fragment>
   <Fragment slot="header">
     <p class="summary">{version.summary}</p>
     <p class="caption captions">

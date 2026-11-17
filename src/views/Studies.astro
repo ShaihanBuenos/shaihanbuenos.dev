@@ -47,7 +47,7 @@ const groups = [undefined, ...years].flatMap((year) => {
 });
 ---
 
-<Reading title={phrases.studies.name}>
+<Reading title={phrases.studies.name} description={phrases.studies.description}>
   <p slot="header" class="caption">
     {phrases.studies.checkedOn}{" "}
     <time datetime={studyList.checkedOn}>{monthIn(studyList.checkedOn, language)}</time>
