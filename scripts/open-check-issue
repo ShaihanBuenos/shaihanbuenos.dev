@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Opens the check issue: the list Shaihan goes through every three months to
+# confirm that the fixed pages are still right (section 10 of the spec).
+#
+#   scripts/open-check-issue [--dry-run] [--month YYYY-MM]
+#
+# --dry-run  shows the issue it would open, and opens nothing.
+# --month    the month the issue is named after; the current one (UTC) if absent.
+#
+# It opens nothing while the last check issue is still open.
+#
+# It talks to GitHub through `gh`, which takes the repo from the clone.
+set -euo pipefail
+
+# The label is the mark of a check issue.
+LABEL="conferência"
+ASSIGNEE="ShaihanBuenos"
+MONTH_NAMES=(janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro)
+
+dry_run=false
+month=$(date -u +%Y-%m)
+while (($# > 0)); do
+  case $1 in
+    --dry-run) dry_run=true ;;
+    --month)
+      month=${2:?"--month needs a value, as in 2027-02"}
+      shift
+      ;;
+    *)
+      echo "unknown option: $1" >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+if [[ ! $month =~ ^[0-9]{4}-(0[1-9]|1[0-2])$ ]]; then
+  echo "not a month, as in 2027-02: $month" >&2
+  exit 2
+fi
+year=${month%-*}
+month_name=${MONTH_NAMES[$((10#${month#*-} - 1))]}
+
+# The last check issue is still open: Shaihan has not finished that check.
+open=$(gh issue list --state open --label "$LABEL" --limit 1 --json number --jq '.[].number')
+if [[ -n $open ]]; then
+  echo "check issue #$open is still open: not opening another"
+  exit 0
+fi
+
+title="Conferência do site: $month_name de $year"
+body=$(
+  cat <<'BODY'
+Chegou a hora da conferência: a revisão, feita a cada três meses, que confirma que as páginas fixas do site continuam certas e iguais nos dois idiomas. O conteúdo fica em `src/content/`, e `docs/desenvolvimento.md` diz como mudar cada arquivo.
+
+## Lista de conferência
+
+- [ ] **Status dos estudos:** cada estudo da lista de estudos está com o status do estudo certo, em andamento ou concluído, e com os meses certos. O estudo que parou sai da lista: apague o arquivo dele em `src/content/studies/`.
+- [ ] **Cargo atual:** o cargo atual, em `src/content/roles/`, ainda é o de hoje, com o título, o período e as conquistas em dia.
+- [ ] **Estado dos projetos:** cada projeto está com o estado do projeto certo (funciona localmente, em desenvolvimento ou em planejamento) e com a data "atualizada em" de quando mudou, no `project.yaml` da pasta dele em `src/content/projects/`.
+- [ ] **Bio:** a bio (`about.bio`, nos dois arquivos de `src/content/pages/`) ainda conta onde você trabalha hoje, de onde vem o lado de IA e o que está estudando.
+- [ ] **Páginas fixas:** as duas versões de cada página fixa, em inglês e em português, ainda dizem a mesma coisa.
+
+## Para terminar
+
+- [ ] Mudar a data "conferida em": `checkedOn`, em `src/content/lists/studies.yaml`, passa a ser o ano e o mês em que a conferência terminou, como `2027-02`.
+- [ ] Fechar esta issue. Enquanto ela estiver aberta, a próxima conferência não abre outra.
+BODY
+)
+
+if [[ $dry_run == true ]]; then
+  printf 'dry run: would open this issue, assigned to %s, with the label "%s"\n\n' "$ASSIGNEE" "$LABEL"
+  printf '%s\n\n%s\n' "$title" "$body"
+  exit 0
+fi
+
+# `gh issue create` fails if the label does not exist.
+gh label create "$LABEL" --description "Conferência do site, a cada três meses" --color 5319e7 --force
+gh issue create --title "$title" --body "$body" --assignee "$ASSIGNEE" --label "$LABEL"
