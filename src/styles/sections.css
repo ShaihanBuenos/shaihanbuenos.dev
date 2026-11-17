@@ -8,7 +8,13 @@
   border-top: 1.5px solid var(--ink);
 }
 
-.section > h2 {
+/* A section that opens the page sits right under the frame. */
+.section:first-child {
+  border-top: 0;
+}
+
+/* The title of the section: the title of the page on a list page. */
+.section > :is(h1, h2) {
   font-size: clamp(2rem, 4.4cqw, 3.6rem);
 }
 
@@ -89,7 +95,8 @@
   height: auto;
 }
 
-.row h3 {
+/* The name: a level below the title above the rows. */
+.row :is(h2, h3) {
   grid-column: 2;
   font-size: clamp(1.5rem, 2.9cqw, 2.3rem);
   line-height: 1.1;
@@ -103,6 +110,17 @@
 
 .row .caption {
   grid-column: 2;
+}
+
+/* The plain row: only the name and the caption, side by side, without the mark. */
+.row.plain {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+}
+
+.row.plain :is(h2, h3),
+.row.plain .caption {
+  grid-column: auto;
 }
 
 a.row:focus-visible {
@@ -170,7 +188,7 @@ a.row:focus-visible p {
 }
 
 @media (min-width: 561px) {
-  .row {
+  .row:not(.plain) {
     grid-template-columns: clamp(56px, 7cqw, 88px) minmax(0, 1fr);
   }
 }

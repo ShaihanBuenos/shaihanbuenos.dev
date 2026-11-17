@@ -86,7 +86,7 @@ export async function build(change?: Change, env: Record<string, string> = {}): 
     if (code === 0) {
       const dist = join(copy.folder, "dist");
       for (const file of await readdir(dist, { recursive: true })) {
-        if (!/\.(html|json|xml)$/.test(file)) continue;
+        if (!/\.(html|json|xml|svg)$/.test(file)) continue;
         files.set(file, await readFile(join(dist, file), "utf8"));
       }
     }

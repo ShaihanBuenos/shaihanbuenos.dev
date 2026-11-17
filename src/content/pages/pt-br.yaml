@@ -46,6 +46,10 @@ projects:
     works-locally: funciona localmente
     in-development: em desenvolvimento
     in-planning: em planejamento
+  # Comes before the "updated on" date of a project story.
+  updatedOn: atualizada em
+  # The title of the section of a project story that leads to the others.
+  others: Outros projetos
 
 writing:
   name: Textos

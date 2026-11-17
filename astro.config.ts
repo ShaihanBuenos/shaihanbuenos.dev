@@ -1,8 +1,10 @@
 import { writeFile } from "node:fs/promises";
+import { satteri } from "@astrojs/markdown-satteri";
 import type { AstroIntegration } from "astro";
 import { defineConfig } from "astro/config";
 import { INDEXABLE } from "./src/lib/config.ts";
 import { DEFAULT_LANGUAGE, LANGUAGES } from "./src/lib/languages.ts";
+import { projectStoryPlugin } from "./src/lib/project-story.ts";
 
 // Feeds and other files that are not HTML carry no <meta name="robots">.
 // Cloudflare reads the _headers file of the output and sends the header on
@@ -43,5 +45,7 @@ export default defineConfig({
     defaultLocale: DEFAULT_LANGUAGE,
     routing: { prefixDefaultLocale: false },
   },
+  // The Markdown of a project story gets the structure of its page.
+  markdown: { processor: satteri({ hastPlugins: [projectStoryPlugin] }) },
   integrations: [noindex, drafts],
 });

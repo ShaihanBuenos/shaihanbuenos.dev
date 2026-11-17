@@ -1,0 +1,62 @@
+---
+import { render } from "astro:content";
+import "../styles/sections.css";
+import "../styles/story.css";
+import Base from "../layouts/Base.astro";
+import { type Project, content } from "../lib/content.ts";
+import { dayIn, isoDayOf } from "../lib/dates.ts";
+import { languageOf } from "../lib/languages.ts";
+import { projectPathOf } from "../lib/pages.ts";
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const language = languageOf(Astro.currentLocale);
+const { pages, projects } = await content();
+const phrases = pages[language];
+
+const story = project.stories[language];
+// The engineering decisions and "How it was built", from the Markdown file.
+const { Content } = await render(story.file);
+
+const otherProjects = projects.filter(({ id }) => id !== project.id);
+---
+
+<Base title={project.name}>
+  <header class="story-top">
+    <div class="story-mark" aria-hidden="true" set:html={project.mark} />
+    <div class="story-id">
+      <h1>{project.name}</h1>
+      <p class="caption story-state">
+        <span class="state">{phrases.projects.states[project.state]}</span>
+        <span>
+          {phrases.projects.updatedOn}{" "}
+          <time datetime={isoDayOf(project.updatedOn)}>{dayIn(project.updatedOn, language)}</time>
+        </span>
+      </p>
+      <p class="lead">{story.whatItIs}</p>
+    </div>
+  </header>
+
+  <Content />
+
+  {otherProjects.length > 0 && (
+    <section class="section">
+      <h2>{phrases.projects.others}</h2>
+      <div class="body">
+        <ul class="rows">
+          {otherProjects.map((other) => (
+            <li>
+              <a class="row plain" href={projectPathOf(other.id, language)}>
+                <h3>{other.name}</h3>
+                <span class="caption">{phrases.projects.states[other.state]}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+</Base>

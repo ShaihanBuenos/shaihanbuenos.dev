@@ -1,0 +1,15 @@
+---
+import type { GetStaticPaths } from "astro";
+import { content } from "../../../lib/content.ts";
+import ProjectStory from "../../../views/ProjectStory.astro";
+
+// One page per project folder in src/content/projects.
+export const getStaticPaths = (async () => {
+  const { projects } = await content();
+  return projects.map((project) => ({ params: { project: project.id }, props: { project } }));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props;
+---
+
+<ProjectStory project={project} />

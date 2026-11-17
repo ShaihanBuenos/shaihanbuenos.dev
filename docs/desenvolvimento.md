@@ -35,12 +35,14 @@ Cada parte também roda sozinha:
 npm run format      # arruma o formato dos arquivos (Prettier)
 npm run lint        # regras de TypeScript (ESLint)
 npm run typecheck   # tipos e erros nos arquivos .astro e .ts
-npm test            # constrói o site e roda os testes
+npm test            # constrói o site do zero e roda os testes
 ```
 
 Os testes em `tests/` olham o site construído: sobem a pasta `dist/` num servidor local e pedem cada endereço, como um visitante faria. Eles conferem que cada endereço responde no idioma certo e que nada pode ser indexado. Testes de uma função ficam ao lado dela, em `src/lib/<nome>.test.ts`.
 
 Os testes do Início, em `tests/home.test.ts`, olham a página construída com o conteúdo de exemplo e a de uma cópia com o conteúdo trocado.
+
+Os testes de Projetos, em `tests/projects.test.ts`, olham a lista e as histórias do projeto do mesmo jeito: com o conteúdo de exemplo e em cópias com uma pasta de projeto criada, apagada ou trocada.
 
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
@@ -58,17 +60,18 @@ A saída é só de arquivos estáticos.
 | Caminho | O que guarda |
 |---|---|
 | `astro.config.ts` | A configuração do Astro: endereço do site, idiomas, formato da saída e o arquivo `_headers`. |
-| `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. |
+| `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. `projects/[project].astro` gera uma página por pasta de projeto. |
 | `src/pages/pt-br/` | As páginas em português. |
 | `src/layouts/Base.astro` | O layout comum a todas as páginas: a moldura, o menu, o botão de idioma e o rodapé. |
 | `src/layouts/Reading.astro` | A coluna de leitura simples, para as páginas de texto. Por enquanto, todas as páginas ainda vazias usam esta. |
-| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas. Hoje, só `Home.astro`, o Início. |
-| `src/components/` | As peças comuns: menu, botão de idioma, rodapé. |
-| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura), `plan` (a planta do Início) e `sections` (as seções, as linhas de projeto e as listas). Parte do celular e cresce com `min-width`. |
+| `src/views/` | O corpo de cada página, usado pelos arquivos dos dois idiomas: `Home.astro` (o Início), `Projects.astro` (a lista de projetos) e `ProjectStory.astro` (a história do projeto). |
+| `src/components/` | As peças comuns: menu, botão de idioma, rodapé e as linhas de projeto (`ProjectRows.astro`), usadas no Início e em Projetos. |
+| `src/styles/` | O CSS do sistema visual, portado do protótipo: `fonts`, `base`, `frame` (a moldura), `reading` (a leitura), `plan` (a planta do Início), `sections` (as seções, as linhas de projeto e as listas) e `story` (a história do projeto). Parte do celular e cresce com `min-width`. |
 | `public/fonts/` | As três fontes, servidas pelo próprio site. |
 | `src/lib/config.ts` | A chave do lançamento (ver abaixo). |
 | `src/lib/languages.ts` | Os dois idiomas e o `lang` de cada um. |
-| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada uma, para o botão de idioma, e os endereços de uma história do projeto e de um texto. |
+| `src/lib/pages.ts` | Os endereços das páginas fixas nos dois idiomas, o equivalente de cada página, para o botão de idioma, e os endereços de uma história do projeto e de um texto. |
+| `src/lib/project-story.ts` | A estrutura do corpo de uma história do projeto: transforma o Markdown nas seções da página e barra o corpo fora do formato. |
 | `src/lib/dates.ts` | Como as datas do conteúdo são escritas em cada idioma. |
 | `src/content/` | Os arquivos de conteúdo (ver "Conteúdo", abaixo). |
 | `src/content.config.ts` | As coleções: em que pasta ficam os arquivos de cada uma. |
@@ -95,7 +98,7 @@ Cada termo do `GLOSSARY.md` tem um nome só no código, anotado ali em "No códi
 
 O inglês fica na raiz e o português em `/pt-br`. Cada página fixa existe nos dois idiomas, com o endereço escrito no seu idioma: `/projects` e `/pt-br/projetos`. Os endereços não têm barra no fim.
 
-Uma página nova precisa de um arquivo em `src/pages/` e outro em `src/pages/pt-br/`. O `lang` sai sozinho, pelo lugar do arquivo. Uma página fixa nova também entra em `src/lib/pages.ts`, com o endereço de cada idioma: é dali que o botão de idioma tira o equivalente. Fora das páginas fixas, o botão leva ao Início do outro idioma.
+Uma página nova precisa de um arquivo em `src/pages/` e outro em `src/pages/pt-br/`. O `lang` sai sozinho, pelo lugar do arquivo. Uma página fixa nova também entra em `src/lib/pages.ts`, com o endereço de cada idioma: é dali que o botão de idioma tira o equivalente. Numa história do projeto, o botão leva à mesma história no outro idioma, e o menu marca Projetos. Fora das páginas fixas e das histórias, o botão leva ao Início do outro idioma.
 
 O "não encontrado" tem uma página por idioma: `404.html` na raiz e `pt-br/404.html`. Quem escolhe qual mostrar é a hospedagem. Na Cloudflare, isso pede a opção que procura o `404.html` mais próximo do endereço pedido (`not_found_handling = "404-page"`), que entra com a configuração da prévia. Rodando com `npm run dev`, a página em português já aparece para endereços sob `/pt-br`.
 
@@ -190,12 +193,41 @@ O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligaç
 
    ## Decisões de engenharia
 
+   ### O título da primeira decisão
+
+   **O problema.** O que precisava ser resolvido.
+
+   **A escolha.** O que foi escolhido.
+
+   **O que foi descartado.** A alternativa que ficou de fora, e por quê.
+
+   ### O título da segunda decisão
+
    ...
 
    ## Como foi construído
 
-   ...
+   O crédito dos agentes, no primeiro parágrafo.
    ```
+
+A página da história mostra, nesta ordem: a marca do projeto e o nome, o estado do projeto e "atualizada em", "o que é", as decisões de engenharia e "Como foi construído". As três primeiras partes saem dos campos; as duas últimas, do corpo do arquivo. O corpo segue um formato fixo:
+
+- Duas partes, cada uma sob um título `##`: primeiro as decisões de engenharia, depois "Como foi construído". Os títulos são escritos no idioma do arquivo.
+- De duas a quatro decisões, cada uma sob um título `###`.
+- Cada decisão tem o problema, a escolha e o que foi descartado. Um parágrafo que começa com uma frase em negrito (`**O problema.** ...`) vira um item da decisão: a frase em negrito é a legenda e o resto é a resposta. Uma decisão tem pelo menos esses três itens.
+- O primeiro parágrafo de "Como foi construído" aparece em destaque.
+- Nenhum link sai do site: uma história do projeto não tem link para repo nem para demo. Links para páginas do site (`/research`) podem.
+- O corpo é só Markdown, sem tags de HTML: é o que deixa a construção conferir os links.
+
+Quem dá essa estrutura ao corpo é `src/lib/project-story.ts`. O Astro guarda o Markdown já processado entre uma construção e outra: depois de mudar esse arquivo, rode `npx astro build --force` (ou `npm test`, que já faz isso), ou a página continua com a estrutura antiga. Mudar um arquivo de conteúdo não pede nada disso.
+
+**Imagens.** As capturas e o diagrama de um projeto ficam na pasta dele, ao lado dos arquivos da história, e entram no corpo pelo Markdown:
+
+```md
+![O que a imagem mostra, para quem não a vê](./diagrama.svg "A legenda, que aparece abaixo da imagem.")
+```
+
+A imagem fica sozinha no parágrafo e aparece com a moldura de um fio; a legenda, entre aspas, é opcional. Cada imagem é um arquivo só, que encolhe até a largura da tela: um diagrama largo precisa continuar legível em 390 px. Um arquivo de imagem serve aos dois idiomas, com o texto alternativo e a legenda escritos em cada um. Use SVG para diagramas e PNG para capturas, com no máximo a largura da coluna em dobro (cerca de 1600 px). Hoje nenhum projeto de exemplo tem imagem.
 
 ### Criar um estudo
 
@@ -267,7 +299,8 @@ A conferência do conteúdo roda em toda construção (`npm run build`, e portan
 - uma página fixa, um projeto ou um estudo existe num idioma e falta no outro. Para os textos essa regra não vale: a tradução é opcional;
 - um texto não tem a versão no idioma original, ou uma tradução não diz se foi feita com IA;
 - dois textos têm o mesmo `slug` no mesmo idioma;
-- um projeto não tem a marca do projeto, `mark.svg`, na pasta.
+- um projeto não tem a marca do projeto, `mark.svg`, na pasta;
+- o corpo de uma história do projeto não tem as duas partes, tem menos de duas ou mais de quatro decisões, tem uma decisão sem os três itens, tem "Como foi construído" vazio, tem texto antes da primeira parte, tem um link que sai do site, uma imagem de fora da pasta do projeto ou uma tag de HTML.
 
 ### Ler o conteúdo numa página
 

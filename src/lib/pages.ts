@@ -29,18 +29,39 @@ export function textPathOf(slug: string, language: Language): string {
   return `${pathOf("writing", language)}/${slug}`;
 }
 
-// The fixed page that answers at a path, if there is one. During the build,
-// Astro gives the path of the generated file, with `.html`; in the dev
-// server, it gives the path as the visitor requests it.
-export function pageAt(path: string): FixedPage | undefined {
-  const cleanPath = path.replace(/\.html$/, "").replace(/\/(index)?$/, "") || "/";
-  const pages = Object.keys(PATHS) as FixedPage[];
-  return pages.find((page) => LANGUAGES.some((language) => PATHS[page][language] === cleanPath));
+// A path as the visitor requests it. During the build, Astro gives the path
+// of the generated file, with `.html`; in the dev server, it gives the path
+// as requested.
+function requestedPath(path: string): string {
+  return path.replace(/\.html$/, "").replace(/\/(index)?$/, "") || "/";
 }
 
-// Where the language button leads: the same page in the other language.
-// Outside the fixed pages, as on "not found", it leads to the other
-// language's Home.
+// The fixed page that answers at a path, if there is one.
+export function pageAt(path: string): FixedPage | undefined {
+  const requested = requestedPath(path);
+  const pages = Object.keys(PATHS) as FixedPage[];
+  return pages.find((page) => LANGUAGES.some((language) => PATHS[page][language] === requested));
+}
+
+// The page of the menu a path belongs to: the page itself or the one above
+// it, as Projects is for a project story.
+export function sectionAt(path: string): FixedPage | undefined {
+  const requested = requestedPath(path);
+  return (
+    pageAt(path) ??
+    MENU_PAGES.find((page) =>
+      LANGUAGES.some((language) => requested.startsWith(`${PATHS[page][language]}/`)),
+    )
+  );
+}
+
+// Where the language button leads: the same page in the other language. A
+// project story leads to the same story. Outside these, as on "not found",
+// it leads to the other language's Home.
 export function equivalentOf(path: string, language: Language): string {
-  return pathOf(pageAt(path) ?? "home", otherLanguage(language));
+  const other = otherLanguage(language);
+  const stories = `${pathOf("projects", language)}/`;
+  const requested = requestedPath(path);
+  if (requested.startsWith(stories)) return projectPathOf(requested.slice(stories.length), other);
+  return pathOf(pageAt(path) ?? "home", other);
 }
