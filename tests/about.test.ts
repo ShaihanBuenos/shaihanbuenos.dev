@@ -7,6 +7,14 @@ import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
 import { element, elements, hrefsOf, textOf } from "./support/html.ts";
 import { PAGES } from "./support/phrases.ts";
+import {
+  AGEING,
+  CLINICAL_CLAIM,
+  PLACEHOLDER,
+  forbiddenWordsIn,
+  patientsNotSimulated,
+  sentencesOf,
+} from "./support/rules.ts";
 
 const root = new URL("..", import.meta.url).pathname;
 
@@ -35,18 +43,55 @@ function partsOf(page: string) {
 }
 
 // Section 7.6 of the spec: the bio, the experience, the education and the
-// contact, in this order. The example bio is in src/content/pages.
+// contact, in this order. The bio is one paragraph.
 test("About shows, in both languages, the bio, the experience, the education and the contact, in this order", async () => {
-  assert.deepEqual(partsOf(await examplePage("en")), {
-    title: "About",
-    bio: ["[Example] This paragraph stands in for the bio, which is still to be written."],
-    sections: ["Experience", "Education", "Contact"],
-  });
-  assert.deepEqual(partsOf(await examplePage("pt")), {
-    title: "Sobre",
-    bio: ["[Exemplo] Este parágrafo ocupa o lugar da bio, que ainda vai ser escrita."],
-    sections: ["Experiência", "Formação", "Contato"],
-  });
+  const inEnglish = partsOf(await examplePage("en"));
+  assert.equal(inEnglish.title, "About");
+  assert.equal(inEnglish.bio.length, 1);
+  assert.deepEqual(inEnglish.sections, ["Experience", "Education", "Contact"]);
+
+  const inPortuguese = partsOf(await examplePage("pt"));
+  assert.equal(inPortuguese.title, "Sobre");
+  assert.equal(inPortuguese.bio.length, 1);
+  assert.deepEqual(inPortuguese.sections, ["Experiência", "Formação", "Contato"]);
+});
+
+// The bio of the page of a language.
+async function bioOf(language: keyof typeof ABOUT): Promise<string> {
+  return partsOf(await examplePage(language)).bio.join(" ");
+}
+
+// Section 7.6 of the spec: a paragraph of three or four sentences, in the
+// first person. The wording is the owner's: the test reads only its shape.
+test("the bio is written, in both languages: three or four sentences, in the first person", async () => {
+  const firstPerson = {
+    en: /\b(I|I'm|my|me)\b/,
+    pt: /(^|\s)(eu|sou|meu|minha|me|trabalho|construo|estudo|escrevo)\b/i,
+  };
+  for (const language of ["en", "pt"] as const) {
+    const bio = await bioOf(language);
+    assert.doesNotMatch(bio, PLACEHOLDER, language);
+    const sentences = sentencesOf(bio);
+    assert.ok(
+      sentences.length === 3 || sentences.length === 4,
+      `${language}: the bio has ${sentences.length} sentences`,
+    );
+    assert.match(bio, firstPerson[language], language);
+  }
+});
+
+// Section 11 of the spec: nothing that ages, the patients of the research
+// always "simulated", no claim that the system diagnoses or treats, and no
+// name that stays out of the site.
+test("the bio follows the content rules: no number, nothing that ages, no forbidden mention", async () => {
+  for (const language of ["en", "pt"] as const) {
+    const bio = await bioOf(language);
+    assert.doesNotMatch(bio, /\d/, language);
+    assert.doesNotMatch(bio, AGEING, language);
+    assert.doesNotMatch(bio, CLINICAL_CLAIM, language);
+    assert.deepEqual(patientsNotSimulated(bio), [], language);
+    assert.deepEqual(forbiddenWordsIn(bio), [], language);
+  }
 });
 
 // The avatar: what the <img> of the bio says in the HTML.

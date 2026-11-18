@@ -120,7 +120,7 @@ research:
 about:
   name: Sobre
   description: "[Exemplo] Descrição da página Sobre."
-  bio: "[Exemplo] Este parágrafo ocupa o lugar da bio, que ainda vai ser escrita."
+  bio: "Sou engenheiro de software na ADP Labs, em Porto Alegre, onde trabalho com serviços de backend. O meu lado de IA vem de fora do emprego: sou primeiro autor de um paper publicado pelo IEEE sobre o uso de LLMs no acompanhamento da hipertensão, e construo projetos próprios com agentes de IA guiados por especificação. Hoje estudo React e TypeScript e esse jeito de programar com agentes, e escrevo aqui sobre o que aprendo."
   # The alternative text of the avatar.
   avatarAlt: Avatar de Shaihan Buenos em pixel art
   # The end of a period while the role is the current one.

@@ -120,7 +120,7 @@ research:
 about:
   name: About
   description: "[Example] Description of the About page."
-  bio: "[Example] This paragraph stands in for the bio, which is still to be written."
+  bio: "I'm a software engineer at ADP Labs, in Porto Alegre, Brazil, where I work on backend services. The AI side of my work comes from outside my job: I'm the first author of a paper published by IEEE on using LLMs in hypertension care, and I build my own projects with AI agents guided by specs. Right now I'm studying React and TypeScript, along with this way of writing code with agents, and I write here about what I learn."
   # The alternative text of the avatar.
   avatarAlt: Pixel art avatar of Shaihan Buenos
   # The end of a period while the role is the current one.
