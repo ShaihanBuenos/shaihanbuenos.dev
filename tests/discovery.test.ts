@@ -419,6 +419,8 @@ for (const [file, other, name] of [
   ],
   ["projects/beto.html", "pt-br/projetos/beto.html", "Betô"],
   ["pt-br/projetos/beto.html", "projects/beto.html", "Betô"],
+  ["projects/ensaio.html", "pt-br/projetos/ensaio.html", "Ensaio"],
+  ["pt-br/projetos/ensaio.html", "projects/ensaio.html", "Ensaio"],
 ] as const) {
   test(`${file} has its tab title and a page description of its own, written in its language`, async () => {
     const head = headOf(await built(file));
@@ -506,7 +508,7 @@ test("a page with an equivalent names both languages, and x-default is the Engli
   for (const [en, pt] of [
     ["index.html", "pt-br.html"],
     ["studies.html", "pt-br/estudos.html"],
-    ["projects/another-example-project.html", "pt-br/projetos/another-example-project.html"],
+    ["projects/ensaio.html", "pt-br/projetos/ensaio.html"],
     [
       "writing/example-article-with-translation.html",
       "pt-br/textos/exemplo-de-artigo-com-traducao.html",
@@ -611,12 +613,12 @@ test("the build writes one share image per text version, per project story and p
   const files = await readdir(`${root}dist/share`, { recursive: true });
   assert.deepEqual(files.filter((file) => file.endsWith(".png")).sort(), [
     "default.png",
-    "projects/another-example-project.png",
     "projects/beto.png",
+    "projects/ensaio.png",
     "projects/out-of-the-rabbit-hole.png",
     "pt-br/default.png",
-    "pt-br/projetos/another-example-project.png",
     "pt-br/projetos/beto.png",
+    "pt-br/projetos/ensaio.png",
     "pt-br/projetos/out-of-the-rabbit-hole.png",
     "pt-br/textos/exemplo-de-artigo-com-traducao.png",
     "writing/example-article-with-translation.png",
@@ -639,11 +641,7 @@ const SHARE_IMAGES = [
     "share/projects/out-of-the-rabbit-hole.png",
     "Out of the Rabbit Hole · shaihanbuenos.dev",
   ],
-  [
-    "pt-br/projetos/another-example-project.html",
-    "share/pt-br/projetos/another-example-project.png",
-    "Another Example Project · shaihanbuenos.dev",
-  ],
+  ["pt-br/projetos/ensaio.html", "share/pt-br/projetos/ensaio.png", "Ensaio · shaihanbuenos.dev"],
   [
     "writing/example-article-with-translation.html",
     "share/writing/example-article-with-translation.png",

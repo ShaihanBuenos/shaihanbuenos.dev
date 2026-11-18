@@ -219,7 +219,7 @@ describe("content in files", { concurrency: true }, () => {
     const { projects } = await contentOf(await example);
     assert.deepEqual(
       projects.map(({ id }) => id),
-      ["out-of-the-rabbit-hole", "beto", "another-example-project"],
+      ["out-of-the-rabbit-hole", "beto", "ensaio"],
     );
 
     const swapped = await build({
@@ -229,7 +229,7 @@ describe("content in files", { concurrency: true }, () => {
     });
     assert.deepEqual(
       (await contentOf(swapped)).projects.map(({ id }) => id),
-      ["beto", "another-example-project", "out-of-the-rabbit-hole"],
+      ["beto", "ensaio", "out-of-the-rabbit-hole"],
     );
   });
 

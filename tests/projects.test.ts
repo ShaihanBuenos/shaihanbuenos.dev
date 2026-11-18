@@ -27,15 +27,13 @@ async function examplePage(file: string): Promise<string> {
 // Section 7.2 of the spec: the projects, in the initial order, each with its
 // state. `words` names the list of words its story leaves out, `figures` is
 // how many images the story has, at least and at most, and `says` is what
-// the story has to say, by the content rules. A project marked as `example`
-// is still made up: only its place on the pages is checked.
+// the story has to say, by the content rules.
 interface Listed {
   id: string;
   name: string;
   state: { en: string; pt: string };
-  example?: true;
-  words?: "rabbit-hole" | "beto" | "ensaio";
-  figures?: [number, number];
+  words: "rabbit-hole" | "beto" | "ensaio";
+  figures: [number, number];
   says?: { en: RegExp; pt: RegExp };
 }
 
@@ -62,14 +60,14 @@ const PROJECTS: Listed[] = [
     says: { en: /not (yet )?(launched|released)/i, pt: /ainda não (foi )?lançado/i },
   },
   {
-    id: "another-example-project",
-    name: "Another Example Project",
+    id: "ensaio",
+    name: "Ensaio",
     state: { en: "in planning", pt: "em planejamento" },
-    example: true,
+    words: "ensaio",
+    // Nothing besides the project mark.
+    figures: [0, 0],
   },
 ];
-
-const WRITTEN = PROJECTS.filter(({ example }) => !example);
 
 const LIST_TITLE = { en: "Projects", pt: "Projetos" };
 const STORY_PATH = {
@@ -149,7 +147,7 @@ function partsOf(story: string) {
 
 // Section 7.2 of the spec: the fixed parts of a project story, in this
 // order, and "updated on".
-for (const { id, name, state } of WRITTEN) {
+for (const { id, name, state } of PROJECTS) {
   for (const language of ["en", "pt"] as const) {
     test(`the story of ${id} (${language}) has the five fixed parts, in order, and "updated on"`, async () => {
       const story = await examplePage(STORY[language](id));
@@ -185,7 +183,7 @@ for (const { id, name, state } of WRITTEN) {
 }
 
 // Section 7.2 of the spec: what the project is, in one or two sentences.
-for (const { id } of WRITTEN) {
+for (const { id } of PROJECTS) {
   test(`the story of ${id} says what the project is in one or two sentences, in both languages`, async () => {
     for (const language of ["en", "pt"] as const) {
       const card = cardsOf(await examplePage(LIST[language])).find(
@@ -213,7 +211,7 @@ function decisionsOf(story: string) {
 // Section 7.2 of the spec: from two to four engineering decisions, each with
 // the problem, the choice and what was ruled out. They come from the
 // Markdown of the language, and both languages tell the same decisions.
-for (const { id } of WRITTEN) {
+for (const { id } of PROJECTS) {
   test(`the story of ${id} has from two to four decisions, each with the problem, the choice and what was ruled out`, async () => {
     const decisions = {
       en: decisionsOf(await examplePage(STORY.en(id))),
@@ -235,7 +233,7 @@ for (const { id } of WRITTEN) {
 // The engineering decisions and "How it was built" are the two sections of
 // the body, each one with its title. The agent credit opens the second one,
 // as its lead (section 7.2 of the spec, and "agent credit" in GLOSSARY.md).
-for (const { id } of WRITTEN) {
+for (const { id } of PROJECTS) {
   test(`the body of the story of ${id} is two sections: the decisions and how it was built, opened by the agent credit`, async () => {
     for (const language of ["en", "pt"] as const) {
       const words = STORY_WORDS[language];
@@ -252,7 +250,7 @@ for (const { id } of WRITTEN) {
 
 // Section 7.2 of the spec: the images each story has. An image is a figure,
 // with alternative text and a caption, served from the folder of the project.
-for (const { id, figures = [0, 0] } of WRITTEN) {
+for (const { id, figures } of PROJECTS) {
   test(`the story of ${id} has from ${figures[0]} to ${figures[1]} images, the same in both languages, each with alternative text and a caption`, async () => {
     const counts = [];
     for (const language of ["en", "pt"] as const) {
@@ -278,7 +276,7 @@ for (const { id, figures = [0, 0] } of WRITTEN) {
 // count of lines or of commits, nothing that ages, and none of the words its
 // project leaves out. Nothing in it is still an example, but the images: the
 // captures and the diagram come later, and their places are marked.
-for (const { id, words, says } of WRITTEN) {
+for (const { id, words, says } of PROJECTS) {
   test(`the story of ${id} follows the content rules, in both languages`, async () => {
     for (const language of ["en", "pt"] as const) {
       const story = await examplePage(STORY[language](id));
@@ -366,7 +364,7 @@ describe("the projects come from the content", { concurrency: true }, () => {
   // repo deleted, and test phrases in English.
   const changed = build({
     write: { "pages/en.yaml": PAGES, ...projectFolder("new-project", "New Project") },
-    remove: ["projects/another-example-project"],
+    remove: ["projects/ensaio"],
   });
 
   async function changedPage(file: string): Promise<string> {
@@ -396,10 +394,10 @@ describe("the projects come from the content", { concurrency: true }, () => {
         cards.map(({ name }) => name),
         ["Out of the Rabbit Hole", "Betô", "New Project"],
       );
-      await assert.rejects((await changed).read(STORY[language]("another-example-project")));
+      await assert.rejects((await changed).read(STORY[language]("ensaio")));
       // The story that stays no longer leads to the one that left.
       const story = await changedPage(STORY[language]("out-of-the-rabbit-hole"));
-      assert.doesNotMatch(story, /another-example-project/);
+      assert.doesNotMatch(story, /ensaio/i);
     });
   }
 

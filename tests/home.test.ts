@@ -124,28 +124,20 @@ describe("the content of Home", { concurrency: true }, () => {
 
   test("the projects come in the order of the content", async () => {
     const home = element(await exampleHome("en"), "main");
-    assert.deepEqual(projectCards(home), [
-      "Out of the Rabbit Hole",
-      "Betô",
-      "Another Example Project",
-    ]);
+    assert.deepEqual(projectCards(home), ["Out of the Rabbit Hole", "Betô", "Ensaio"]);
     assert.deepEqual(projectBlocks(home), [
       "/projects/out-of-the-rabbit-hole",
       "/projects/beto",
-      "/projects/another-example-project",
+      "/projects/ensaio",
     ]);
   });
 
   test("changing the order of the projects in the content changes the order on the page", async () => {
     const home = await changedHome("en");
-    assert.deepEqual(projectCards(home), [
-      "Betô",
-      "Another Example Project",
-      "Out of the Rabbit Hole",
-    ]);
+    assert.deepEqual(projectCards(home), ["Betô", "Ensaio", "Out of the Rabbit Hole"]);
     assert.deepEqual(projectBlocks(home), [
       "/projects/beto",
-      "/projects/another-example-project",
+      "/projects/ensaio",
       "/projects/out-of-the-rabbit-hole",
     ]);
   });
