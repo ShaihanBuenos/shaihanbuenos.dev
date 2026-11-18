@@ -219,17 +219,17 @@ describe("content in files", { concurrency: true }, () => {
     const { projects } = await contentOf(await example);
     assert.deepEqual(
       projects.map(({ id }) => id),
-      ["out-of-the-rabbit-hole", "another-example-project"],
+      ["out-of-the-rabbit-hole", "beto", "another-example-project"],
     );
 
     const swapped = await build({
       write: {
-        "projects/out-of-the-rabbit-hole/project.yaml": PROJECT.replace("order: 1", "order: 3"),
+        "projects/out-of-the-rabbit-hole/project.yaml": PROJECT.replace("order: 1", "order: 4"),
       },
     });
     assert.deepEqual(
       (await contentOf(swapped)).projects.map(({ id }) => id),
-      ["another-example-project", "out-of-the-rabbit-hole"],
+      ["beto", "another-example-project", "out-of-the-rabbit-hole"],
     );
   });
 

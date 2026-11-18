@@ -52,6 +52,16 @@ const PROJECTS: Listed[] = [
     says: { en: /simulated model/i, pt: /modelo simulado/i },
   },
   {
+    id: "beto",
+    name: "Betô",
+    state: { en: "in development", pt: "em desenvolvimento" },
+    words: "beto",
+    // One engineering diagram, without the words of the product.
+    figures: [1, 1],
+    // PRODUCT.md: Betô shows as a product that is not launched yet.
+    says: { en: /not (yet )?(launched|released)/i, pt: /ainda não (foi )?lançado/i },
+  },
+  {
     id: "another-example-project",
     name: "Another Example Project",
     state: { en: "in planning", pt: "em planejamento" },
@@ -384,7 +394,7 @@ describe("the projects come from the content", { concurrency: true }, () => {
       const cards = cardsOf(await changedPage(LIST[language]));
       assert.deepEqual(
         cards.map(({ name }) => name),
-        ["Out of the Rabbit Hole", "New Project"],
+        ["Out of the Rabbit Hole", "Betô", "New Project"],
       );
       await assert.rejects((await changed).read(STORY[language]("another-example-project")));
       // The story that stays no longer leads to the one that left.
@@ -401,7 +411,10 @@ describe("the projects come from the content", { concurrency: true }, () => {
     const others = elements(story, "section").at(-1);
     assert.ok(others);
     assert.equal(textOf(element(others, "h2")), "Test other projects");
-    assert.equal(textOf(element(others, "li")), "Out of the Rabbit Hole test works locally");
+    assert.deepEqual(elements(others, "li").map(textOf), [
+      "Out of the Rabbit Hole test works locally",
+      "Betô test in development",
+    ]);
   });
 
   test("the body of a story follows its Markdown file", async () => {

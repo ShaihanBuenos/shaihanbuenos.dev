@@ -406,13 +406,23 @@ const HEADS = [
 
 // A project story has the name of the project in the tab title and its own
 // page description, in each language.
-for (const [file, other] of [
-  ["projects/out-of-the-rabbit-hole.html", "pt-br/projetos/out-of-the-rabbit-hole.html"],
-  ["pt-br/projetos/out-of-the-rabbit-hole.html", "projects/out-of-the-rabbit-hole.html"],
+for (const [file, other, name] of [
+  [
+    "projects/out-of-the-rabbit-hole.html",
+    "pt-br/projetos/out-of-the-rabbit-hole.html",
+    "Out of the Rabbit Hole",
+  ],
+  [
+    "pt-br/projetos/out-of-the-rabbit-hole.html",
+    "projects/out-of-the-rabbit-hole.html",
+    "Out of the Rabbit Hole",
+  ],
+  ["projects/beto.html", "pt-br/projetos/beto.html", "Betô"],
+  ["pt-br/projetos/beto.html", "projects/beto.html", "Betô"],
 ] as const) {
   test(`${file} has its tab title and a page description of its own, written in its language`, async () => {
     const head = headOf(await built(file));
-    assert.equal(head.title, "Out of the Rabbit Hole · Shaihan Buenos");
+    assert.equal(head.title, `${name} · Shaihan Buenos`);
     assert.equal(head.meta["og:title"], head.title);
     const { description = "" } = head.meta;
     assert.ok(description.trim().length > 0, "the page has no description");
@@ -534,8 +544,8 @@ test("hreflang is reciprocal: if a page points to another, the other points back
       pairs += 1;
     }
   }
-  // The fixed pages, the project stories and the translated article, both ways.
-  assert.equal(pairs, 18);
+  // The six fixed pages, the three project stories and the translated article, both ways.
+  assert.equal(pairs, 20);
 });
 
 test("a text without a translation has no hreflang", async () => {
@@ -602,9 +612,11 @@ test("the build writes one share image per text version, per project story and p
   assert.deepEqual(files.filter((file) => file.endsWith(".png")).sort(), [
     "default.png",
     "projects/another-example-project.png",
+    "projects/beto.png",
     "projects/out-of-the-rabbit-hole.png",
     "pt-br/default.png",
     "pt-br/projetos/another-example-project.png",
+    "pt-br/projetos/beto.png",
     "pt-br/projetos/out-of-the-rabbit-hole.png",
     "pt-br/textos/exemplo-de-artigo-com-traducao.png",
     "writing/example-article-with-translation.png",

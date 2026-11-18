@@ -70,7 +70,7 @@ describe("the content of Home", { concurrency: true }, () => {
       "pages/en.yaml": PAGES,
       "research/example-paper.yaml": PAPER,
       "projects/out-of-the-rabbit-hole/project.yaml":
-        "name: Out of the Rabbit Hole\norder: 3\nstate: works-locally\nupdatedOn: 2026-05-20\n",
+        "name: Out of the Rabbit Hole\norder: 4\nstate: works-locally\nupdatedOn: 2026-05-20\n",
       "texts/newest-text/text.yaml":
         "publishedOn: 2026-05-01\ntype: article\ntopics: [backend]\noriginalLanguage: pt-br\n",
       "texts/newest-text/pt-br.md":
@@ -124,17 +124,27 @@ describe("the content of Home", { concurrency: true }, () => {
 
   test("the projects come in the order of the content", async () => {
     const home = element(await exampleHome("en"), "main");
-    assert.deepEqual(projectCards(home), ["Out of the Rabbit Hole", "Another Example Project"]);
+    assert.deepEqual(projectCards(home), [
+      "Out of the Rabbit Hole",
+      "Betô",
+      "Another Example Project",
+    ]);
     assert.deepEqual(projectBlocks(home), [
       "/projects/out-of-the-rabbit-hole",
+      "/projects/beto",
       "/projects/another-example-project",
     ]);
   });
 
   test("changing the order of the projects in the content changes the order on the page", async () => {
     const home = await changedHome("en");
-    assert.deepEqual(projectCards(home), ["Another Example Project", "Out of the Rabbit Hole"]);
+    assert.deepEqual(projectCards(home), [
+      "Betô",
+      "Another Example Project",
+      "Out of the Rabbit Hole",
+    ]);
     assert.deepEqual(projectBlocks(home), [
+      "/projects/beto",
       "/projects/another-example-project",
       "/projects/out-of-the-rabbit-hole",
     ]);

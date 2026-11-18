@@ -22,7 +22,7 @@ const STORY_PATH = {
   en: (project: string) => `/projects/${project}`,
   pt: (project: string) => `/pt-br/projetos/${project}`,
 };
-const PROJECTS = ["out-of-the-rabbit-hole", "another-example-project"];
+const PROJECTS = ["out-of-the-rabbit-hole", "beto", "another-example-project"];
 
 // The pages with the reading column, in both languages.
 const READING_PAGES = [
