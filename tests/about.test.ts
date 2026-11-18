@@ -1,6 +1,6 @@
 // Tests of the About page (section 7.6 of the spec). They look at the built
-// page: the one in dist/, with the example content, and the one of a copy of
-// the site with some content files changed.
+// page: the one in dist/, with the content of the repo, and the one of a copy
+// of the site with some content files changed.
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { describe, test } from "node:test";
@@ -12,6 +12,7 @@ import {
   CLINICAL_CLAIM,
   PLACEHOLDER,
   forbiddenWordsIn,
+  numbersBesidesPercentages,
   patientsNotSimulated,
   sentencesOf,
 } from "./support/rules.ts";
@@ -21,8 +22,8 @@ const root = new URL("..", import.meta.url).pathname;
 // The file of the About page of each language in a build.
 const ABOUT = { en: "about.html", pt: "pt-br/sobre.html" };
 
-// The <main> of the About page with the example content, as `npm test` has
-// just built it.
+// The <main> of the About page with the content of the repo, as `npm test`
+// has just built it.
 async function examplePage(language: keyof typeof ABOUT): Promise<string> {
   return element(await readFile(`${root}dist/${ABOUT[language]}`, "utf8"), "main");
 }
@@ -156,68 +157,140 @@ function timelineOf(page: string) {
   });
 }
 
-// Section 7.6 of the spec: a timeline by company. The company shows the name
-// and the whole period; each role shows the title, the period, a line of
-// context and the achievements. The example roles are in src/content/roles:
-// two roles at the same company, the newest one without an end.
-test("the experience is a timeline by company, each role with its title in English, period, context and achievements", async () => {
-  assert.deepEqual(timelineOf(await examplePage("en")), [
+// Section 7.6 of the spec: a timeline by company, from the most recent to
+// the oldest. The company shows the name and the whole period; each role
+// shows the title, in English in both languages, and its period. The
+// companies, the titles and the months are the ones the spec gives.
+const TIMELINE = {
+  en: [
     {
-      name: "Example Company",
-      period: "Jan 2022 – Present",
-      months: ["2022-01"],
+      name: "ADP Labs",
+      period: "Dec 2022 – Present",
+      months: ["2022-12"],
       roles: [
         {
           title: "Software Engineer II",
           lang: null,
-          period: "Mar 2024 – Present",
-          months: ["2024-03"],
-          context: "[Example] One line of context about the team and the kind of work.",
-          achievements: [
-            "[Example] A made-up achievement, in the first person and in the past tense, saying what changed and how it was done.",
-            "[Example] A second made-up achievement, to show that the order of the lines is the order on the page.",
-          ],
-        },
-        {
-          title: "Software Engineer I",
-          lang: null,
-          period: "Jan 2022 – Mar 2024",
-          months: ["2022-01", "2024-03"],
-          context: "[Example] One line of context about an earlier role at the same company.",
-          achievements: ["[Example] A made-up achievement from the earlier role."],
+          period: "Dec 2022 – Present",
+          months: ["2022-12"],
         },
       ],
     },
-  ]);
+    {
+      name: "Dell Technologies",
+      period: "Sep 2020 – Dec 2022",
+      months: ["2020-09", "2022-12"],
+      roles: [
+        {
+          title: "Software Engineer I",
+          lang: null,
+          period: "Jul 2021 – Dec 2022",
+          months: ["2021-07", "2022-12"],
+        },
+        {
+          title: "Software Engineer Intern",
+          lang: null,
+          period: "Sep 2020 – Jul 2021",
+          months: ["2020-09", "2021-07"],
+        },
+      ],
+    },
+  ],
+  pt: [
+    {
+      name: "ADP Labs",
+      period: "dez. de 2022 – hoje",
+      months: ["2022-12"],
+      roles: [
+        {
+          title: "Software Engineer II",
+          lang: "en",
+          period: "dez. de 2022 – hoje",
+          months: ["2022-12"],
+        },
+      ],
+    },
+    {
+      name: "Dell Technologies",
+      period: "set. de 2020 – dez. de 2022",
+      months: ["2020-09", "2022-12"],
+      roles: [
+        {
+          title: "Software Engineer I",
+          lang: "en",
+          period: "jul. de 2021 – dez. de 2022",
+          months: ["2021-07", "2022-12"],
+        },
+        {
+          title: "Software Engineer Intern",
+          lang: "en",
+          period: "set. de 2020 – jul. de 2021",
+          months: ["2020-09", "2021-07"],
+        },
+      ],
+    },
+  ],
+};
 
-  assert.deepEqual(timelineOf(await examplePage("pt")), [
-    {
-      name: "Example Company",
-      period: "jan. de 2022 – hoje",
-      months: ["2022-01"],
-      roles: [
-        {
-          title: "Software Engineer II",
-          lang: "en",
-          period: "mar. de 2024 – hoje",
-          months: ["2024-03"],
-          context: "[Exemplo] Uma linha de contexto sobre o time e o tipo de trabalho.",
-          achievements: [
-            "[Exemplo] Uma conquista inventada, em primeira pessoa e no passado, dizendo o que mudou e como foi feito.",
-            "[Exemplo] Uma segunda conquista inventada, para mostrar que a ordem das linhas é a ordem na página.",
-          ],
-        },
-        {
-          title: "Software Engineer I",
-          lang: "en",
-          period: "jan. de 2022 – mar. de 2024",
-          months: ["2022-01", "2024-03"],
-          context: "[Exemplo] Uma linha de contexto sobre um cargo anterior na mesma empresa.",
-          achievements: ["[Exemplo] Uma conquista inventada do cargo anterior."],
-        },
-      ],
-    },
-  ]);
+for (const language of ["en", "pt"] as const) {
+  test(`the experience (${language}) is a timeline by company, each role with its title in English and its period`, async () => {
+    const timeline = timelineOf(await examplePage(language)).map((company) => ({
+      ...company,
+      roles: company.roles.map(({ title, lang, period, months }) => ({
+        title,
+        lang,
+        period,
+        months,
+      })),
+    }));
+    assert.deepEqual(timeline, TIMELINE[language]);
+  });
+}
+
+// The roles of the page of a language, from the most recent to the oldest.
+async function rolesOf(language: keyof typeof ABOUT) {
+  return timelineOf(await examplePage(language)).flatMap(({ roles }) => roles);
+}
+
+// Section 12 of the spec: nine achievements, each of 120 to 220 characters.
+// The internship has a single one. The wording is the owner's: the test
+// reads only the shape of each role.
+test("each role has one line of context and its achievements, of 120 to 220 characters, in both languages", async () => {
+  for (const language of ["en", "pt"] as const) {
+    const roles = await rolesOf(language);
+    assert.deepEqual(
+      roles.map(({ achievements }) => achievements.length),
+      [4, 4, 1],
+      language,
+    );
+    for (const { title, context, achievements } of roles) {
+      assert.ok(context.length > 0, `${language}: ${title} has no line of context`);
+      assert.doesNotMatch(context, PLACEHOLDER, `${language}: ${title}`);
+      for (const achievement of achievements) {
+        assert.doesNotMatch(achievement, PLACEHOLDER, `${language}: ${title}`);
+        assert.ok(
+          achievement.length >= 120 && achievement.length <= 220,
+          `${language}: ${title} has an achievement of ${achievement.length} characters: ${achievement}`,
+        );
+      }
+    }
+  }
+});
+
+// Section 11 of the spec: the experience tells what Shaihan did as an
+// engineer. A number is only a percentage of quality or of improvement,
+// nothing ages, and no name that stays out of the site is there. The agent
+// credit belongs to the projects: the experience says nothing about agents.
+test("the experience follows the content rules: no number besides percentages, nothing that ages, no forbidden mention", async () => {
+  for (const language of ["en", "pt"] as const) {
+    for (const { title, context, achievements } of await rolesOf(language)) {
+      const text = [context, ...achievements].join(" ");
+      assert.deepEqual(numbersBesidesPercentages(text), [], `${language}: ${title}`);
+      assert.doesNotMatch(text, AGEING, `${language}: ${title}`);
+      assert.doesNotMatch(text, /\bagents?\b|\bagentes?\b/i, `${language}: ${title}`);
+      assert.deepEqual(forbiddenWordsIn(text), [], `${language}: ${title}`);
+    }
+  }
 });
 
 // Section 7.6 of the spec gives the line of the education.
@@ -290,15 +363,15 @@ function roleFile(company: string, title: string, months: string, achievements: 
 }
 
 describe("the experience comes from the content", { concurrency: true }, () => {
-  // A copy of the site with test phrases in English, the example current
-  // role with every field changed, the example previous role deleted and two
-  // more roles, both ended, at another company. The names of the files are
-  // not in the order of the months.
+  // A copy of the site with test phrases in English, the current role with
+  // every field changed, the two previous roles deleted and two more roles,
+  // both ended, at another company. The names of the files are not in the
+  // order of the months.
   const changed = build({
-    remove: ["roles/example-previous-role.yaml"],
+    remove: ["roles/dell-software-engineer-i.yaml", "roles/dell-software-engineer-intern.yaml"],
     write: {
       "pages/en.yaml": PAGES,
-      "roles/example-current-role.yaml": roleFile(
+      "roles/adp-labs-software-engineer-ii.yaml": roleFile(
         "Newest Test Company",
         "Staff Test Engineer",
         "start: 2025-05",
@@ -399,7 +472,7 @@ describe("the experience comes from the content", { concurrency: true }, () => {
         ["Staff Test Engineer", "Test Engineer II", "Test Engineer I"],
         language,
       );
-      assert.doesNotMatch(page, /Example Company|Software Engineer/, language);
+      assert.doesNotMatch(page, /Dell Technologies|Software Engineer/, language);
     }
   });
 

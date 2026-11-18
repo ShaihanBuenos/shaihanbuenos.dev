@@ -202,7 +202,7 @@ describe("content in files", { concurrency: true }, () => {
     assert.ok(projects.length >= 2);
     assert.ok(studies.some(({ status }) => status === "in-progress"));
     assert.ok(studies.some(({ status }) => status === "completed"));
-    assert.ok(roles.length >= 2);
+    assert.equal(roles.length, 3);
     assert.deepEqual(research.map(({ type }) => type).sort(), ["paper", "thesis"]);
     assert.match(studyList.checkedOn, /^\d{4}-\d{2}$/);
   });
@@ -262,11 +262,11 @@ describe("content in files", { concurrency: true }, () => {
   test("a role without achievements stops the build", async () => {
     const built = await build({
       write: {
-        "roles/example-current-role.yaml":
-          "company: Example Company\ntitle: Software Engineer\nstart: 2024-03\ncontext:\n  en: Context.\n  pt-br: Contexto.\n",
+        "roles/adp-labs-software-engineer-ii.yaml":
+          "company: Test Company\ntitle: Software Engineer\nstart: 2024-03\ncontext:\n  en: Context.\n  pt-br: Contexto.\n",
       },
     });
-    assertStopped(built, /roles\/example-current-role\.yaml/, /achievements/);
+    assertStopped(built, /roles\/adp-labs-software-engineer-ii\.yaml/, /achievements/);
   });
 
   test("a research item without the result stops the build", async () => {

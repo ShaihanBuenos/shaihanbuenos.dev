@@ -1,0 +1,16 @@
+company: Dell Technologies
+title: Software Engineer I
+start: 2021-07
+end: 2022-12
+context:
+  en: Platform of customer service bots and customer notifications.
+  pt-br: Plataforma de bots de atendimento e de notificações ao cliente.
+achievements:
+  - en: I built backend microservices that connected internal systems to an external customer service platform, for customer service bots, with Java, Spring Boot, RabbitMQ and MongoDB.
+    pt-br: Construí microsserviços de backend que integravam sistemas internos a uma plataforma externa de atendimento, para bots de atendimento ao cliente, com Java, Spring Boot, RabbitMQ e MongoDB.
+  - en: I kept code coverage at 90% or more, with JUnit, Cucumber (BDD) and Robot Framework (ATDD), measured with JaCoCo and SonarQube.
+    pt-br: Mantive a cobertura de código em pelo menos 90%, com JUnit, Cucumber (BDD) e Robot Framework (ATDD), medida com JaCoCo e SonarQube.
+  - en: I looked after the deploy pipeline of the microservices on Cloud Foundry, with security scanning stages and the publishing of artifacts to JFrog Artifactory.
+    pt-br: Cuidei do pipeline de deploy dos microsserviços em Cloud Foundry, com etapas de varredura de segurança e de publicação de artefatos no JFrog Artifactory.
+  - en: I led a research and development initiative as its technical lead, delivered successfully and with a significant improvement in delivery timelines.
+    pt-br: Liderei, como líder técnico, uma iniciativa de pesquisa e desenvolvimento, entregue com sucesso e com melhora significativa nos prazos de entrega.
