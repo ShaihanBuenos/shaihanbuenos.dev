@@ -1,0 +1,11 @@
+name:
+  en: Prompt evaluation for structured outputs
+  pt-br: Avaliação de prompts para saídas estruturadas
+goal:
+  en: Measure whether a prompt makes an LLM always answer in the requested format, and publish the result.
+  pt-br: Medir se um prompt faz um LLM responder sempre no formato pedido, e publicar o resultado.
+status: completed
+start: 2025-11
+end: 2026-05
+links:
+  research: [haxd-paper]

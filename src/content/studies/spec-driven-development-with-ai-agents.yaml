@@ -1,0 +1,10 @@
+name:
+  en: Spec-driven development with AI agents
+  pt-br: Desenvolvimento com agentes de IA guiado por especificação
+goal:
+  en: Reach a workflow in which the specification, the tests and the review cost less than the code they protect.
+  pt-br: Chegar a um fluxo em que a especificação, os testes e a revisão custem menos do que o código que protegem.
+status: in-progress
+start: 2026-10
+links:
+  project: beto

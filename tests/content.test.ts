@@ -27,11 +27,11 @@ updatedOn: 2026-05-20
 `;
 
 const STUDY = `name:
-  en: An example study
-  pt-br: Um estudo de exemplo
+  en: A test study
+  pt-br: Um estudo de teste
 goal:
-  en: An example goal.
-  pt-br: Um objetivo de exemplo.
+  en: A test goal.
+  pt-br: Um objetivo de teste.
 status: in-progress
 start: 2026-02
 `;
@@ -102,7 +102,7 @@ describe("content in files", { concurrency: true }, () => {
 
   test("a study shows the texts that came from it, without repeating the link", async () => {
     const { studies } = await contentOf(await example);
-    const study = studies.find(({ id }) => id === "example-in-progress");
+    const study = studies.find(({ id }) => id === "spec-driven-development-with-ai-agents");
     assert.deepEqual(study?.links.texts, ["example-study-note"]);
   });
 
@@ -259,9 +259,14 @@ describe("content in files", { concurrency: true }, () => {
 
   test("a completed study without the end month stops the build", async () => {
     const built = await build({
-      write: { "studies/example-in-progress.yaml": STUDY.replace("in-progress", "completed") },
+      write: {
+        "studies/spec-driven-development-with-ai-agents.yaml": STUDY.replace(
+          "in-progress",
+          "completed",
+        ),
+      },
     });
-    assertStopped(built, /studies\/example-in-progress\.yaml/, /end/);
+    assertStopped(built, /studies\/spec-driven-development-with-ai-agents\.yaml/, /end/);
   });
 
   test("a role without achievements stops the build", async () => {
@@ -297,23 +302,33 @@ describe("content in files", { concurrency: true }, () => {
 
   test("a study linked to a text that does not exist stops the build", async () => {
     const built = await build({
-      write: { "studies/example-in-progress.yaml": `${STUDY}links:\n  texts: [no-such-text]\n` },
+      write: {
+        "studies/spec-driven-development-with-ai-agents.yaml": `${STUDY}links:\n  texts: [no-such-text]\n`,
+      },
     });
-    assertStopped(built, /studies\/example-in-progress\.yaml/, /no-such-text/);
+    assertStopped(built, /studies\/spec-driven-development-with-ai-agents\.yaml/, /no-such-text/);
   });
 
   test("a study linked to a project that does not exist stops the build", async () => {
     const built = await build({
-      write: { "studies/example-in-progress.yaml": `${STUDY}links:\n  project: no-such-project\n` },
+      write: {
+        "studies/spec-driven-development-with-ai-agents.yaml": `${STUDY}links:\n  project: no-such-project\n`,
+      },
     });
-    assertStopped(built, /studies\/example-in-progress\.yaml/, /no-such-project/);
+    assertStopped(
+      built,
+      /studies\/spec-driven-development-with-ai-agents\.yaml/,
+      /no-such-project/,
+    );
   });
 
   test("a study linked to a research item that does not exist stops the build", async () => {
     const built = await build({
-      write: { "studies/example-in-progress.yaml": `${STUDY}links:\n  research: [no-such-item]\n` },
+      write: {
+        "studies/spec-driven-development-with-ai-agents.yaml": `${STUDY}links:\n  research: [no-such-item]\n`,
+      },
     });
-    assertStopped(built, /studies\/example-in-progress\.yaml/, /no-such-item/);
+    assertStopped(built, /studies\/spec-driven-development-with-ai-agents\.yaml/, /no-such-item/);
   });
 
   // Validation: a project or a study that exists in one language and is
@@ -331,20 +346,23 @@ describe("content in files", { concurrency: true }, () => {
   test("a study missing in one language stops the build", async () => {
     const built = await build({
       write: {
-        "studies/example-in-progress.yaml": STUDY.replace("  en: An example goal.\n", ""),
+        "studies/spec-driven-development-with-ai-agents.yaml": STUDY.replace(
+          "  en: A test goal.\n",
+          "",
+        ),
       },
     });
-    assertStopped(built, /studies\/example-in-progress\.yaml/, /goal/, /en/);
+    assertStopped(built, /studies\/spec-driven-development-with-ai-agents\.yaml/, /goal/, /en/);
   });
 
   test("the link of a study to a draft is left out of the published build", async () => {
     const built = await build({
       write: {
-        "studies/example-in-progress.yaml": `${STUDY}links:\n  texts: [example-draft, example-study-note]\n`,
+        "studies/spec-driven-development-with-ai-agents.yaml": `${STUDY}links:\n  texts: [example-draft, example-study-note]\n`,
       },
     });
     const { studies } = await contentOf(built);
-    const study = studies.find(({ id }) => id === "example-in-progress");
+    const study = studies.find(({ id }) => id === "spec-driven-development-with-ai-agents");
     assert.deepEqual(study?.links.texts, ["example-study-note"]);
   });
 });

@@ -232,13 +232,24 @@ describe("the content of Home", { concurrency: true }, () => {
     assert.equal(hrefsOf(section).at(-1), "/pt-br/textos");
   });
 
+  // The studies in progress, as the study list shows them: its first group.
   test("only the studies in progress are shown, and the section leads to the list", async () => {
     const section = element(element(await exampleHome("pt"), "main"), "section", "studies");
+    const list = element(await readFile(`${root}dist/pt-br/estudos.html`, "utf8"), "main");
+    const inProgress = element(list, "section");
+    assert.equal(textOf(element(inProgress, "h2")), "Em andamento");
+    const names = elements(inProgress, "h3").map(textOf);
+    assert.ok(names.length > 0, "the study list has no study in progress");
     assert.deepEqual(
       elements(section, "li").map((item) => textOf(element(item, "strong"))),
-      ["[Exemplo] Um estudo em andamento"],
+      names,
     );
-    assert.match(section, /<time datetime="2026-02">/);
+    // The month each one started: the dates of the linked texts are days.
+    assert.deepEqual(
+      [...section.matchAll(/<time datetime="([^"]*)"/g)].map(([, month]) => month),
+      [...inProgress.matchAll(/<time datetime="(\d{4}-\d{2})"/g)].map(([, month]) => month),
+    );
+    assert.equal(elements(list, "h3").length > names.length, true, "no study is completed");
     assert.deepEqual(hrefsOf(section), ["/pt-br/estudos"]);
   });
 

@@ -390,15 +390,8 @@ describe("the research items come from the content", { concurrency: true }, () =
     assert.equal(textOf(element(await changedPage("en"), "h1")), "Research");
   });
 
-  // A copy without the thesis, and without the link the example completed
-  // study has to it.
-  const withoutThesis = build({
-    remove: [`research/${THESIS_ID}.yaml`],
-    write: {
-      "studies/example-completed.yaml":
-        "name:\n  en: Study\n  pt-br: Estudo\ngoal:\n  en: Goal.\n  pt-br: Objetivo.\nstatus: completed\nstart: 2025-03\nend: 2025-11\nlinks:\n  research: [haxd-paper]\n",
-    },
-  });
+  // A copy without the thesis. No study of the repo links to it.
+  const withoutThesis = build({ remove: [`research/${THESIS_ID}.yaml`] });
 
   test("deleting the thesis file takes its item away, and the page stands with the paper alone", async () => {
     const built = await withoutThesis;
