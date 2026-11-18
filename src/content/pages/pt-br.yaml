@@ -13,7 +13,7 @@ common:
 
 home:
   name: Início
-  description: "[Exemplo] Descrição da página Início."
+  description: "O site de Shaihan Buenos, engenheiro de software com foco em backend e IA: projetos, textos, estudos, pesquisa e experiência."
   label: Engenheiro de software com foco em backend e IA
   intro: Construo serviços de backend e sistemas que usam LLMs, e programo com agentes de IA guiados por especificação.
   # The blocks of the floor plan: the title of each one and, where the caption
@@ -38,7 +38,7 @@ home:
 
 projects:
   name: Projetos
-  description: "[Exemplo] Descrição da página Projetos."
+  description: "Os projetos que construo por conta própria, com agentes de IA guiados por especificação: o estado de cada um e as decisões de engenharia."
   # The name of each project state.
   states:
     works-locally: funciona localmente
@@ -51,7 +51,7 @@ projects:
 
 writing:
   name: Textos
-  description: "[Exemplo] Descrição da página Textos."
+  description: "Artigos e notas de estudo sobre backend, arquitetura e IA, cada texto no idioma em que foi escrito."
   # The name of each text type.
   types:
     article: artigo
@@ -80,7 +80,7 @@ writing:
 
 studies:
   name: Estudos
-  description: "[Exemplo] Descrição da página Estudos."
+  description: "O que estou estudando e o que já concluí, com o status de cada estudo e os textos e projetos ligados a ele."
   # Comes before the month of the last check of the study list.
   checkedOn: conferida em
   # The title of the group of the studies in progress.
@@ -103,7 +103,7 @@ studies:
 
 research:
   name: Pesquisa
-  description: "[Exemplo] Descrição da página Pesquisa."
+  description: "Meu trabalho acadêmico: um paper publicado pelo IEEE sobre o uso de LLMs no acompanhamento da hipertensão, e o TCC que foi o ponto de partida dele."
   # What comes before each field of a research item.
   fields:
     whatItIs: O que é
@@ -119,7 +119,7 @@ research:
 
 about:
   name: Sobre
-  description: "[Exemplo] Descrição da página Sobre."
+  description: "Quem é Shaihan Buenos: a bio, a experiência como engenheiro de software, a formação e o contato."
   bio: "Sou engenheiro de software na ADP Labs, em Porto Alegre, onde trabalho com serviços de backend. O meu lado de IA vem de fora do emprego: sou primeiro autor de um paper publicado pelo IEEE sobre o uso de LLMs no acompanhamento da hipertensão, e construo projetos próprios com agentes de IA guiados por especificação. Hoje estudo React e TypeScript e esse jeito de programar com agentes, e escrevo aqui sobre o que aprendo."
   # The alternative text of the avatar.
   avatarAlt: Avatar de Shaihan Buenos em pixel art

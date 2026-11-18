@@ -7,7 +7,14 @@ import { readdir, readFile } from "node:fs/promises";
 import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
 import { element, elements, textOf } from "./support/html.ts";
-import { PLACEHOLDER } from "./support/rules.ts";
+import {
+  AGEING,
+  CLINICAL_CLAIM,
+  PLACEHOLDER,
+  forbiddenWordsIn,
+  patientsNotSimulated,
+  sentencesOf,
+} from "./support/rules.ts";
 
 const root = new URL("..", import.meta.url).pathname;
 
@@ -355,27 +362,67 @@ const LABEL = {
 // Section 9 of the spec: the tab title is "Page · Shaihan Buenos", and Home
 // uses the name and the label. The description is the one-line summary on a
 // text, and the page description on a fixed page and on a project story.
+
+// The fixed pages: the file of each one in each language, and its tab title.
+const FIXED_PAGES = [
+  {
+    en: { file: "index.html", title: `Shaihan Buenos · ${LABEL.en}` },
+    pt: { file: "pt-br.html", title: `Shaihan Buenos · ${LABEL.pt}` },
+  },
+  {
+    en: { file: "projects.html", title: "Projects · Shaihan Buenos" },
+    pt: { file: "pt-br/projetos.html", title: "Projetos · Shaihan Buenos" },
+  },
+  {
+    en: { file: "writing.html", title: "Writing · Shaihan Buenos" },
+    pt: { file: "pt-br/textos.html", title: "Textos · Shaihan Buenos" },
+  },
+  {
+    en: { file: "studies.html", title: "Studies · Shaihan Buenos" },
+    pt: { file: "pt-br/estudos.html", title: "Estudos · Shaihan Buenos" },
+  },
+  {
+    en: { file: "research.html", title: "Research · Shaihan Buenos" },
+    pt: { file: "pt-br/pesquisa.html", title: "Pesquisa · Shaihan Buenos" },
+  },
+  {
+    en: { file: "about.html", title: "About · Shaihan Buenos" },
+    pt: { file: "pt-br/sobre.html", title: "Sobre · Shaihan Buenos" },
+  },
+];
+
+// Section 9 of the spec: each fixed page has a page description of one line,
+// in both languages. The wording is the owner's: the test reads only that
+// the description is written, is one sentence, belongs to that page alone
+// and follows the content rules of section 11.
+for (const language of ["en", "pt"] as const) {
+  test(`each fixed page (${language}) has its tab title and a page description of its own, of one sentence`, async () => {
+    const descriptions = [];
+    for (const page of FIXED_PAGES) {
+      const { file, title } = page[language];
+      const head = headOf(await built(file));
+      assert.equal(head.title, title, file);
+      assert.equal(head.meta["og:title"], title, file);
+      const { description = "" } = head.meta;
+      assert.equal(head.meta["og:description"], description, file);
+      assert.doesNotMatch(description, PLACEHOLDER, file);
+      assert.equal(sentencesOf(description).length, 1, `${file}: ${description}`);
+      assert.doesNotMatch(description, AGEING, file);
+      assert.doesNotMatch(description, CLINICAL_CLAIM, file);
+      assert.deepEqual(patientsNotSimulated(description), [], file);
+      assert.deepEqual(forbiddenWordsIn(description), [], file);
+      // The description is written in the language of the page.
+      const other = page[language === "en" ? "pt" : "en"].file;
+      assert.notEqual(description, headOf(await built(other)).meta.description, file);
+      descriptions.push(description);
+    }
+    assert.equal(new Set(descriptions).size, FIXED_PAGES.length, "two pages share a description");
+  });
+}
+
+// The description is the one-line summary on a text. "Not found" has a
+// description of its own.
 const HEADS = [
-  {
-    file: "index.html",
-    title: `Shaihan Buenos · ${LABEL.en}`,
-    description: "[Example] Description of the Home page.",
-  },
-  {
-    file: "pt-br.html",
-    title: `Shaihan Buenos · ${LABEL.pt}`,
-    description: "[Exemplo] Descrição da página Início.",
-  },
-  {
-    file: "about.html",
-    title: "About · Shaihan Buenos",
-    description: "[Example] Description of the About page.",
-  },
-  {
-    file: "pt-br/sobre.html",
-    title: "Sobre · Shaihan Buenos",
-    description: "[Exemplo] Descrição da página Sobre.",
-  },
   {
     file: "writing/example-article-with-translation.html",
     title: "[Example] An example article with a translation · Shaihan Buenos",
