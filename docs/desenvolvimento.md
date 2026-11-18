@@ -58,6 +58,8 @@ Os testes da descoberta, em `tests/discovery.test.ts`, olham os dois feeds, o `<
 
 Os testes da issue de conferência, em `tests/check-issue.test.ts`, não olham o site: rodam `scripts/open-check-issue` com um `gh` falso, sem a rede, e leem o arquivo do workflow. Ver "A issue de conferência", abaixo.
 
+Os testes do deploy, em `tests/deploy.test.ts`, não olham o site: leem o `wrangler.jsonc` e conferem o que a Cloudflare vai publicar. Ver "Deploy", abaixo.
+
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
 ## Construir
@@ -69,10 +71,82 @@ npm run preview   # serve a pasta dist/ em http://localhost:4321
 
 A saída é só de arquivos estáticos.
 
+## Deploy
+
+O site é publicado na Cloudflare como Workers com arquivos estáticos: a Cloudflare serve a pasta `dist/` e não roda código nenhum. A configuração fica em `wrangler.jsonc`, na raiz, e o Worker se chama `shaihanbuenos-dev`.
+
+Quem publica é a própria Cloudflare (Workers Builds), ligada a este repo no painel. O repo não tem workflow de deploy, token nem identificador de conta: a conta é a de quem fez a ligação no painel.
+
+| O que acontece | O que a Cloudflare roda | Onde aparece |
+|---|---|---|
+| Um push no `master` | `npm run build` e `npx wrangler deploy` | No endereço da prévia, abaixo. |
+| Um push em outro branch | `npm run build` e `npx wrangler preview` | Num endereço próprio do branch. |
+
+Endereço da prévia: _a preencher depois da ligação_
+
+Os dois comandos de cada linha, o branch de produção e as prévias dos outros branches são ajustes do painel, e não deste repo: ver "O que fica no painel", abaixo.
+
+Até o lançamento, esse endereço `*.workers.dev` é o único do site. O `wrangler.jsonc` não tem rota nem domínio: ligar `shaihanbuenos.dev` é do dia do lançamento.
+
+### O que o `wrangler.jsonc` diz
+
+- `assets.directory`: a pasta servida, `./dist`. Sem `main`, não há código de Worker.
+- `assets.not_found_handling`: `404-page`. Para um endereço que não existe, a Cloudflare responde com o `404.html` mais próximo, e por isso um endereço sob `/pt-br` recebe o "não encontrado" em português.
+- `workers_dev`: `true`. O site responde no endereço `*.workers.dev`.
+- `previews`: o que a prévia de um branch tem de diferente. O bloco é vazio porque ela não precisa de nada além dos arquivos, mas o `wrangler preview` exige que ele exista.
+- `compatibility_date`: a data que fixa o comportamento da Cloudflare. Só muda de propósito.
+
+O arquivo `_headers` não fica no `wrangler.jsonc`: a construção o escreve em `dist/` (ver "Não indexar até o lançamento", abaixo), e a Cloudflare o lê de lá.
+
+### O que fica no painel
+
+Em Workers & Pages > `shaihanbuenos-dev` > Settings > Build:
+
+| Ajuste | Valor |
+|---|---|
+| Nome do Worker | `shaihanbuenos-dev`, igual ao `name` do `wrangler.jsonc`. Com nomes diferentes, a construção falha. |
+| Comando de construção | `npm run build` |
+| Comando de deploy | `npx wrangler deploy` |
+| Comando dos outros branches | `npx wrangler preview` |
+| Pasta raiz | vazia: o projeto fica na raiz do repo. |
+| Branch de produção | `master` |
+| Construir os outros branches | ligado ("Enable Preview Builds", em Branch control). |
+| Variáveis de construção | nenhuma. O Node padrão da Cloudflare atende o `engines` do `package.json`; para fixar outra versão, a variável é `NODE_VERSION`. |
+
+A Cloudflare instala as dependências sozinha, pelo `package-lock.json`, antes do comando de construção.
+
+### Ver a prévia de um branch
+
+Faça o push do branch. A Cloudflare constrói e publica, e deixa o endereço num comentário no PR do branch. O estado de cada construção aparece como uma conferência (check) do commit no GitHub, e o painel mostra as prévias na página do Worker. O endereço tem a forma `<branch>-shaihanbuenos-dev.<subdomínio>.workers.dev` e sempre mostra o último push do branch.
+
+A prévia de um branch é pública: quem tem o endereço abre. A Cloudflare manda `X-Robots-Tag: noindex` por conta própria nos endereços de prévia em `*.workers.dev`, e o `_headers` do site manda o mesmo cabeçalho em todos os endereços.
+
+Uma prévia não some sozinha quando o branch é apagado. No plano gratuito, a Cloudflare guarda até 100 por Worker e, no limite, apaga a que está há mais tempo sem push. Para apagar uma à mão: `npx wrangler preview delete --name <branch>`, com a conta já ligada (`npx wrangler login`).
+
+### Conferir o deploy sem a conta
+
+O `wrangler` não é dependência do repo: a Cloudflare o baixa na hora, com `npx`. Dá para ver localmente o que ela serviria, sem conta:
+
+```sh
+npm run build
+npx wrangler dev                 # serve dist/ como a Cloudflare, em http://localhost:8787
+npx wrangler deploy --dry-run    # lê a configuração e a pasta, sem publicar
+```
+
+Com o `wrangler dev` rodando, confira o cabeçalho e o "não encontrado" nos dois idiomas:
+
+```sh
+curl -sI http://localhost:8787/rss.xml | grep -i x-robots-tag
+curl -s http://localhost:8787/pt-br/nao-existe | grep -o '<h1[^>]*>[^<]*'
+```
+
+Na prévia de verdade, o mesmo `curl` vale com o endereço dela.
+
 ## Onde fica cada coisa
 
 | Caminho | O que guarda |
 |---|---|
+| `wrangler.jsonc` | A configuração do deploy na Cloudflare (ver "Deploy", acima). |
 | `astro.config.ts` | A configuração do Astro: endereço do site, idiomas, formato da saída e o arquivo `_headers`. |
 | `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. `projects/[project].astro` gera uma página por pasta de projeto, e `writing/[text].astro`, uma página por texto que tem versão em inglês. Também ficam aqui os arquivos que não são páginas: os feeds (`rss.xml.ts`), o mapa do site (`sitemap.xml.ts`), o `robots.txt.ts` e as imagens de compartilhamento (`share/[...image].png.ts`). |
 | `src/pages/pt-br/` | As páginas em português. `textos/[text].astro` gera uma página por texto que tem versão em português. |
@@ -102,7 +176,7 @@ A saída é só de arquivos estáticos.
 | `src/lib/share-image.ts` | As imagens de compartilhamento: quais existem, onde fica cada uma e o que cada uma diz. |
 | `src/lib/share-image-drawing.ts` | O desenho de uma imagem de compartilhamento, e o PNG. |
 | `src/lib/structured-data.ts` | Os dados estruturados: a pessoa do Início e o artigo de um texto. |
-| `tests/` | Os testes do site construído e os da issue de conferência. |
+| `tests/` | Os testes do site construído, os da issue de conferência e os do deploy. |
 | `scripts/check` | A conferência completa. |
 | `scripts/open-check-issue` | O script que abre a issue de conferência (ver "A issue de conferência", abaixo). |
 | `.github/workflows/check-issue.yml` | A tarefa agendada que roda esse script a cada três meses. |
@@ -121,7 +195,7 @@ Uma página nova precisa de um arquivo em `src/pages/` e outro em `src/pages/pt-
 
 Cada versão de um texto tem um endereço só, sob o prefixo do seu idioma e com o `slug` do seu arquivo: `/writing/<slug>` ou `/pt-br/textos/<slug>`. Um texto sem tradução não ganha página no outro idioma: a lista de lá mostra o original, com a marca de idioma, e leva ao endereço dele. Na página de um texto, o menu marca Textos e o botão de idioma leva à outra versão; sem tradução, leva à lista de textos do outro idioma. Como o `slug` muda de um idioma para o outro, o endereço não diz qual é o equivalente: a página do texto (`src/views/Text.astro`) é que o entrega ao layout, com `textEquivalentOf`, de `src/lib/pages.ts`.
 
-O "não encontrado" tem uma página por idioma: `404.html` na raiz e `pt-br/404.html`. Quem escolhe qual mostrar é a hospedagem. Na Cloudflare, isso pede a opção que procura o `404.html` mais próximo do endereço pedido (`not_found_handling = "404-page"`), que entra com a configuração da prévia. Rodando com `npm run dev`, a página em português já aparece para endereços sob `/pt-br`.
+O "não encontrado" tem uma página por idioma: `404.html` na raiz e `pt-br/404.html`. Quem escolhe qual mostrar é a hospedagem. Na Cloudflare, quem pede isso é a opção que procura o `404.html` mais próximo do endereço pedido (`not_found_handling`, com o valor `404-page`), no `wrangler.jsonc`. Rodando com `npm run dev`, a página em português já aparece para endereços sob `/pt-br`.
 
 ## Não indexar até o lançamento
 
