@@ -1,0 +1,21 @@
+// The deploy to Cloudflare: Workers with static assets. See "Deploy" in
+// docs/desenvolvimento.md.
+{
+  "name": "shaihanbuenos-dev",
+  // Until launch the site answers only at *.workers.dev: no route and no
+  // domain are connected here.
+  "workers_dev": true,
+  "compatibility_date": "2026-11-17",
+  // Only the files of the build are served: there is no Worker code.
+  "assets": {
+    "directory": "./dist",
+    // "Not found" is the nearest 404.html to the address asked for, so that
+    // an address under /pt-br gets the page in Portuguese.
+    "not_found_handling": "404-page",
+  },
+  // Every branch other than the production one is published as a preview of
+  // its own, at <branch>-shaihanbuenos-dev.<subdomain>.workers.dev. Previews
+  // inherit nothing but the assets, and need nothing else.
+  "preview_urls": true,
+  "previews": {},
+}
