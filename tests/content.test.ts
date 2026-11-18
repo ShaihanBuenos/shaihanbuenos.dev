@@ -20,7 +20,7 @@ function assertStopped({ failed, output }: Build, ...clues: RegExp[]): void {
   for (const clue of clues) assert.match(output, clue);
 }
 
-const PROJECT = `name: Example Project
+const PROJECT = `name: Test Project
 order: 1
 state: works-locally
 updatedOn: 2026-05-20
@@ -209,7 +209,7 @@ describe("content in files", { concurrency: true }, () => {
 
   test("a project has its story in both languages, and what is not a phrase holds for both", async () => {
     const { projects } = await contentOf(await example);
-    const project = projects.find(({ id }) => id === "example-project");
+    const project = projects.find(({ id }) => id === "out-of-the-rabbit-hole");
     assert.equal(project?.state, "works-locally");
     assert.match(project.mark, /^<svg\b/);
     assert.notEqual(project.stories.en.whatItIs, project.stories["pt-br"].whatItIs);
@@ -219,15 +219,17 @@ describe("content in files", { concurrency: true }, () => {
     const { projects } = await contentOf(await example);
     assert.deepEqual(
       projects.map(({ id }) => id),
-      ["example-project", "another-example-project"],
+      ["out-of-the-rabbit-hole", "another-example-project"],
     );
 
     const swapped = await build({
-      write: { "projects/example-project/project.yaml": PROJECT.replace("order: 1", "order: 3") },
+      write: {
+        "projects/out-of-the-rabbit-hole/project.yaml": PROJECT.replace("order: 1", "order: 3"),
+      },
     });
     assert.deepEqual(
       (await contentOf(swapped)).projects.map(({ id }) => id),
-      ["another-example-project", "example-project"],
+      ["another-example-project", "out-of-the-rabbit-hole"],
     );
   });
 
@@ -241,15 +243,18 @@ describe("content in files", { concurrency: true }, () => {
   test("a project without the project state stops the build", async () => {
     const built = await build({
       write: {
-        "projects/example-project/project.yaml": PROJECT.replace("state: works-locally\n", ""),
+        "projects/out-of-the-rabbit-hole/project.yaml": PROJECT.replace(
+          "state: works-locally\n",
+          "",
+        ),
       },
     });
-    assertStopped(built, /projects\/example-project\/project\.yaml/, /state/);
+    assertStopped(built, /projects\/out-of-the-rabbit-hole\/project\.yaml/, /state/);
   });
 
   test("a project without the project mark stops the build", async () => {
-    const built = await build({ remove: ["projects/example-project/mark.svg"] });
-    assertStopped(built, /projects\/example-project/, /mark\.svg/);
+    const built = await build({ remove: ["projects/out-of-the-rabbit-hole/mark.svg"] });
+    assertStopped(built, /projects\/out-of-the-rabbit-hole/, /mark\.svg/);
   });
 
   test("a completed study without the end month stops the build", async () => {
@@ -314,13 +319,13 @@ describe("content in files", { concurrency: true }, () => {
   // Validation: a project or a study that exists in one language and is
   // missing in the other.
   test("a project missing in one language stops the build", async () => {
-    const built = await build({ remove: ["projects/example-project/en.md"] });
-    assertStopped(built, /projects\/example-project/, /en\.md/);
+    const built = await build({ remove: ["projects/out-of-the-rabbit-hole/en.md"] });
+    assertStopped(built, /projects\/out-of-the-rabbit-hole/, /en\.md/);
   });
 
   test("a project story in a folder without project.yaml stops the build", async () => {
-    const built = await build({ remove: ["projects/example-project/project.yaml"] });
-    assertStopped(built, /projects\/example-project/, /project\.yaml/);
+    const built = await build({ remove: ["projects/out-of-the-rabbit-hole/project.yaml"] });
+    assertStopped(built, /projects\/out-of-the-rabbit-hole/, /project\.yaml/);
   });
 
   test("a study missing in one language stops the build", async () => {

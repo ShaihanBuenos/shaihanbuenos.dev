@@ -6,7 +6,8 @@ import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
-import { elements, textOf } from "./support/html.ts";
+import { element, elements, textOf } from "./support/html.ts";
+import { PLACEHOLDER } from "./support/rules.ts";
 
 const root = new URL("..", import.meta.url).pathname;
 
@@ -376,16 +377,6 @@ const HEADS = [
     description: "[Exemplo] Descrição da página Sobre.",
   },
   {
-    file: "projects/example-project.html",
-    title: "Example Project · Shaihan Buenos",
-    description: "[Example] Description of the Example Project page.",
-  },
-  {
-    file: "pt-br/projetos/example-project.html",
-    title: "Example Project · Shaihan Buenos",
-    description: "[Exemplo] Descrição da página do Example Project.",
-  },
-  {
     file: "writing/example-article-with-translation.html",
     title: "[Example] An example article with a translation · Shaihan Buenos",
     description: "[Example] This one-line summary stands in for the summary of a real article.",
@@ -412,6 +403,24 @@ const HEADS = [
     description: "Este endereço não existe em shaihanbuenos.dev.",
   },
 ];
+
+// A project story has the name of the project in the tab title and its own
+// page description, in each language.
+for (const [file, other] of [
+  ["projects/out-of-the-rabbit-hole.html", "pt-br/projetos/out-of-the-rabbit-hole.html"],
+  ["pt-br/projetos/out-of-the-rabbit-hole.html", "projects/out-of-the-rabbit-hole.html"],
+] as const) {
+  test(`${file} has its tab title and a page description of its own, written in its language`, async () => {
+    const head = headOf(await built(file));
+    assert.equal(head.title, "Out of the Rabbit Hole · Shaihan Buenos");
+    assert.equal(head.meta["og:title"], head.title);
+    const { description = "" } = head.meta;
+    assert.ok(description.trim().length > 0, "the page has no description");
+    assert.doesNotMatch(description, PLACEHOLDER);
+    assert.equal(head.meta["og:description"], description);
+    assert.notEqual(description, headOf(await built(other)).meta.description);
+  });
+}
 
 for (const { file, title, description } of HEADS) {
   test(`${file} has its tab title and its description`, async () => {
@@ -593,10 +602,10 @@ test("the build writes one share image per text version, per project story and p
   assert.deepEqual(files.filter((file) => file.endsWith(".png")).sort(), [
     "default.png",
     "projects/another-example-project.png",
-    "projects/example-project.png",
+    "projects/out-of-the-rabbit-hole.png",
     "pt-br/default.png",
     "pt-br/projetos/another-example-project.png",
-    "pt-br/projetos/example-project.png",
+    "pt-br/projetos/out-of-the-rabbit-hole.png",
     "pt-br/textos/exemplo-de-artigo-com-traducao.png",
     "writing/example-article-with-translation.png",
     "writing/example-study-note-without-translation.png",
@@ -614,9 +623,9 @@ const SHARE_IMAGES = [
     `Shaihan Buenos · ${LABEL.pt} · shaihanbuenos.dev`,
   ],
   [
-    "projects/example-project.html",
-    "share/projects/example-project.png",
-    "Example Project · shaihanbuenos.dev",
+    "projects/out-of-the-rabbit-hole.html",
+    "share/projects/out-of-the-rabbit-hole.png",
+    "Out of the Rabbit Hole · shaihanbuenos.dev",
   ],
   [
     "pt-br/projetos/another-example-project.html",
@@ -717,7 +726,11 @@ test("the site map says when a text and a project story last changed", async () 
   assert.equal(changes.get(ARTICLE), "2026-02-03");
   assert.equal(changes.get(ARTICLE_IN_PORTUGUESE), "2026-02-03");
   assert.equal(changes.get(NOTE), "2026-03-10");
-  assert.equal(changes.get(`${SITE}/projects/example-project`), "2026-05-20");
+  // The "updated on" date of the story, as its page shows it.
+  const story = await built("projects/out-of-the-rabbit-hole.html");
+  const updatedOn = element(story, "main").match(/<time datetime="(\d{4}-\d{2}-\d{2})">/)?.[1];
+  assert.ok(updatedOn, "the story shows no date");
+  assert.equal(changes.get(`${SITE}/projects/out-of-the-rabbit-hole`), updatedOn);
   // A fixed page is updated in place, without a date.
   assert.equal(changes.get(`${SITE}/about`), undefined);
 });

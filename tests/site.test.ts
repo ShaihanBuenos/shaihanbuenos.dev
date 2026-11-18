@@ -44,7 +44,7 @@ const PAGES = [
 
 // Section 4 of the spec: a project story lives under the Projects page of
 // its language, and the name of the project's folder closes the address.
-const STORIES = ["example-project", "another-example-project"].map((project) => ({
+const STORIES = ["out-of-the-rabbit-hole", "another-example-project"].map((project) => ({
   page: `The story of ${project}`,
   en: `/projects/${project}`,
   pt: `/pt-br/projetos/${project}`,

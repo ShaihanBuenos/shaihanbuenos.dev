@@ -163,7 +163,11 @@ function textsOf(study: string) {
 test("a study shows the links it has, and each one leads to its page", async () => {
   const inEnglish = await examplePage("en");
   assert.deepEqual(linksOf(studyOf(inEnglish, "example-in-progress"))?.slice(1), [
-    { label: "Project", text: "Example Project", hrefs: ["/projects/example-project"] },
+    {
+      label: "Project",
+      text: "Out of the Rabbit Hole",
+      hrefs: ["/projects/out-of-the-rabbit-hole"],
+    },
   ]);
   assert.deepEqual(linksOf(studyOf(inEnglish, "example-completed"))?.slice(1), [
     {
@@ -185,7 +189,11 @@ test("a study shows the links it has, and each one leads to its page", async () 
 
   const inPortuguese = await examplePage("pt");
   assert.deepEqual(linksOf(studyOf(inPortuguese, "example-in-progress"))?.slice(1), [
-    { label: "Projeto", text: "Example Project", hrefs: ["/pt-br/projetos/example-project"] },
+    {
+      label: "Projeto",
+      text: "Out of the Rabbit Hole",
+      hrefs: ["/pt-br/projetos/out-of-the-rabbit-hole"],
+    },
   ]);
   assert.deepEqual(linksOf(studyOf(inPortuguese, "example-completed"))?.slice(1), [
     {
