@@ -7,6 +7,7 @@ import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
 import { element, elements, hrefsOf, textOf } from "./support/html.ts";
 import { PAGES } from "./support/phrases.ts";
+import { CLINICAL_CLAIM, PLACEHOLDER, patientsNotSimulated, sentencesOf } from "./support/rules.ts";
 
 const root = new URL("..", import.meta.url).pathname;
 
@@ -61,6 +62,28 @@ result:
   pt-br: Resultado de teste de 93,4%, com a ressalva.
 `;
 
+// Section 7.1 of the spec: the paper callout shows the title, "HAXD 2026,
+// IEEE" and one plain sentence, without numbers. Section 11: the patients
+// are always "simulated", and no text says the system diagnoses or treats.
+for (const language of ["en", "pt"] as const) {
+  test(`Home (${language}) calls the paper with its title, where it came out and one plain sentence, without numbers`, async () => {
+    const callout = elements(
+      element(element(await exampleHome(language), "main"), "section", "research"),
+      "p",
+    ).map(textOf);
+    assert.deepEqual(callout.slice(0, 2), [
+      "Integrating Large Language Models into Hypertension Care: Architecture and Prompt Tuning Evaluation",
+      "HAXD 2026, IEEE",
+    ]);
+    const sentence = callout[2] ?? "";
+    assert.equal(sentencesOf(sentence).length, 1);
+    assert.doesNotMatch(sentence, PLACEHOLDER);
+    assert.doesNotMatch(sentence, /\d/);
+    assert.doesNotMatch(sentence, CLINICAL_CLAIM);
+    assert.deepEqual(patientsNotSimulated(sentence), []);
+  });
+}
+
 describe("the content of Home", { concurrency: true }, () => {
   // A copy of the site with test phrases in English, another paper, the
   // order of the projects swapped, and two more texts: the newest one, in
@@ -68,7 +91,7 @@ describe("the content of Home", { concurrency: true }, () => {
   const changed = build({
     write: {
       "pages/en.yaml": PAGES,
-      "research/example-paper.yaml": PAPER,
+      "research/haxd-paper.yaml": PAPER,
       "projects/out-of-the-rabbit-hole/project.yaml":
         "name: Out of the Rabbit Hole\norder: 4\nstate: works-locally\nupdatedOn: 2026-05-20\n",
       "texts/newest-text/text.yaml":
@@ -105,9 +128,9 @@ describe("the content of Home", { concurrency: true }, () => {
   // The link that closes the callout leads to the paper on the Research page.
   test("the paper callout leads to the paper on the Research page", async () => {
     const callout = element(await changedHome("en"), "section", "research");
-    assert.deepEqual(hrefsOf(callout), ["/research#example-paper"]);
+    assert.deepEqual(hrefsOf(callout), ["/research#haxd-paper"]);
     const inPortuguese = element(await changedHome("pt"), "section", "research");
-    assert.deepEqual(hrefsOf(inPortuguese), ["/pt-br/pesquisa#example-paper"]);
+    assert.deepEqual(hrefsOf(inPortuguese), ["/pt-br/pesquisa#haxd-paper"]);
   });
 
   // The names on the project cards, in the order of the page.

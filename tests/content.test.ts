@@ -277,11 +277,11 @@ describe("content in files", { concurrency: true }, () => {
   test("a research item without the result stops the build", async () => {
     const built = await build({
       write: {
-        "research/example-thesis.yaml":
+        "research/unisinos-thesis.yaml":
           "type: thesis\norder: 2\ntitle: Title\ntranslatedTitle: Title\nwhatItIs: { en: a, pt-br: a }\nsummary: { en: a, pt-br: a }\nbuilt: { en: a, pt-br: a }\n",
       },
     });
-    assertStopped(built, /research\/example-thesis\.yaml/, /result/);
+    assertStopped(built, /research\/unisinos-thesis\.yaml/, /result/);
   });
 
   // Validation: a link to a study, text or project that does not exist.

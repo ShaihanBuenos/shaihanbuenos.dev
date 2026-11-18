@@ -1,5 +1,5 @@
 // Tests of the Research page (section 7.5 of the spec). They look at the
-// built page: the one in dist/, with the example content, and the one of a
+// built page: the one in dist/, with the content of the repo, and the one of a
 // copy of the site with some content files changed.
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -7,13 +7,21 @@ import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
 import { element, elements, hrefsOf, textOf } from "./support/html.ts";
 import { PAGES } from "./support/phrases.ts";
+import {
+  CLINICAL_CLAIM,
+  PLACEHOLDER,
+  forbiddenWordsIn,
+  numbersWithoutTheCaveat,
+  patientsNotSimulated,
+  sentencesOf,
+} from "./support/rules.ts";
 
 const root = new URL("..", import.meta.url).pathname;
 
 // The file of the Research page of each language in a build.
 const RESEARCH = { en: "research.html", pt: "pt-br/pesquisa.html" };
 
-// The <main> of the Research page with the example content, as `npm test`
+// The <main> of the Research page with the content of the repo, as `npm test`
 // has just built it.
 async function examplePage(language: keyof typeof RESEARCH): Promise<string> {
   return element(await readFile(`${root}dist/${RESEARCH[language]}`, "utf8"), "main");
@@ -35,22 +43,31 @@ function titleOf(item: string) {
   };
 }
 
-const PAPER_TITLE = "[Example] A Made-Up Paper Title, in the Original English";
-const THESIS_TITLE = "[Exemplo] Um título de TCC inventado, em português";
+// The titles of the two works, as each one was published or delivered.
+const PAPER_TITLE =
+  "Integrating Large Language Models into Hypertension Care: Architecture and Prompt Tuning Evaluation";
+const THESIS_TITLE =
+  "Inteligência Artificial Aplicada ao Desenvolvimento e Treinamento de Chatbots para Monitoramento de Saúde";
+
+// The names of the files in src/content/research: the id of each item.
+const PAPER_ID = "haxd-paper";
+const THESIS_ID = "unisinos-thesis";
 
 // Section 7.5 of the spec: the paper first, in the original English, and the
 // thesis below it, in Portuguese, with the translation in parentheses on the
-// English page. The example items are in src/content/research.
+// English page.
 test("Research shows, in both languages, the paper and then the thesis, each title in its own language", async () => {
   const inEnglish = await examplePage("en");
   assert.equal(textOf(element(inEnglish, "h1")), "Research");
-  assert.deepEqual(itemsOf(inEnglish).map(titleOf), [
-    { text: PAPER_TITLE, foreign: null },
-    {
-      text: `${THESIS_TITLE} ([Example] A made-up thesis title, translated)`,
-      foreign: { lang: "pt-BR", text: THESIS_TITLE },
-    },
-  ]);
+  const [paper, thesis] = itemsOf(inEnglish).map(titleOf);
+  assert.equal(itemsOf(inEnglish).length, 2);
+  assert.deepEqual(paper, { text: PAPER_TITLE, foreign: null });
+  assert.deepEqual(thesis.foreign, { lang: "pt-BR", text: THESIS_TITLE });
+  // The translation of the title, in parentheses, after the original.
+  const translated = thesis.text.slice(THESIS_TITLE.length);
+  assert.match(translated, /^ \([^()]+\)$/);
+  assert.doesNotMatch(translated, PLACEHOLDER);
+  assert.ok(thesis.text.startsWith(THESIS_TITLE));
 
   const inPortuguese = await examplePage("pt");
   assert.equal(textOf(element(inPortuguese, "h1")), "Pesquisa");
@@ -95,40 +112,50 @@ const CONTACT = { en: "/about#contact", pt: "/pt-br/sobre#contact" };
 // The DOI of the paper, from issue #10.
 const DOI = "https://doi.org/10.1109/HAXD70072.2026.11621018";
 
-// Section 7.5 of the spec: where it came out, the authors as they appear in
-// the publication, with Shaihan's name highlighted and no e-mails, the
-// summary, what Shaihan built, the result and the link by the DOI.
-test("the paper shows the venue, the authors, the summary, what was built, the result and the link by the DOI", async () => {
-  const [inEnglish = ""] = itemsOf(await examplePage("en"));
-  assert.deepEqual(bylineOf(inEnglish), {
-    venue: "[Example] Example Conference 2026",
-    authors: ["Shaihan Buenos", "Example Author", "Another Example Author"],
-    highlighted: ["Shaihan Buenos"],
-  });
-  assert.deepEqual(fieldsOf(inEnglish), [
-    {
-      label: "Summary",
-      text: "[Example] Two or three sentences that summarize the made-up paper in plain words.",
-    },
-    { label: "What I built", text: "[Example] What Shaihan built in the made-up paper." },
-    {
-      label: "Result",
-      text: "[Example] The result, with its caveat stated right next to the number.",
-    },
-  ]);
-  assert.deepEqual(linksOf(inEnglish), [{ text: "Read on IEEE Xplore", href: DOI }]);
+// What comes before each field of an item, in each language.
+const LABELS = {
+  en: { whatItIs: "What it is", summary: "Summary", built: "What I built", result: "Result" },
+  pt: { whatItIs: "O que é", summary: "Resumo", built: "O que construí", result: "Resultado" },
+};
 
-  const [inPortuguese = ""] = itemsOf(await examplePage("pt"));
-  assert.deepEqual(bylineOf(inPortuguese), bylineOf(inEnglish));
-  assert.deepEqual(fieldsOf(inPortuguese), [
-    {
-      label: "Resumo",
-      text: "[Exemplo] Duas ou três frases que resumem o paper inventado em palavras simples.",
-    },
-    { label: "O que construí", text: "[Exemplo] O que Shaihan construiu no paper inventado." },
-    { label: "Resultado", text: "[Exemplo] O resultado, com a ressalva colada ao número." },
-  ]);
-  assert.deepEqual(linksOf(inPortuguese), [{ text: "Ler no IEEE Xplore", href: DOI }]);
+// Checks that a field of an item is written: it says something, and nothing
+// in it is still an example.
+function assertWritten(fields: ReturnType<typeof fieldsOf>, clue: string): void {
+  for (const { label, text } of fields) {
+    assert.ok(text.length > 0, `${clue}: "${label}" is empty`);
+    assert.doesNotMatch(text, PLACEHOLDER, `${clue}: ${label}`);
+  }
+}
+
+// Section 7.5 of the spec: "HAXD 2026, IEEE", the four authors as they
+// appear in the publication, with Shaihan's name highlighted and no e-mails,
+// the summary of two or three sentences, what Shaihan built, the result and
+// the link by the DOI.
+test("the paper shows the venue, the authors, the summary, what was built, the result and the link by the DOI", async () => {
+  const byline = {
+    venue: "HAXD 2026, IEEE",
+    authors: ["Shaihan Buenos", "Janaina Avancini Pinheiro", "Daniel Formolo", "Sandro José Rigo"],
+    highlighted: ["Shaihan Buenos"],
+  };
+  const links = { en: "Read on IEEE Xplore", pt: "Ler no IEEE Xplore" };
+  const summaries = [];
+  for (const language of ["en", "pt"] as const) {
+    const [paper = ""] = itemsOf(await examplePage(language));
+    assert.deepEqual(bylineOf(paper), byline, language);
+    const fields = fieldsOf(paper);
+    const { summary, built, result } = LABELS[language];
+    assert.deepEqual(
+      fields.map(({ label }) => label),
+      [summary, built, result],
+      language,
+    );
+    assertWritten(fields, `paper (${language})`);
+    const sentences = sentencesOf(fields[0]?.text ?? "").length;
+    assert.ok(sentences === 2 || sentences === 3, `${language}: the summary has ${sentences}`);
+    assert.deepEqual(linksOf(paper), [{ text: links[language], href: DOI }], language);
+    summaries.push(fields[0]?.text);
+  }
+  assert.notEqual(summaries[0], summaries[1]);
 });
 
 test("the paper shows no e-mail", async () => {
@@ -138,30 +165,50 @@ test("the paper shows no e-mail", async () => {
   }
 });
 
-// Section 7.5 of the spec: what it is, the summary, what Shaihan built, the
-// result and "available on request", which leads to the contact, on the
-// About page of the same language.
+// Section 7.5 of the spec: what it is, with the advisor named, the summary
+// of two sentences, what Shaihan built, the result and "available on
+// request", which leads to the contact, on the About page of the same
+// language.
 test("the thesis shows what it is, the summary, what was built, the result and “available on request”, leading to the contact", async () => {
-  const [, inEnglish = ""] = itemsOf(await examplePage("en"));
-  assert.deepEqual(fieldsOf(inEnglish), [
-    { label: "What it is", text: "[Example] What the work is, with the advisor named." },
-    { label: "Summary", text: "[Example] Two sentences that summarize the made-up thesis." },
-    { label: "What I built", text: "[Example] What Shaihan built in the made-up thesis." },
-    {
-      label: "Result",
-      text: "[Example] The result, with its caveat stated right next to the number.",
-    },
-  ]);
-  assert.deepEqual(linksOf(inEnglish), [{ text: "Available on request", href: CONTACT.en }]);
+  const links = { en: "Available on request", pt: "Disponível a pedido" };
+  const summaries = [];
+  for (const language of ["en", "pt"] as const) {
+    const [, thesis = ""] = itemsOf(await examplePage(language));
+    const fields = fieldsOf(thesis);
+    const { whatItIs, summary, built, result } = LABELS[language];
+    assert.deepEqual(
+      fields.map(({ label }) => label),
+      [whatItIs, summary, built, result],
+      language,
+    );
+    assertWritten(fields, `thesis (${language})`);
+    assert.match(fields[0]?.text ?? "", /UNISINOS.*Sandro José Rigo/, language);
+    assert.equal(sentencesOf(fields[1]?.text ?? "").length, 2, language);
+    assert.deepEqual(
+      linksOf(thesis),
+      [{ text: links[language], href: CONTACT[language] }],
+      language,
+    );
+    summaries.push(fields[1]?.text);
+  }
+  assert.notEqual(summaries[0], summaries[1]);
+});
 
-  const [, inPortuguese = ""] = itemsOf(await examplePage("pt"));
-  assert.deepEqual(fieldsOf(inPortuguese), [
-    { label: "O que é", text: "[Exemplo] O que é o trabalho, com o orientador citado." },
-    { label: "Resumo", text: "[Exemplo] Duas frases que resumem o TCC inventado." },
-    { label: "O que construí", text: "[Exemplo] O que Shaihan construiu no TCC inventado." },
-    { label: "Resultado", text: "[Exemplo] O resultado, com a ressalva colada ao número." },
-  ]);
-  assert.deepEqual(linksOf(inPortuguese), [{ text: "Disponível a pedido", href: CONTACT.pt }]);
+// Section 11 of the spec, the rule of health: the patients are always
+// "simulated", no text says the system diagnoses or treats, and a result
+// number only shows next to the caveat.
+test("the research items follow the rule of health, in both languages", async () => {
+  for (const language of ["en", "pt"] as const) {
+    for (const item of itemsOf(await examplePage(language))) {
+      const fields = fieldsOf(item);
+      const read = fields.map(({ text }) => text).join(" ");
+      assert.deepEqual(patientsNotSimulated(read), [], language);
+      assert.doesNotMatch(read, CLINICAL_CLAIM, language);
+      assert.deepEqual(numbersWithoutTheCaveat(fields.at(-1)?.text ?? ""), [], language);
+      assert.match(fields.at(-1)?.text ?? "", /simulated|simulad/i, language);
+      assert.deepEqual(forbiddenWordsIn(read), [], language);
+    }
+  }
 });
 
 // Section 7.5 of the spec: the paper has a diagram and the thesis has no
@@ -203,8 +250,8 @@ test("Research has no link to a PDF, no image from outside the site, and only th
 test("each research item can be reached by the name of its file", async () => {
   for (const language of ["en", "pt"] as const) {
     const page = await examplePage(language);
-    assert.equal(titleOf(element(page, "article", "example-paper")).text, PAPER_TITLE, language);
-    assert.match(titleOf(element(page, "article", "example-thesis")).text, /TCC/, language);
+    assert.equal(titleOf(element(page, "article", PAPER_ID)).text, PAPER_TITLE, language);
+    assert.ok(titleOf(element(page, "article", THESIS_ID)).text.startsWith(THESIS_TITLE), language);
   }
 });
 
@@ -258,12 +305,12 @@ function numbersOf(html: string): string[] {
 
 describe("the research items come from the content", { concurrency: true }, () => {
   // A copy of the site with test phrases in English and with the test paper
-  // and the test thesis in the place of the example ones.
+  // and the test thesis in the place of the ones of the repo.
   const changed = build({
     write: {
       "pages/en.yaml": PAGES,
-      "research/example-paper.yaml": PAPER,
-      "research/example-thesis.yaml": THESIS,
+      [`research/${PAPER_ID}.yaml`]: PAPER,
+      [`research/${THESIS_ID}.yaml`]: THESIS,
     },
   });
 
@@ -346,10 +393,10 @@ describe("the research items come from the content", { concurrency: true }, () =
   // A copy without the thesis, and without the link the example completed
   // study has to it.
   const withoutThesis = build({
-    remove: ["research/example-thesis.yaml"],
+    remove: [`research/${THESIS_ID}.yaml`],
     write: {
       "studies/example-completed.yaml":
-        "name:\n  en: Study\n  pt-br: Estudo\ngoal:\n  en: Goal.\n  pt-br: Objetivo.\nstatus: completed\nstart: 2025-03\nend: 2025-11\nlinks:\n  research: [example-paper]\n",
+        "name:\n  en: Study\n  pt-br: Estudo\ngoal:\n  en: Goal.\n  pt-br: Objetivo.\nstatus: completed\nstart: 2025-03\nend: 2025-11\nlinks:\n  research: [haxd-paper]\n",
     },
   });
 
@@ -369,16 +416,16 @@ describe("the research items come from the content", { concurrency: true }, () =
   // The order of the page is the `order` field, not the type of the item.
   const reordered = build({
     write: {
-      "research/example-paper.yaml": PAPER.replace("order: 1", "order: 3"),
+      [`research/${PAPER_ID}.yaml`]: PAPER.replace("order: 1", "order: 3"),
     },
   });
 
   test("changing the order field changes the order of the items", async () => {
     const items = itemsOf(element(await (await reordered).read(RESEARCH.en), "main"));
-    assert.deepEqual(
-      items.map((item) => titleOf(item).text),
-      [`${THESIS_TITLE} ([Example] A made-up thesis title, translated)`, "Test Paper Title"],
-    );
+    const titles = items.map((item) => titleOf(item).text);
+    assert.equal(titles.length, 2);
+    assert.ok(titles[0]?.startsWith(THESIS_TITLE));
+    assert.equal(titles[1], "Test Paper Title");
   });
 });
 

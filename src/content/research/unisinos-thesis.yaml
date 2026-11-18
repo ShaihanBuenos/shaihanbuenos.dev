@@ -1,0 +1,16 @@
+type: thesis
+order: 2
+title: Inteligência Artificial Aplicada ao Desenvolvimento e Treinamento de Chatbots para Monitoramento de Saúde
+translatedTitle: Artificial Intelligence Applied to the Development and Training of Chatbots for Health Monitoring
+whatItIs:
+  en: Final project of the Bachelor's degree in Information Systems, UNISINOS, 2025, advised by Prof. Sandro José Rigo.
+  pt-br: Trabalho de conclusão do Bacharelado em Sistemas de Informação, UNISINOS, 2025, orientado pelo Prof. Sandro José Rigo.
+summary:
+  en: The thesis designs and tests the conversation layer of a chatbot for hypertension care, with simulated patients, as part of a larger research effort of the group at UNISINOS. It was the starting point of the paper.
+  pt-br: O TCC desenha e testa a camada de conversa de um chatbot para o acompanhamento da hipertensão, com pacientes simulados, como parte de uma pesquisa maior do grupo na UNISINOS. Foi o ponto de partida do paper.
+built:
+  en: "I built the interaction layer: an API in FastAPI, with Pydantic and SQLAlchemy over PostgreSQL, the integration with OpenAI, with one assistant per medical unit and one conversation per simulated patient, the guard of the JSON output, a Flask microservice with the guidelines and the orchestration flow in n8n, all of it in Docker."
+  pt-br: "Construí a camada de interação: uma API em FastAPI, com Pydantic e SQLAlchemy sobre PostgreSQL, a integração com a OpenAI, com um assistente por unidade médica e uma conversa por paciente simulado, a guarda do JSON de saída, um microsserviço em Flask com as diretrizes e o fluxo de orquestração no n8n, tudo em Docker."
+result:
+  en: In three phases of 20 questions, asked by 4 simulated personas, one for each phenotype, the phenotype was right in 100% of the answers in the two phases with prompt tuning; the coverage of the JSON fields went from 0% at the baseline to 82.5% and 83.4%, and the average latency, from 15 s to 6.4 s and 6.2 s. The data is simulated, the test covers hypertension only and clinical validation is still missing.
+  pt-br: Em três fases de 20 perguntas, feitas por 4 personas simuladas, uma para cada fenótipo, o fenótipo saiu correto em 100% das respostas nas duas fases com ajuste de prompt; a cobertura dos campos do JSON passou de 0% na linha de base para 82,5% e 83,4%, e a latência média, de 15 s para 6,4 s e 6,2 s. Os dados são simulados, o teste cobre só hipertensão e falta a validação clínica.

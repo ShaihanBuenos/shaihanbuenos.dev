@@ -182,8 +182,8 @@ test("a study shows the links it has, and each one leads to its page", async () 
     },
     {
       label: "Research",
-      text: "[Example] A Made-Up Paper Title, in the Original English [Exemplo] Um título de TCC inventado, em português ([Example] A made-up thesis title, translated)",
-      hrefs: ["/research#example-paper", "/research#example-thesis"],
+      text: "Integrating Large Language Models into Hypertension Care: Architecture and Prompt Tuning Evaluation Inteligência Artificial Aplicada ao Desenvolvimento e Treinamento de Chatbots para Monitoramento de Saúde (Artificial Intelligence Applied to the Development and Training of Chatbots for Health Monitoring)",
+      hrefs: ["/research#haxd-paper", "/research#unisinos-thesis"],
     },
   ]);
 
@@ -208,8 +208,8 @@ test("a study shows the links it has, and each one leads to its page", async () 
     },
     {
       label: "Pesquisa",
-      text: "[Example] A Made-Up Paper Title, in the Original English [Exemplo] Um título de TCC inventado, em português",
-      hrefs: ["/pt-br/pesquisa#example-paper", "/pt-br/pesquisa#example-thesis"],
+      text: "Integrating Large Language Models into Hypertension Care: Architecture and Prompt Tuning Evaluation Inteligência Artificial Aplicada ao Desenvolvimento e Treinamento de Chatbots para Monitoramento de Saúde",
+      hrefs: ["/pt-br/pesquisa#haxd-paper", "/pt-br/pesquisa#unisinos-thesis"],
     },
   ]);
 });

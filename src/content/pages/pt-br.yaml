@@ -27,7 +27,7 @@ home:
   # The end of the experience while the current role has none.
   today: hoje
   # The paper callout: one plain sentence, without numbers.
-  paper: "[Exemplo] Uma frase simples sobre o paper, sem números."
+  paper: Uma arquitetura que põe um LLM para acompanhar as leituras de pressão arterial de pacientes simulados, com a resposta num formato fixo, conferido por código.
   # The link that closes each section.
   more:
     research: Sobre a pesquisa

@@ -27,7 +27,7 @@ home:
   # The end of the experience while the current role has none.
   today: today
   # The paper callout: one plain sentence, without numbers.
-  paper: "[Example] One plain sentence about the paper, without numbers."
+  paper: An architecture that puts an LLM to follow the blood pressure readings of simulated patients, with the answer in a fixed shape, checked by code.
   # The link that closes each section.
   more:
     research: About the research

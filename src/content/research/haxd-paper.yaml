@@ -1,0 +1,20 @@
+type: paper
+order: 1
+title: "Integrating Large Language Models into Hypertension Care: Architecture and Prompt Tuning Evaluation"
+venue: HAXD 2026, IEEE
+authors:
+  - name: Shaihan Buenos
+    highlight: true
+  - name: Janaina Avancini Pinheiro
+  - name: Daniel Formolo
+  - name: Sandro José Rigo
+doi: 10.1109/HAXD70072.2026.11621018
+summary:
+  en: The paper describes the architecture of a system that uses an LLM to follow the blood pressure readings of simulated patients with hypertension. Each reading that arrives is combined with the data of the simulated patient and with the text of the Brazilian hypertension guidelines, and the model answers in a JSON of a fixed shape. We evaluated a single version of the prompt, and the paper itself says that clinical validation with real patients is still missing, since all the data is simulated.
+  pt-br: O paper descreve a arquitetura de um sistema que usa um LLM para acompanhar as leituras de pressão arterial de pacientes simulados com hipertensão. Cada leitura que chega é combinada com os dados do paciente simulado e com o texto da diretriz brasileira de hipertensão, e a resposta do modelo sai num JSON de formato fixo. Avaliamos uma única versão do prompt, e o próprio paper diz que falta a validação clínica com pacientes reais, já que todos os dados são simulados.
+built:
+  en: I built the backend in FastAPI, the integration with OpenAI's Assistants API, with one persistent conversation per simulated patient, and the Flask microservice that classifies the phenotype and returns the guideline text. I also wrote the JSON output contract and the guard that extracts the JSON from the answer and tries again when it comes back invalid.
+  pt-br: Construí o backend em FastAPI, a integração com a Assistants API da OpenAI, com uma conversa persistente por paciente simulado, e o microsserviço em Flask que classifica o fenótipo e devolve o texto da diretriz. Também escrevi o contrato de saída em JSON e a guarda que extrai o JSON da resposta e tenta de novo quando ele vem inválido.
+result:
+  en: In 135 readings from 9 simulated patients, one for each hypertension phenotype, 100% of the answers came as valid JSON and the phenotype was right in 100% of the cases; the critical alert fired on the 4 readings at or above 180/110 mmHg, all from the same simulated patient, and on none of the others. In no test did the model recommend a change of medication. The data is simulated, a single version of the prompt was evaluated, without a baseline, and clinical validation is still missing.
+  pt-br: Em 135 leituras de 9 pacientes simulados, um para cada fenótipo de hipertensão, 100% das respostas vieram em JSON válido e o fenótipo saiu correto em 100% dos casos; o alerta crítico disparou nas 4 leituras a partir de 180/110 mmHg, todas do mesmo paciente simulado, e em nenhuma das outras. Em nenhum teste o modelo recomendou mudar a medicação. Os dados são simulados, uma só versão do prompt foi avaliada, sem linha de base, e falta a validação clínica.
