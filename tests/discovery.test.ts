@@ -514,6 +514,16 @@ test("no description has a number", async () => {
   }
 });
 
+// Section 11 of the spec: the names that stay out of the site, and what ages
+// on its own, are on no page, whatever the piece of content they came in.
+test("no page says a name that stays out of the site, years of experience or “full stack”", async () => {
+  for (const file of await everyPage()) {
+    const read = textOf(await built(file));
+    assert.deepEqual(forbiddenWordsIn(read), [], file);
+    assert.doesNotMatch(read, AGEING, file);
+  }
+});
+
 test("each page names its canonical address: absolute, on the domain, without a slash at the end", async () => {
   for (const file of await everyPage()) {
     const head = headOf(await built(file));

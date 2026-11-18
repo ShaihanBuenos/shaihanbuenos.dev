@@ -40,25 +40,27 @@ npm test            # constrói o site do zero e roda os testes
 
 Os testes em `tests/` olham o site construído: sobem a pasta `dist/` num servidor local e pedem cada endereço, como um visitante faria. Eles conferem que cada endereço responde no idioma certo e que nada pode ser indexado. Testes de uma função ficam ao lado dela, em `src/lib/<nome>.test.ts`.
 
-Os testes do Início, em `tests/home.test.ts`, olham a página construída com o conteúdo de exemplo e a de uma cópia com o conteúdo trocado.
+Os testes do Início, em `tests/home.test.ts`, olham a página construída com o conteúdo do repo e a de uma cópia com o conteúdo trocado.
 
-Os testes de Projetos, em `tests/projects.test.ts`, olham a lista e as histórias do projeto do mesmo jeito: com o conteúdo de exemplo e em cópias com uma pasta de projeto criada, apagada ou trocada.
+Os testes de Projetos, em `tests/projects.test.ts`, olham a lista e as histórias do projeto do mesmo jeito: com o conteúdo do repo e em cópias com uma pasta de projeto criada, apagada ou trocada.
 
-Os testes de Textos, em `tests/writing.test.ts`, olham a lista de textos e a página de um texto: com o conteúdo de exemplo e numa cópia com textos criados, um deles com tradução.
+Os testes de Textos, em `tests/writing.test.ts`, olham a lista de textos e a página de um texto: com o conteúdo do repo e numa cópia com textos criados, um deles com tradução.
 
-Os testes de Estudos, em `tests/studies.test.ts`, olham a lista de estudos: com o conteúdo de exemplo e numa cópia com estudos criados, um apagado e outro mês de conferência.
+Os testes de Estudos, em `tests/studies.test.ts`, olham a lista de estudos: com o conteúdo do repo e numa cópia com estudos criados, um apagado e outro mês de conferência.
 
-Os testes de Pesquisa, em `tests/research.test.ts`, olham a página Pesquisa: com o conteúdo de exemplo e em cópias com um paper e um TCC de teste, com o TCC apagado e com a ordem trocada.
+Os testes de Pesquisa, em `tests/research.test.ts`, olham a página Pesquisa: com o conteúdo do repo e em cópias com um paper e um TCC de teste, com o TCC apagado e com a ordem trocada.
 
-Os testes de Sobre, em `tests/about.test.ts`, olham a página Sobre: com o conteúdo de exemplo e numa cópia com cargos criados, um trocado e um apagado.
+Os testes de Sobre, em `tests/about.test.ts`, olham a página Sobre: com o conteúdo do repo e numa cópia com cargos criados, um trocado e um apagado.
 
 Os testes do movimento, em `tests/motion.test.ts`, olham as páginas, o CSS e o JavaScript construídos: o que é animado, o que sobra com o movimento reduzido e com o JavaScript desligado, onde cada parte do movimento existe e quanto JavaScript vai para o navegador. Quem lê o CSS construído é `tests/support/css.ts`. Ver "Movimento", abaixo.
 
-Os testes da descoberta, em `tests/discovery.test.ts`, olham os dois feeds, o `<head>` de cada página, as imagens de compartilhamento, o mapa do site e o `robots.txt`: com o conteúdo de exemplo e em cópias com um texto criado, traduzido e revisado, e com a chave do lançamento ligada. Ver "Descoberta", abaixo.
+Os testes da descoberta, em `tests/discovery.test.ts`, olham os dois feeds, o `<head>` de cada página, as imagens de compartilhamento, o mapa do site e o `robots.txt`: com o conteúdo do repo e em cópias com um texto criado, traduzido e revisado, e com a chave do lançamento ligada. Ver "Descoberta", abaixo.
 
 Os testes da issue de conferência, em `tests/check-issue.test.ts`, não olham o site: rodam `scripts/open-check-issue` com um `gh` falso, sem a rede, e leem o arquivo do workflow. Ver "A issue de conferência", abaixo.
 
 Os testes do deploy, em `tests/deploy.test.ts`, não olham o site: leem o `wrangler.jsonc` e conferem o que a Cloudflare vai publicar. Ver "Deploy", abaixo.
+
+As regras de conteúdo da seção 11 da spec que uma máquina confere ficam em `tests/support/rules.ts`, e os testes de cada página as aplicam ao conteúdo do repo: a marca `[Exemplo]`, o que envelhece, os pacientes sempre "simulados", o número de resultado junto da ressalva, o número só em percentual na experiência e as palavras que não podem aparecer. Essas palavras ficam guardadas como resumo (o começo do SHA-256 de cada uma), porque o repo é público e a lista em texto claro diria o que o site não diz. O comentário do arquivo mostra como acrescentar uma. Os testes conferem a forma e as regras de cada peça, não a redação: reescrever uma frase não quebra um teste, a não ser que ela quebre uma regra.
 
 Os testes do conteúdo, em `tests/content.test.ts`, constroem cópias do site numa pasta temporária, cada uma com um arquivo de conteúdo trocado, e conferem que a construção para no arquivo errado. Quem faz a cópia é `tests/support/copy.ts`.
 
@@ -372,7 +374,15 @@ Tudo o que o site diz fica em `src/content/`. Trocar uma frase, um estado ou uma
 
 O nome do arquivo (ou da pasta) é o identificador do item: é ele que as ligações usam. Os campos de cada coleção estão em `src/lib/schemas.ts`. Os nomes dos campos e das pastas são em inglês; o que se escreve dentro deles segue o idioma do site.
 
-**O conteúdo que está lá hoje é de exemplo.** Ele é inventado, está marcado com `[Exemplo]` ou `[Example]`, e serve para as páginas poderem ser construídas. Cada arquivo de exemplo sai do repo antes do lançamento, quando o conteúdo de verdade entrar. O repo é público: nada dos dossiês locais entra aqui sem passar pelas regras da seção 11 da spec.
+**Parte do conteúdo ainda é de exemplo.** O que é de exemplo é inventado, está marcado com `[Exemplo]` ou `[Example]`, e sai do repo antes do lançamento:
+
+- os três textos de `texts/` (um artigo, uma nota de estudo e um rascunho);
+- a marca de cada projeto, `mark.svg`;
+- `image-to-come.svg`, nas pastas de `out-of-the-rabbit-hole` e de `beto`: marca o lugar de uma captura ou de um diagrama que ainda vai ser feito, com o texto alternativo e a legenda também marcados;
+- a legenda do diagrama do paper, `research.diagramCaption`;
+- o avatar, `src/assets/avatar.png`.
+
+O resto é rascunho do conteúdo de verdade, à espera da redação final. O repo é público: nada dos dossiês locais entra aqui sem passar pelas regras da seção 11 da spec.
 
 ### Criar um texto
 
@@ -470,7 +480,7 @@ Quem dá essa estrutura ao corpo é `src/lib/project-story.ts`. O Astro guarda o
 ![O que a imagem mostra, para quem não a vê](./diagrama.svg "A legenda, que aparece abaixo da imagem.")
 ```
 
-A imagem fica sozinha no parágrafo e aparece com a moldura de um fio; a legenda, entre aspas, é opcional. Cada imagem é um arquivo só, que encolhe até a largura da tela: um diagrama largo precisa continuar legível em 390 px. Um arquivo de imagem serve aos dois idiomas, com o texto alternativo e a legenda escritos em cada um. Use SVG para diagramas e PNG para capturas, com no máximo a largura da coluna em dobro (cerca de 1600 px). Hoje nenhum projeto de exemplo tem imagem.
+A imagem fica sozinha no parágrafo e aparece com a moldura de um fio; a legenda, entre aspas, é opcional. Cada imagem é um arquivo só, que encolhe até a largura da tela: um diagrama largo precisa continuar legível em 390 px. Um arquivo de imagem serve aos dois idiomas, com o texto alternativo e a legenda escritos em cada um. Use SVG para diagramas e PNG para capturas, com no máximo a largura da coluna em dobro (cerca de 1600 px). Enquanto uma imagem não existe, `image-to-come.svg` marca o lugar dela, com `[Exemplo]` no texto alternativo e na legenda.
 
 ### Criar um estudo
 
