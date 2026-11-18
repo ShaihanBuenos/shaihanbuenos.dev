@@ -16,6 +16,5 @@
   // Every branch other than the production one is published as a preview of
   // its own, at <branch>-shaihanbuenos-dev.<subdomain>.workers.dev. Previews
   // inherit nothing but the assets, and need nothing else.
-  "preview_urls": true,
   "previews": {},
 }

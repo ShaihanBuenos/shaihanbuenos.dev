@@ -8,18 +8,23 @@ import ts from "typescript";
 
 const root = new URL("..", import.meta.url).pathname;
 
+// The settings the tests look at. Any other key is read as unknown.
+interface DeployConfig extends Record<string, unknown> {
+  assets: Record<string, unknown>;
+}
+
 // wrangler.jsonc has comments, which JSON.parse refuses. TypeScript reads the
 // same format for tsconfig.json.
-async function deployConfig(): Promise<Record<string, unknown>> {
+async function deployConfig(): Promise<DeployConfig> {
   const file = `${root}wrangler.jsonc`;
   const parsed = ts.parseConfigFileTextToJson(file, await readFile(file, "utf8"));
   assert.equal(parsed.error, undefined, "wrangler.jsonc is not valid JSONC");
-  return parsed.config as Record<string, unknown>;
+  return parsed.config as DeployConfig;
 }
 
 test("the deploy serves the dist/ folder, with no Worker code", async () => {
   const config = await deployConfig();
-  const assets = config.assets as Record<string, unknown>;
+  const { assets } = config;
   assert.equal(assets.directory, "./dist");
   // With no `main`, there is no Worker script: only the static files.
   assert.equal(config.main, undefined);
@@ -31,7 +36,7 @@ test("the deploy serves the dist/ folder, with no Worker code", async () => {
 // host shows the one nearest to the address that was asked for.
 test('"not found" is answered with the nearest 404 page', async () => {
   const { assets } = await deployConfig();
-  assert.equal((assets as Record<string, unknown>).not_found_handling, "404-page");
+  assert.equal(assets.not_found_handling, "404-page");
 });
 
 // Until launch the site lives only at *.workers.dev. Connecting the domain
@@ -55,7 +60,6 @@ test("the deploy fixes a compatibility date", async () => {
 test("the other branches can be published as previews", async () => {
   const config = await deployConfig();
   assert.deepEqual(config.previews, {});
-  assert.equal(config.preview_urls, true);
 });
 
 // The repo is public: the account is chosen where the deploy runs, never here.

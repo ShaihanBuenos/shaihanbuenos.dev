@@ -84,6 +84,8 @@ Quem publica é a própria Cloudflare (Workers Builds), ligada a este repo no pa
 
 Endereço da prévia: _a preencher depois da ligação_
 
+Os dois comandos de cada linha, o branch de produção e as prévias dos outros branches são ajustes do painel, e não deste repo: ver "O que fica no painel", abaixo.
+
 Até o lançamento, esse endereço `*.workers.dev` é o único do site. O `wrangler.jsonc` não tem rota nem domínio: ligar `shaihanbuenos.dev` é do dia do lançamento.
 
 ### O que o `wrangler.jsonc` diz
@@ -91,14 +93,31 @@ Até o lançamento, esse endereço `*.workers.dev` é o único do site. O `wrang
 - `assets.directory`: a pasta servida, `./dist`. Sem `main`, não há código de Worker.
 - `assets.not_found_handling`: `404-page`. Para um endereço que não existe, a Cloudflare responde com o `404.html` mais próximo, e por isso um endereço sob `/pt-br` recebe o "não encontrado" em português.
 - `workers_dev`: `true`. O site responde no endereço `*.workers.dev`.
-- `preview_urls` e `previews`: ligam os endereços de prévia dos outros branches. O bloco `previews` é vazio porque a prévia de um branch não precisa de nada além dos arquivos, mas o `wrangler preview` exige que ele exista.
+- `previews`: o que a prévia de um branch tem de diferente. O bloco é vazio porque ela não precisa de nada além dos arquivos, mas o `wrangler preview` exige que ele exista.
 - `compatibility_date`: a data que fixa o comportamento da Cloudflare. Só muda de propósito.
 
 O arquivo `_headers` não fica no `wrangler.jsonc`: a construção o escreve em `dist/` (ver "Não indexar até o lançamento", abaixo), e a Cloudflare o lê de lá.
 
+### O que fica no painel
+
+Em Workers & Pages > `shaihanbuenos-dev` > Settings > Build:
+
+| Ajuste | Valor |
+|---|---|
+| Nome do Worker | `shaihanbuenos-dev`, igual ao `name` do `wrangler.jsonc`. Com nomes diferentes, a construção falha. |
+| Comando de construção | `npm run build` |
+| Comando de deploy | `npx wrangler deploy` |
+| Comando dos outros branches | `npx wrangler preview` |
+| Pasta raiz | vazia: o projeto fica na raiz do repo. |
+| Branch de produção | `master` |
+| Construir os outros branches | ligado ("Enable Preview Builds", em Branch control). |
+| Variáveis de construção | nenhuma. O Node padrão da Cloudflare atende o `engines` do `package.json`; para fixar outra versão, a variável é `NODE_VERSION`. |
+
+A Cloudflare instala as dependências sozinha, pelo `package-lock.json`, antes do comando de construção.
+
 ### Ver a prévia de um branch
 
-Faça o push do branch. A Cloudflare constrói e publica, e o endereço aparece em três lugares: no comentário que ela deixa no PR, na conferência (check) do commit no GitHub e, no painel, em Workers & Pages > `shaihanbuenos-dev` > Deployments. O endereço tem a forma `<branch>-shaihanbuenos-dev.<subdomínio>.workers.dev` e sempre mostra o último push do branch.
+Faça o push do branch. A Cloudflare constrói e publica, e deixa o endereço num comentário no PR do branch. O estado de cada construção aparece como uma conferência (check) do commit no GitHub, e o painel mostra as prévias na página do Worker. O endereço tem a forma `<branch>-shaihanbuenos-dev.<subdomínio>.workers.dev` e sempre mostra o último push do branch.
 
 A prévia de um branch é pública: quem tem o endereço abre. A Cloudflare manda `X-Robots-Tag: noindex` por conta própria nos endereços de prévia em `*.workers.dev`, e o `_headers` do site manda o mesmo cabeçalho em todos os endereços.
 
@@ -127,7 +146,7 @@ Na prévia de verdade, o mesmo `curl` vale com o endereço dela.
 
 | Caminho | O que guarda |
 |---|---|
-| `wrangler.jsonc` | A configuração do deploy na Cloudflare (ver "Deploy", abaixo). |
+| `wrangler.jsonc` | A configuração do deploy na Cloudflare (ver "Deploy", acima). |
 | `astro.config.ts` | A configuração do Astro: endereço do site, idiomas, formato da saída e o arquivo `_headers`. |
 | `src/pages/` | Um arquivo por endereço. As páginas em inglês ficam na raiz. `projects/[project].astro` gera uma página por pasta de projeto, e `writing/[text].astro`, uma página por texto que tem versão em inglês. Também ficam aqui os arquivos que não são páginas: os feeds (`rss.xml.ts`), o mapa do site (`sitemap.xml.ts`), o `robots.txt.ts` e as imagens de compartilhamento (`share/[...image].png.ts`). |
 | `src/pages/pt-br/` | As páginas em português. `textos/[text].astro` gera uma página por texto que tem versão em português. |
