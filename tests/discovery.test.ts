@@ -6,7 +6,15 @@ import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
-import { elements, textOf } from "./support/html.ts";
+import { element, elements, textOf } from "./support/html.ts";
+import {
+  AGEING,
+  CLINICAL_CLAIM,
+  PLACEHOLDER,
+  forbiddenWordsIn,
+  patientsNotSimulated,
+  sentencesOf,
+} from "./support/rules.ts";
 
 const root = new URL("..", import.meta.url).pathname;
 
@@ -354,37 +362,67 @@ const LABEL = {
 // Section 9 of the spec: the tab title is "Page · Shaihan Buenos", and Home
 // uses the name and the label. The description is the one-line summary on a
 // text, and the page description on a fixed page and on a project story.
+
+// The fixed pages: the file of each one in each language, and its tab title.
+const FIXED_PAGES = [
+  {
+    en: { file: "index.html", title: `Shaihan Buenos · ${LABEL.en}` },
+    pt: { file: "pt-br.html", title: `Shaihan Buenos · ${LABEL.pt}` },
+  },
+  {
+    en: { file: "projects.html", title: "Projects · Shaihan Buenos" },
+    pt: { file: "pt-br/projetos.html", title: "Projetos · Shaihan Buenos" },
+  },
+  {
+    en: { file: "writing.html", title: "Writing · Shaihan Buenos" },
+    pt: { file: "pt-br/textos.html", title: "Textos · Shaihan Buenos" },
+  },
+  {
+    en: { file: "studies.html", title: "Studies · Shaihan Buenos" },
+    pt: { file: "pt-br/estudos.html", title: "Estudos · Shaihan Buenos" },
+  },
+  {
+    en: { file: "research.html", title: "Research · Shaihan Buenos" },
+    pt: { file: "pt-br/pesquisa.html", title: "Pesquisa · Shaihan Buenos" },
+  },
+  {
+    en: { file: "about.html", title: "About · Shaihan Buenos" },
+    pt: { file: "pt-br/sobre.html", title: "Sobre · Shaihan Buenos" },
+  },
+];
+
+// Section 9 of the spec: each fixed page has a page description of one line,
+// in both languages. The wording is the owner's: the test reads only that
+// the description is written, is one sentence, belongs to that page alone
+// and follows the content rules of section 11.
+for (const language of ["en", "pt"] as const) {
+  test(`each fixed page (${language}) has its tab title and a page description of its own, of one sentence`, async () => {
+    const descriptions = [];
+    for (const page of FIXED_PAGES) {
+      const { file, title } = page[language];
+      const head = headOf(await built(file));
+      assert.equal(head.title, title, file);
+      assert.equal(head.meta["og:title"], title, file);
+      const { description = "" } = head.meta;
+      assert.equal(head.meta["og:description"], description, file);
+      assert.doesNotMatch(description, PLACEHOLDER, file);
+      assert.equal(sentencesOf(description).length, 1, `${file}: ${description}`);
+      assert.doesNotMatch(description, AGEING, file);
+      assert.doesNotMatch(description, CLINICAL_CLAIM, file);
+      assert.deepEqual(patientsNotSimulated(description), [], file);
+      assert.deepEqual(forbiddenWordsIn(description), [], file);
+      // The description is written in the language of the page.
+      const other = page[language === "en" ? "pt" : "en"].file;
+      assert.notEqual(description, headOf(await built(other)).meta.description, file);
+      descriptions.push(description);
+    }
+    assert.equal(new Set(descriptions).size, FIXED_PAGES.length, "two pages share a description");
+  });
+}
+
+// The description is the one-line summary on a text. "Not found" has a
+// description of its own.
 const HEADS = [
-  {
-    file: "index.html",
-    title: `Shaihan Buenos · ${LABEL.en}`,
-    description: "[Example] Description of the Home page.",
-  },
-  {
-    file: "pt-br.html",
-    title: `Shaihan Buenos · ${LABEL.pt}`,
-    description: "[Exemplo] Descrição da página Início.",
-  },
-  {
-    file: "about.html",
-    title: "About · Shaihan Buenos",
-    description: "[Example] Description of the About page.",
-  },
-  {
-    file: "pt-br/sobre.html",
-    title: "Sobre · Shaihan Buenos",
-    description: "[Exemplo] Descrição da página Sobre.",
-  },
-  {
-    file: "projects/example-project.html",
-    title: "Example Project · Shaihan Buenos",
-    description: "[Example] Description of the Example Project page.",
-  },
-  {
-    file: "pt-br/projetos/example-project.html",
-    title: "Example Project · Shaihan Buenos",
-    description: "[Exemplo] Descrição da página do Example Project.",
-  },
   {
     file: "writing/example-article-with-translation.html",
     title: "[Example] An example article with a translation · Shaihan Buenos",
@@ -412,6 +450,36 @@ const HEADS = [
     description: "Este endereço não existe em shaihanbuenos.dev.",
   },
 ];
+
+// A project story has the name of the project in the tab title and its own
+// page description, in each language.
+for (const [file, other, name] of [
+  [
+    "projects/out-of-the-rabbit-hole.html",
+    "pt-br/projetos/out-of-the-rabbit-hole.html",
+    "Out of the Rabbit Hole",
+  ],
+  [
+    "pt-br/projetos/out-of-the-rabbit-hole.html",
+    "projects/out-of-the-rabbit-hole.html",
+    "Out of the Rabbit Hole",
+  ],
+  ["projects/beto.html", "pt-br/projetos/beto.html", "Betô"],
+  ["pt-br/projetos/beto.html", "projects/beto.html", "Betô"],
+  ["projects/ensaio.html", "pt-br/projetos/ensaio.html", "Ensaio"],
+  ["pt-br/projetos/ensaio.html", "projects/ensaio.html", "Ensaio"],
+] as const) {
+  test(`${file} has its tab title and a page description of its own, written in its language`, async () => {
+    const head = headOf(await built(file));
+    assert.equal(head.title, `${name} · Shaihan Buenos`);
+    assert.equal(head.meta["og:title"], head.title);
+    const { description = "" } = head.meta;
+    assert.ok(description.trim().length > 0, "the page has no description");
+    assert.doesNotMatch(description, PLACEHOLDER);
+    assert.equal(head.meta["og:description"], description);
+    assert.notEqual(description, headOf(await built(other)).meta.description);
+  });
+}
 
 for (const { file, title, description } of HEADS) {
   test(`${file} has its tab title and its description`, async () => {
@@ -443,6 +511,16 @@ test("no description has a number", async () => {
   for (const file of await everyPage()) {
     const { description = "" } = headOf(await built(file)).meta;
     assert.doesNotMatch(description, /\d/, file);
+  }
+});
+
+// Section 11 of the spec: the names that stay out of the site, and what ages
+// on its own, are on no page, whatever the piece of content they came in.
+test("no page says a name that stays out of the site, years of experience or “full stack”", async () => {
+  for (const file of await everyPage()) {
+    const read = textOf(await built(file));
+    assert.deepEqual(forbiddenWordsIn(read), [], file);
+    assert.doesNotMatch(read, AGEING, file);
   }
 });
 
@@ -487,7 +565,7 @@ test("a page with an equivalent names both languages, and x-default is the Engli
   for (const [en, pt] of [
     ["index.html", "pt-br.html"],
     ["studies.html", "pt-br/estudos.html"],
-    ["projects/another-example-project.html", "pt-br/projetos/another-example-project.html"],
+    ["projects/ensaio.html", "pt-br/projetos/ensaio.html"],
     [
       "writing/example-article-with-translation.html",
       "pt-br/textos/exemplo-de-artigo-com-traducao.html",
@@ -525,8 +603,8 @@ test("hreflang is reciprocal: if a page points to another, the other points back
       pairs += 1;
     }
   }
-  // The fixed pages, the project stories and the translated article, both ways.
-  assert.equal(pairs, 18);
+  // The six fixed pages, the three project stories and the translated article, both ways.
+  assert.equal(pairs, 20);
 });
 
 test("a text without a translation has no hreflang", async () => {
@@ -592,11 +670,13 @@ test("the build writes one share image per text version, per project story and p
   const files = await readdir(`${root}dist/share`, { recursive: true });
   assert.deepEqual(files.filter((file) => file.endsWith(".png")).sort(), [
     "default.png",
-    "projects/another-example-project.png",
-    "projects/example-project.png",
+    "projects/beto.png",
+    "projects/ensaio.png",
+    "projects/out-of-the-rabbit-hole.png",
     "pt-br/default.png",
-    "pt-br/projetos/another-example-project.png",
-    "pt-br/projetos/example-project.png",
+    "pt-br/projetos/beto.png",
+    "pt-br/projetos/ensaio.png",
+    "pt-br/projetos/out-of-the-rabbit-hole.png",
     "pt-br/textos/exemplo-de-artigo-com-traducao.png",
     "writing/example-article-with-translation.png",
     "writing/example-study-note-without-translation.png",
@@ -614,15 +694,11 @@ const SHARE_IMAGES = [
     `Shaihan Buenos · ${LABEL.pt} · shaihanbuenos.dev`,
   ],
   [
-    "projects/example-project.html",
-    "share/projects/example-project.png",
-    "Example Project · shaihanbuenos.dev",
+    "projects/out-of-the-rabbit-hole.html",
+    "share/projects/out-of-the-rabbit-hole.png",
+    "Out of the Rabbit Hole · shaihanbuenos.dev",
   ],
-  [
-    "pt-br/projetos/another-example-project.html",
-    "share/pt-br/projetos/another-example-project.png",
-    "Another Example Project · shaihanbuenos.dev",
-  ],
+  ["pt-br/projetos/ensaio.html", "share/pt-br/projetos/ensaio.png", "Ensaio · shaihanbuenos.dev"],
   [
     "writing/example-article-with-translation.html",
     "share/writing/example-article-with-translation.png",
@@ -717,7 +793,11 @@ test("the site map says when a text and a project story last changed", async () 
   assert.equal(changes.get(ARTICLE), "2026-02-03");
   assert.equal(changes.get(ARTICLE_IN_PORTUGUESE), "2026-02-03");
   assert.equal(changes.get(NOTE), "2026-03-10");
-  assert.equal(changes.get(`${SITE}/projects/example-project`), "2026-05-20");
+  // The "updated on" date of the story, as its page shows it.
+  const story = await built("projects/out-of-the-rabbit-hole.html");
+  const updatedOn = element(story, "main").match(/<time datetime="(\d{4}-\d{2}-\d{2})">/)?.[1];
+  assert.ok(updatedOn, "the story shows no date");
+  assert.equal(changes.get(`${SITE}/projects/out-of-the-rabbit-hole`), updatedOn);
   // A fixed page is updated in place, without a date.
   assert.equal(changes.get(`${SITE}/about`), undefined);
 });

@@ -1,0 +1,10 @@
+company: Dell Technologies
+title: Software Engineer Intern
+start: 2020-09
+end: 2021-07
+context:
+  en: Internal mobile app.
+  pt-br: Aplicativo móvel interno.
+achievements:
+  - en: During the internship, I developed an internal social network for the company's employees, delivered as a mobile app and built with Flutter, .NET and PostgreSQL.
+    pt-br: Desenvolvi, no estágio, uma rede social interna para os funcionários da empresa, entregue como aplicativo móvel e construída com Flutter, .NET e PostgreSQL.

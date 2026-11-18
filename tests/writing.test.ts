@@ -192,13 +192,14 @@ test("a text that came from a study names it, with a link to the study on the st
   const page = await examplePage(TEXT.en("example-study-note-without-translation"));
   const study = element(page.slice(page.indexOf('<div class="prose">')), "dl");
   assert.equal(textOf(element(study, "dt")), "source study");
-  assert.equal(textOf(element(study, "dd")), "[Example] A study in progress");
-  assert.deepEqual(hrefsOf(study), ["/studies#example-in-progress"]);
+  assert.deepEqual(hrefsOf(study), ["/studies#spec-driven-development-with-ai-agents"]);
+  // The name of the study, as the study list shows it.
   const studies = await examplePage("studies.html");
-  assert.equal(
-    textOf(element(element(studies, "article", "example-in-progress"), "h3")),
-    "[Example] A study in progress",
+  const name = textOf(
+    element(element(studies, "article", "spec-driven-development-with-ai-agents"), "h3"),
   );
+  assert.ok(name.length > 0);
+  assert.equal(textOf(element(study, "dd")), name);
 });
 
 test("a text that came from no study names none", async () => {
@@ -285,14 +286,17 @@ for (const [name, file] of [
 }
 
 describe("the texts come from the content", { concurrency: true }, () => {
-  // A copy of the site with test phrases in English and three more texts:
-  // the newest one, written in Portuguese and translated to English without
-  // AI, one in Portuguese only, and the oldest one, in English only.
+  // A copy of the site with test phrases in English, a test study and three
+  // more texts: the newest one, written in Portuguese, translated to English
+  // without AI and born from the test study, one in Portuguese only, and the
+  // oldest one, in English only.
   const changed = build({
     write: {
       "pages/en.yaml": PAGES,
+      "studies/test-study.yaml":
+        "name:\n  en: Test study\n  pt-br: Estudo de teste\ngoal:\n  en: Goal.\n  pt-br: Objetivo.\nstatus: completed\nstart: 2025-03\nend: 2025-11\n",
       "texts/newest-text/text.yaml":
-        "publishedOn: 2026-05-01\nupdatedOn: 2026-06-02\ntype: article\ntopics: [career]\noriginalLanguage: pt-br\nstudy: example-completed\n",
+        "publishedOn: 2026-05-01\nupdatedOn: 2026-06-02\ntype: article\ntopics: [career]\noriginalLanguage: pt-br\nstudy: test-study\n",
       "texts/newest-text/pt-br.md":
         "---\ntitle: Texto mais novo\nsummary: Resumo de teste.\nslug: texto-mais-novo\n---\n\nCorpo de teste.\n",
       "texts/newest-text/en.md":
@@ -363,7 +367,7 @@ describe("the texts come from the content", { concurrency: true }, () => {
     );
     const study = element(page, "dl");
     assert.equal(textOf(element(study, "dt")), "test source study");
-    assert.equal(textOf(element(study, "dd")), "[Example] A completed study");
+    assert.equal(textOf(element(study, "dd")), "Test study");
   });
 
   test("a translation made without AI carries the note without the notice", async () => {

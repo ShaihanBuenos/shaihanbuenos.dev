@@ -13,7 +13,7 @@ common:
 
 home:
   name: Home
-  description: "[Example] Description of the Home page."
+  description: "The site of Shaihan Buenos, a software engineer focused on backend and AI: projects, writing, studies, research and experience."
   label: Software Engineer focused on backend and AI
   intro: I build backend services and systems that use LLMs, and I write code with AI agents guided by specs.
   # The blocks of the floor plan: the title of each one and, where the caption
@@ -27,7 +27,7 @@ home:
   # The end of the experience while the current role has none.
   today: today
   # The paper callout: one plain sentence, without numbers.
-  paper: "[Example] One plain sentence about the paper, without numbers."
+  paper: An architecture that puts an LLM to follow the blood pressure readings of simulated patients, with the answer in a fixed shape, checked by code.
   # The link that closes each section.
   more:
     research: About the research
@@ -38,7 +38,7 @@ home:
 
 projects:
   name: Projects
-  description: "[Example] Description of the Projects page."
+  description: "The projects I build on my own, with AI agents guided by specs: the state of each one and its engineering decisions."
   # The name of each project state.
   states:
     works-locally: works locally
@@ -51,7 +51,7 @@ projects:
 
 writing:
   name: Writing
-  description: "[Example] Description of the Writing page."
+  description: "Articles and study notes on backend, architecture and AI, each text in the language it was written in."
   # The name of each text type.
   types:
     article: article
@@ -80,7 +80,7 @@ writing:
 
 studies:
   name: Studies
-  description: "[Example] Description of the Studies page."
+  description: "The studies in progress and the ones I have completed, with the status of each one and the texts and projects linked to it."
   # Comes before the month of the last check of the study list.
   checkedOn: checked in
   # The title of the group of the studies in progress.
@@ -103,7 +103,7 @@ studies:
 
 research:
   name: Research
-  description: "[Example] Description of the Research page."
+  description: "My academic work: a paper published by IEEE on using LLMs in hypertension care, and the undergraduate thesis it started from."
   # What comes before each field of a research item.
   fields:
     whatItIs: What it is
@@ -119,8 +119,8 @@ research:
 
 about:
   name: About
-  description: "[Example] Description of the About page."
-  bio: "[Example] This paragraph stands in for the bio, which is still to be written."
+  description: "Who Shaihan Buenos is: the bio, the experience as a software engineer, the education and the contact."
+  bio: "I'm a software engineer at ADP Labs, in Porto Alegre, where I work on backend services. My AI side comes from outside my job: I'm the first author of a paper published by IEEE on using LLMs in hypertension care, and I build my own projects with AI agents guided by specs. Right now I'm studying React and TypeScript, along with this way of writing code with agents, and I write here about what I learn."
   # The alternative text of the avatar.
   avatarAlt: Pixel art avatar of Shaihan Buenos
   # The end of a period while the role is the current one.

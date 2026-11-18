@@ -7,6 +7,7 @@ import { describe, test } from "node:test";
 import { build } from "./support/copy.ts";
 import { element, elements, hrefsOf, textOf } from "./support/html.ts";
 import { PAGES } from "./support/phrases.ts";
+import { CLINICAL_CLAIM, PLACEHOLDER, patientsNotSimulated, sentencesOf } from "./support/rules.ts";
 
 const root = new URL("..", import.meta.url).pathname;
 
@@ -61,6 +62,28 @@ result:
   pt-br: Resultado de teste de 93,4%, com a ressalva.
 `;
 
+// Section 7.1 of the spec: the paper callout shows the title, "HAXD 2026,
+// IEEE" and one plain sentence, without numbers. Section 11: the patients
+// are always "simulated", and no text says the system diagnoses or treats.
+for (const language of ["en", "pt"] as const) {
+  test(`Home (${language}) calls the paper with its title, where it came out and one plain sentence, without numbers`, async () => {
+    const callout = elements(
+      element(element(await exampleHome(language), "main"), "section", "research"),
+      "p",
+    ).map(textOf);
+    assert.deepEqual(callout.slice(0, 2), [
+      "Integrating Large Language Models into Hypertension Care: Architecture and Prompt Tuning Evaluation",
+      "HAXD 2026, IEEE",
+    ]);
+    const sentence = callout[2] ?? "";
+    assert.equal(sentencesOf(sentence).length, 1);
+    assert.doesNotMatch(sentence, PLACEHOLDER);
+    assert.doesNotMatch(sentence, /\d/);
+    assert.doesNotMatch(sentence, CLINICAL_CLAIM);
+    assert.deepEqual(patientsNotSimulated(sentence), []);
+  });
+}
+
 describe("the content of Home", { concurrency: true }, () => {
   // A copy of the site with test phrases in English, another paper, the
   // order of the projects swapped, and two more texts: the newest one, in
@@ -68,9 +91,9 @@ describe("the content of Home", { concurrency: true }, () => {
   const changed = build({
     write: {
       "pages/en.yaml": PAGES,
-      "research/example-paper.yaml": PAPER,
-      "projects/example-project/project.yaml":
-        "name: Example Project\norder: 3\nstate: works-locally\nupdatedOn: 2026-05-20\n",
+      "research/haxd-paper.yaml": PAPER,
+      "projects/out-of-the-rabbit-hole/project.yaml":
+        "name: Out of the Rabbit Hole\norder: 4\nstate: works-locally\nupdatedOn: 2026-05-20\n",
       "texts/newest-text/text.yaml":
         "publishedOn: 2026-05-01\ntype: article\ntopics: [backend]\noriginalLanguage: pt-br\n",
       "texts/newest-text/pt-br.md":
@@ -105,9 +128,9 @@ describe("the content of Home", { concurrency: true }, () => {
   // The link that closes the callout leads to the paper on the Research page.
   test("the paper callout leads to the paper on the Research page", async () => {
     const callout = element(await changedHome("en"), "section", "research");
-    assert.deepEqual(hrefsOf(callout), ["/research#example-paper"]);
+    assert.deepEqual(hrefsOf(callout), ["/research#haxd-paper"]);
     const inPortuguese = element(await changedHome("pt"), "section", "research");
-    assert.deepEqual(hrefsOf(inPortuguese), ["/pt-br/pesquisa#example-paper"]);
+    assert.deepEqual(hrefsOf(inPortuguese), ["/pt-br/pesquisa#haxd-paper"]);
   });
 
   // The names on the project cards, in the order of the page.
@@ -124,32 +147,35 @@ describe("the content of Home", { concurrency: true }, () => {
 
   test("the projects come in the order of the content", async () => {
     const home = element(await exampleHome("en"), "main");
-    assert.deepEqual(projectCards(home), ["Example Project", "Another Example Project"]);
+    assert.deepEqual(projectCards(home), ["Out of the Rabbit Hole", "Betô", "Ensaio"]);
     assert.deepEqual(projectBlocks(home), [
-      "/projects/example-project",
-      "/projects/another-example-project",
+      "/projects/out-of-the-rabbit-hole",
+      "/projects/beto",
+      "/projects/ensaio",
     ]);
   });
 
   test("changing the order of the projects in the content changes the order on the page", async () => {
     const home = await changedHome("en");
-    assert.deepEqual(projectCards(home), ["Another Example Project", "Example Project"]);
+    assert.deepEqual(projectCards(home), ["Betô", "Ensaio", "Out of the Rabbit Hole"]);
     assert.deepEqual(projectBlocks(home), [
-      "/projects/another-example-project",
-      "/projects/example-project",
+      "/projects/beto",
+      "/projects/ensaio",
+      "/projects/out-of-the-rabbit-hole",
     ]);
   });
 
+  // What the card says the project is, is what the Projects page says.
   test("a project card shows the state, what the project is and leads to its story", async () => {
     const [card] = elements(element(await exampleHome("pt"), "section", "projects"), "li");
     assert.ok(card, "the section has no project card");
-    assert.deepEqual(hrefsOf(card), ["/pt-br/projetos/example-project"]);
+    assert.deepEqual(hrefsOf(card), ["/pt-br/projetos/out-of-the-rabbit-hole"]);
     assert.match(card, /<svg\b/);
     assert.match(textOf(card), /funciona localmente/);
-    assert.match(
-      textOf(card),
-      /\[Exemplo\] Um projeto inventado, que ocupa o lugar de uma história do projeto de verdade\./,
-    );
+    const list = element(await readFile(`${root}dist/pt-br/projetos.html`, "utf8"), "main");
+    const whatItIs = textOf(element(element(list, "li"), "p"));
+    assert.ok(whatItIs.length > 0);
+    assert.ok(textOf(card).includes(whatItIs), `the card does not say: ${whatItIs}`);
   });
 
   // The texts of the Home page: the title and the address of each one.
@@ -206,13 +232,24 @@ describe("the content of Home", { concurrency: true }, () => {
     assert.equal(hrefsOf(section).at(-1), "/pt-br/textos");
   });
 
+  // The studies in progress, as the study list shows them: its first group.
   test("only the studies in progress are shown, and the section leads to the list", async () => {
     const section = element(element(await exampleHome("pt"), "main"), "section", "studies");
+    const list = element(await readFile(`${root}dist/pt-br/estudos.html`, "utf8"), "main");
+    const inProgress = element(list, "section");
+    assert.equal(textOf(element(inProgress, "h2")), "Em andamento");
+    const names = elements(inProgress, "h3").map(textOf);
+    assert.ok(names.length > 0, "the study list has no study in progress");
     assert.deepEqual(
       elements(section, "li").map((item) => textOf(element(item, "strong"))),
-      ["[Exemplo] Um estudo em andamento"],
+      names,
     );
-    assert.match(section, /<time datetime="2026-02">/);
+    // The month each one started: the dates of the linked texts are days.
+    assert.deepEqual(
+      [...section.matchAll(/<time datetime="([^"]*)"/g)].map(([, month]) => month),
+      [...inProgress.matchAll(/<time datetime="(\d{4}-\d{2})"/g)].map(([, month]) => month),
+    );
+    assert.equal(elements(list, "h3").length > names.length, true, "no study is completed");
     assert.deepEqual(hrefsOf(section), ["/pt-br/estudos"]);
   });
 
