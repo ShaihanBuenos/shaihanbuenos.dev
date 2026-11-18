@@ -430,6 +430,11 @@ describe("the projects come from the content", { concurrency: true }, () => {
       "Choice",
       "Ruled out",
     ]);
+    assert.deepEqual(elements(story, "dd").map(textOf).slice(0, 3), [
+      "Test problem.",
+      "Test choice.",
+      "Test alternative.",
+    ]);
     assert.match(textOf(story), /Test credit\./);
   });
 });

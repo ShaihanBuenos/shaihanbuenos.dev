@@ -9,9 +9,9 @@ description: "The story of Ensaio, an app in planning for my own guitar practice
 
 **The problem.** An LLM that suggests a tone can make up an effect block the device does not have, or a value out of range.
 
-**The choice.** The model's proposal is a JSON in which every block name has to come from the device's catalog. The number ranges are checked in code, and the model tries again when a value falls out of range. The AI only writes drafts.
+**The choice.** By the specification, the model's proposal is a JSON in which every block name has to come from the device's catalog. The number ranges will be checked in code, and the model tries again when a value falls out of range. The AI will only write proposals, never the final version. None of this is built yet.
 
-**What was ruled out.** LangChain and a vector database. The reference data fits in the prompt, with caching, and the practice log is searched through tool calls.
+**What was ruled out.** LangChain and a vector database. By the design, the reference data fits in the prompt, with caching, and the practice log will be searched through tool calls.
 
 ### Measuring with the device before choosing the stack
 

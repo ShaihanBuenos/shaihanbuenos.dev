@@ -17,9 +17,9 @@ description: "The story of Betô, a product that is not launched yet: writes tha
 
 ### Nothing is deleted: undoing writes a void
 
-**The problem.** Undoing a record is one more operation that can be done offline and resent. It has to travel the same path as the records.
+**The problem.** Undoing a record is one more operation that will be done offline and resent. It has to travel the same path as the records.
 
-**The choice.** The server never deletes a record. Undoing writes a void, and the send queue gained a void operation. The batch answers with a status for each item.
+**The choice.** The server never deletes a record. Undoing writes a void, and the design of the send queue, which is not built yet, gained a void operation. The batch answers with a status for each item.
 
 **What was ruled out.** Removing the row with a `DELETE`.
 

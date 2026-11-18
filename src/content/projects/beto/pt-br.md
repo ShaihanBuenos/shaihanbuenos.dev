@@ -17,9 +17,9 @@ description: "A história do Betô, um produto ainda não lançado: escritas que
 
 ### Nada é apagado: desfazer é gravar uma anulação
 
-**O problema.** Desfazer um registro é mais uma operação que pode ser feita sem conexão e reenviada. Ela precisa passar pelo mesmo caminho dos registros.
+**O problema.** Desfazer um registro é mais uma operação que vai poder ser feita sem conexão e reenviada. Ela precisa passar pelo mesmo caminho dos registros.
 
-**A escolha.** O servidor nunca apaga um registro. Desfazer grava uma anulação, e a fila de envio ganhou a operação de anular. O lote responde com um status para cada item.
+**A escolha.** O servidor nunca apaga um registro. Desfazer grava uma anulação, e o desenho da fila de envio, que ainda não foi construída, ganhou a operação de anular. O lote responde com um status para cada item.
 
 **O que foi descartado.** Apagar a linha com um `DELETE`.
 
@@ -35,7 +35,7 @@ description: "A história do Betô, um produto ainda não lançado: escritas que
 
 **O problema.** Quem escreve o código são agentes. Um limite entre módulos que existe só num documento acaba atravessado sem ninguém ver.
 
-**A escolha.** Os limites são conferidos pela construção, dos dois lados: no backend, com Spring Modulith; no frontend, com uma regra de ESLint que tem os próprios testes. O contrato OpenAPI só aceita mudanças que acrescentam, e uma conferência barra a divergência entre o contrato e o código.
+**A escolha.** Os limites são conferidos pela construção, dos dois lados: no backend, com Spring Modulith; no frontend, com uma regra de ESLint que tem os próprios testes. O contrato OpenAPI só aceita mudanças que acrescentam, e uma verificação barra a divergência entre o contrato e o código.
 
 **O que foi descartado.** Deixar os limites só na documentação e na revisão.
 

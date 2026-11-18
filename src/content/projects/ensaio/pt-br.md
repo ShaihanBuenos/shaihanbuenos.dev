@@ -9,9 +9,9 @@ description: "A história do Ensaio, um app em planejamento para o meu estudo de
 
 **O problema.** Um LLM que sugere um timbre pode inventar um bloco de efeito que o aparelho não tem, ou um valor fora da faixa.
 
-**A escolha.** A proposta do modelo é um JSON em que cada nome de bloco tem de vir do catálogo do aparelho. As faixas dos números são conferidas em código, e o modelo tenta de novo quando um valor sai da faixa. A IA só escreve rascunhos.
+**A escolha.** Pela especificação, a proposta do modelo é um JSON em que cada nome de bloco tem de vir do catálogo do aparelho. As faixas dos números vão ser conferidas em código, e o modelo tenta de novo quando um valor sai da faixa. A IA só vai escrever propostas, nunca a versão final. Nada disso está construído ainda.
 
-**O que foi descartado.** LangChain e um banco vetorial. Os dados de referência cabem no prompt, com cache, e o histórico de estudo é consultado por chamadas de ferramenta.
+**O que foi descartado.** LangChain e um banco vetorial. Pelo desenho, os dados de referência cabem no prompt, com cache, e o histórico de estudo vai ser consultado por chamadas de ferramenta.
 
 ### Medir com o aparelho antes de escolher a stack
 

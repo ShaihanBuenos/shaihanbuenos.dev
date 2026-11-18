@@ -80,7 +80,7 @@ writing:
 
 studies:
   name: Estudos
-  description: "O que estou estudando e o que já concluí, com o status de cada estudo e os textos e projetos ligados a ele."
+  description: "Os estudos em andamento e os que já concluí, com o status de cada um e os textos e projetos ligados a ele."
   # Comes before the month of the last check of the study list.
   checkedOn: conferida em
   # The title of the group of the studies in progress.

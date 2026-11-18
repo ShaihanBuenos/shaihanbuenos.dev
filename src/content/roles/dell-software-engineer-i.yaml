@@ -12,5 +12,5 @@ achievements:
     pt-br: Mantive a cobertura de código em pelo menos 90%, com JUnit, Cucumber (BDD) e Robot Framework (ATDD), medida com JaCoCo e SonarQube.
   - en: I looked after the deploy pipeline of the microservices on Cloud Foundry, with security scanning stages and the publishing of artifacts to JFrog Artifactory.
     pt-br: Cuidei do pipeline de deploy dos microsserviços em Cloud Foundry, com etapas de varredura de segurança e de publicação de artefatos no JFrog Artifactory.
-  - en: I led a research and development initiative as its technical lead, delivered successfully and with a significant improvement in delivery timelines.
-    pt-br: Liderei, como líder técnico, uma iniciativa de pesquisa e desenvolvimento, entregue com sucesso e com melhora significativa nos prazos de entrega.
+  - en: I led a research and development initiative as its technical lead, delivered successfully and with an improvement in delivery timelines.
+    pt-br: Liderei, como líder técnico, uma iniciativa de pesquisa e desenvolvimento, entregue com sucesso e com melhora nos prazos de entrega.

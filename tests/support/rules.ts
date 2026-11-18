@@ -9,12 +9,14 @@ export const PLACEHOLDER = /\[(Example|Exemplo)\]/;
 export const AGEING = /full[\s-]?stack|years of experience|anos de experiência/i;
 
 // What no text about the research says: that the system diagnoses or treats.
-export const CLINICAL_CLAIM = /\bdiagnos|\btreat(s|ed|ing|ment)?\b|\btrata(r|m|mento)?\b/i;
+export const CLINICAL_CLAIM = /\bdiagn[oó]s|\btreat\w*|\btrat(a|ar|am|ou|amento|amentos)\b/i;
 
 // The words that may not appear. The repo is public, and the list itself
 // would say them, so each word is kept as the start of its SHA-256, in
-// lowercase and without accents. The list in plain text lives outside git,
-// with the local notes of the owner. To add a word:
+// lowercase and without accents. This keeps the words out of a search and
+// of a casual reading, and no more: a dictionary recovers a short word from
+// its hash. Only single words can be listed. The list in plain text lives
+// outside git, with the local notes of the owner. To add a word:
 //   node -e 'console.log(require("crypto").createHash("sha256").update(process.argv[1]).digest("hex").slice(0,16))' word
 const FORBIDDEN = {
   // On every page: names from the jobs and from the education that stay out.
@@ -133,10 +135,10 @@ export function forbiddenWordsIn(
 }
 
 // The sentences of a text. A period inside a number or a name (82.5, .NET)
-// does not close a sentence.
+// does not close a sentence, and neither does the one of "Prof.".
 export function sentencesOf(text: string): string[] {
   return text
-    .split(/(?<=[.!?])\s+/)
+    .split(/(?<=[.!?])(?<!\bProf\.)\s+/)
     .map((sentence) => sentence.trim())
     .filter((sentence) => sentence !== "");
 }
@@ -153,12 +155,14 @@ export function numbersBesidesPercentages(text: string): string[] {
 // that name a patient or a persona without saying so.
 export function patientsNotSimulated(text: string): string[] {
   return sentencesOf(text).filter(
-    (sentence) => /patient|pacient|persona/i.test(sentence) && !/simulated|simulad/i.test(sentence),
+    (sentence) =>
+      /patient|pacient|\bpersonas?\b/i.test(sentence) && !/simulated|simulad/i.test(sentence),
   );
 }
 
 // Section 11 of the spec: a result number only shows next to the caveat. The
-// sentences with a number that do not say the patients are simulated.
+// sentences with a number that do not say the patients are simulated. It
+// reads only the word: whether the caveat is whole is for a person to judge.
 export function numbersWithoutTheCaveat(text: string): string[] {
   return sentencesOf(text).filter(
     (sentence) => /\d/.test(sentence) && !/simulated|simulad/i.test(sentence),

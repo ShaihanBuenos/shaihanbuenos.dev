@@ -80,7 +80,7 @@ writing:
 
 studies:
   name: Studies
-  description: "What I am studying and what I have completed, with the status of each study and the texts and projects linked to it."
+  description: "The studies in progress and the ones I have completed, with the status of each one and the texts and projects linked to it."
   # Comes before the month of the last check of the study list.
   checkedOn: checked in
   # The title of the group of the studies in progress.
@@ -120,7 +120,7 @@ research:
 about:
   name: About
   description: "Who Shaihan Buenos is: the bio, the experience as a software engineer, the education and the contact."
-  bio: "I'm a software engineer at ADP Labs, in Porto Alegre, Brazil, where I work on backend services. The AI side of my work comes from outside my job: I'm the first author of a paper published by IEEE on using LLMs in hypertension care, and I build my own projects with AI agents guided by specs. Right now I'm studying React and TypeScript, along with this way of writing code with agents, and I write here about what I learn."
+  bio: "I'm a software engineer at ADP Labs, in Porto Alegre, where I work on backend services. My AI side comes from outside my job: I'm the first author of a paper published by IEEE on using LLMs in hypertension care, and I build my own projects with AI agents guided by specs. Right now I'm studying React and TypeScript, along with this way of writing code with agents, and I write here about what I learn."
   # The alternative text of the avatar.
   avatarAlt: Pixel art avatar of Shaihan Buenos
   # The end of a period while the role is the current one.

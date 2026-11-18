@@ -6,8 +6,8 @@ context:
   en: International payroll platform.
   pt-br: Plataforma internacional de folha de pagamento.
 achievements:
-  - en: I designed and delivered the platform's micro-frontend web components, written in TypeScript with Stencil and tested with Jest and Cypress.
-    pt-br: Arquitetei e entreguei os web components de micro-frontend da plataforma, escritos em TypeScript com Stencil e testados com Jest e Cypress.
+  - en: I designed and delivered the micro-frontend web components of the international payroll platform, written in TypeScript with Stencil.
+    pt-br: Arquitetei e entreguei os web components de micro-frontend da plataforma internacional de folha de pagamento, escritos em TypeScript com Stencil.
   - en: I moved to the backend, where I designed and built REST microservices in Java and Spring Boot, with MySQL, running in Docker containers orchestrated by Kubernetes on AWS.
     pt-br: Passei para o backend, onde projetei e desenvolvi microsserviços REST com Java e Spring Boot, com MySQL, em contêineres Docker orquestrados por Kubernetes na AWS.
   - en: I kept quality in check with TDD (JUnit) and BDD (Cucumber) suites, and used Spring Cloud Contract to validate the contracts between microservices and micro-frontends.
